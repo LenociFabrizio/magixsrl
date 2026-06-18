@@ -4,6 +4,8 @@
     const targetId = views[name] || views.home;
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
     document.getElementById(targetId).classList.add("active");
+    const fab = document.getElementById("waFab");
+    if (fab) fab.classList.toggle("hidden", targetId === "view-admin");
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     runReveal();
   }
