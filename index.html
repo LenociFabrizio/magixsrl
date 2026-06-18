@@ -552,9 +552,6 @@
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="prodotti"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Prodotti (PIM)</a>
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="news"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> News</a>
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="download"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Cataloghi &amp; download</a>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Ordini</a>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Preventivi (RFQ)</a>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Clienti B2B</a>
         <div class="pt-4 mt-4 border-t border-white/10"></div>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Impostazioni · RBAC</a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-view="home"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> ← Torna al sito</a>
@@ -588,29 +585,27 @@
 
       <!-- panel: dashboard -->
       <div class="admin-panel p-6" data-panel="dashboard">
-        <!-- KPI -->
+        <!-- KPI contenuti -->
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
-            <div class="flex items-center justify-between"><span class="kicker text-faint">VENDITE (MESE)</span><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2 py-0.5">+12,4%</span></div>
-            <div class="display font-extrabold text-3xl mt-3">€ 84.210</div>
-            <svg class="mt-3 w-full" height="36" viewBox="0 0 200 36" preserveAspectRatio="none"><polyline fill="none" stroke="#E4002B" stroke-width="2" points="0,28 25,24 50,26 75,18 100,20 125,12 150,14 175,8 200,6"/></svg>
+            <div class="flex items-center justify-between"><span class="kicker text-faint">PRODOTTI A CATALOGO</span><span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m21 16-9 5-9-5V8l9-5 9 5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span></div>
+            <div class="display font-extrabold text-3xl mt-3">120</div>
+            <div class="mono text-[12px] text-muted mt-2">referenze pubblicate</div>
           </div>
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
-            <div class="flex items-center justify-between"><span class="kicker text-faint">ORDINI</span><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2 py-0.5">+8</span></div>
-            <div class="display font-extrabold text-3xl mt-3">312</div>
-            <div class="flex items-end gap-1 mt-3 h-9">
-              <span class="flex-1 bg-graphite/10 rounded-t" style="height:40%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:60%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:50%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:80%"></span><span class="flex-1 bg-red rounded-t" style="height:100%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:70%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:90%"></span>
-            </div>
+            <div class="flex items-center justify-between"><span class="kicker text-faint">NEWS</span><span class="w-9 h-9 rounded-lg bg-graphite/5 text-graphite grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg></span></div>
+            <div class="display font-extrabold text-3xl mt-3">6</div>
+            <div class="mono text-[12px] text-muted mt-2">articoli pubblicati</div>
           </div>
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
-            <div class="flex items-center justify-between"><span class="kicker text-faint">PREVENTIVI APERTI</span><span class="text-[11px] font-semibold text-red bg-red/10 rounded-full px-2 py-0.5">3 urgenti</span></div>
-            <div class="display font-extrabold text-3xl mt-3">17</div>
-            <div class="mono text-[12px] text-muted mt-3">Valore stimato · € 142.300</div>
+            <div class="flex items-center justify-between"><span class="kicker text-faint">DOWNLOAD</span><span class="w-9 h-9 rounded-lg bg-bio/10 text-bio grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg></span></div>
+            <div class="display font-extrabold text-3xl mt-3">4</div>
+            <div class="mono text-[12px] text-muted mt-2">documenti disponibili</div>
           </div>
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
-            <div class="flex items-center justify-between"><span class="kicker text-faint">LOW STOCK</span><span class="text-[11px] font-semibold text-ink bg-bg2 rounded-full px-2 py-0.5">attenzione</span></div>
-            <div class="display font-extrabold text-3xl mt-3">5</div>
-            <div class="mono text-[12px] text-muted mt-3">SKU sotto soglia minima</div>
+            <div class="flex items-center justify-between"><span class="kicker text-faint">CATEGORIE</span><span class="w-9 h-9 rounded-lg bg-bg2 text-ink border border-line grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg></span></div>
+            <div class="display font-extrabold text-3xl mt-3">8</div>
+            <div class="mono text-[12px] text-muted mt-2">categorie prodotto</div>
           </div>
         </div>
 
@@ -631,8 +626,8 @@
             <span class="mono"><span id="bulkCount">0</span> selezionati</span>
             <div class="ml-auto flex gap-2">
               <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Pubblica</button>
-              <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Modifica prezzi</button>
-              <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Categoria</button>
+              <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Sposta categoria</button>
+              <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Elimina</button>
             </div>
           </div>
 
@@ -644,8 +639,6 @@
                 <th class="px-3 py-3 text-left font-normal">PRODOTTO</th>
                 <th class="px-3 py-3 text-left font-normal">SKU</th>
                 <th class="px-3 py-3 text-left font-normal">CATEGORIA</th>
-                <th class="px-3 py-3 text-right font-normal">PREZZO</th>
-                <th class="px-3 py-3 text-right font-normal">STOCK</th>
                 <th class="px-3 py-3 text-left font-normal">STATO</th>
               </tr>
             </thead>
@@ -655,8 +648,6 @@
                 <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-grey w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Rasante MGX Fine</span></div></td>
                 <td class="px-3 py-3 mono text-[12px] text-muted">MGX-RAS-0125</td>
                 <td class="px-3 py-3 text-muted">Malte da rasatura</td>
-                <td class="px-3 py-3 text-right font-semibold mono">€ 14,90</td>
-                <td class="px-3 py-3 text-right mono">1.240</td>
                 <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
               </tr>
               <tr class="hover:bg-bg/40 transition">
@@ -664,17 +655,13 @@
                 <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-ochre w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Adesivo MGX Flex</span></div></td>
                 <td class="px-3 py-3 mono text-[12px] text-muted">MGX-ADE-0220</td>
                 <td class="px-3 py-3 text-muted">Adesivi cementizi</td>
-                <td class="px-3 py-3 text-right font-semibold mono">€ 11,50</td>
-                <td class="px-3 py-3 text-right mono text-red">42</td>
-                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2.5 py-1">Low stock</span></td>
+                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
               </tr>
               <tr class="hover:bg-bg/40 transition">
                 <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
                 <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-bio w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Bio Intonaco Calce</span></div></td>
                 <td class="px-3 py-3 mono text-[12px] text-muted">MGX-BIO-0301</td>
                 <td class="px-3 py-3 text-muted">Linea bio</td>
-                <td class="px-3 py-3 text-right font-semibold mono">€ 18,20</td>
-                <td class="px-3 py-3 text-right mono">860</td>
                 <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
               </tr>
               <tr class="hover:bg-bg/40 transition">
@@ -682,8 +669,6 @@
                 <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-white w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Collante MGX Cappotto</span></div></td>
                 <td class="px-3 py-3 mono text-[12px] text-muted">MGX-CAP-0140</td>
                 <td class="px-3 py-3 text-muted">Sistema a cappotto</td>
-                <td class="px-3 py-3 text-right font-semibold mono">€ 13,40</td>
-                <td class="px-3 py-3 text-right mono">2.010</td>
                 <td class="px-3 py-3"><span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2.5 py-1">Bozza</span></td>
               </tr>
               <tr class="hover:bg-bg/40 transition">
@@ -691,8 +676,6 @@
                 <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-anthr w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Cemento sfuso R32,5</span></div></td>
                 <td class="px-3 py-3 mono text-[12px] text-muted">MGX-CEM-SILO</td>
                 <td class="px-3 py-3 text-muted">Cemento sfuso</td>
-                <td class="px-3 py-3 text-right font-semibold mono text-muted">preventivo</td>
-                <td class="px-3 py-3 text-right mono">∞</td>
                 <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
               </tr>
             </tbody>
@@ -828,11 +811,11 @@
               <div class="grid gap-4 mt-4">
                 <div>
                   <label class="adm-label" for="p-disp">Disponibilità</label>
-                  <select id="p-disp" class="adm-in"><option>Disponibile · pronta consegna</option><option>Su preventivo</option><option>Esaurito</option></select>
+                  <select id="p-disp" class="adm-in"><option>Disponibile · pronta consegna</option><option>Su richiesta</option></select>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div><label class="adm-label" for="p-prezzo">Prezzo (€)</label><input id="p-prezzo" class="adm-in mono" placeholder="14,90" /></div>
-                  <div><label class="adm-label" for="p-formato">Formato</label><input id="p-formato" class="adm-in" placeholder="Sacco 25 kg" /></div>
+                <div>
+                  <label class="adm-label" for="p-formato">Formato</label>
+                  <input id="p-formato" class="adm-in" placeholder="Sacco 25 kg" />
                 </div>
                 <div>
                   <label class="adm-label" for="p-stato">Stato</label>
