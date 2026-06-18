@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Magix — Prototipo Refactor 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bg: "#F5F3EF", bg2: "#ECE8E1", surface: "#FFFFFF",
+          ink: "#15171C", inksoft: "#33353D", muted: "#5C5D64", faint: "#8A8B91",
+          line: "#E4E0D8", linesoft: "#EEEBE5",
+          red: "#E4002B", redcta: "#C20023", reddeep: "#9C001C",
+          graphite: "#15171C", bio: "#2E7D5B", biosoft: "#EAF3EE",
+        },
+        fontFamily: {
+          display: ['"Bricolage Grotesque"', "sans-serif"],
+          sans: ['"Hanken Grotesk"', "sans-serif"],
+          mono: ['"JetBrains Mono"', "monospace"],
+        },
+        boxShadow: {
+          soft: "0 1px 2px rgba(21,23,28,.04), 0 8px 24px -12px rgba(21,23,28,.12)",
+          lift: "0 2px 4px rgba(21,23,28,.04), 0 24px 48px -20px rgba(21,23,28,.22)",
+          glass: "0 8px 40px -12px rgba(21,23,28,.18)",
+        },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="antialiased">
+
+<!-- ═══════════════════════ VIEW: HOME (vetrina + azienda) ═══════════════════════ -->
+<section id="view-home" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-white transition">Area download</a>
+        <a href="#" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center gap-2.5 shrink-0">
+        <span class="w-9 h-9 rounded-lg bg-red flex items-center justify-center text-white display font-extrabold text-lg leading-none">M</span>
+        <span class="display font-extrabold text-xl tracking-tight">magix</span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
+        <a class="underline-grow" href="#" data-view="news">News</a>
+        <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2">
+        <button class="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface/70 text-muted text-sm hover:border-ink/30 transition w-64">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <span>Cerca prodotti, classi EN…</span>
+          <kbd class="mono ml-auto text-[10px] text-faint border border-line rounded px-1.5 py-0.5">⌘K</kbd>
+        </button>
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- hero -->
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="absolute inset-0 grid-bg"></div>
+    <div class="absolute -top-32 -right-32 w-[460px] h-[460px] rounded-full" style="background:radial-gradient(circle,rgba(228,0,43,.14),transparent 70%)"></div>
+    <div class="relative max-w-7xl mx-auto px-5 pt-16 pb-20 lg:grid lg:grid-cols-[1.15fr,.85fr] lg:gap-12 items-center">
+      <div>
+        <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s">
+          <span class="w-6 h-px bg-red"></span> DAL 1990 · BIOEDILIZIA · MADE IN PUGLIA
+        </div>
+        <h1 class="rise display font-extrabold text-[clamp(2.6rem,6vw,4.6rem)] leading-[.98] mt-5" style="animation-delay:.12s">
+          Materiali che<br>tengono. <span class="text-red">Punto.</span>
+        </h1>
+        <p class="rise text-[17px] text-inksoft/90 leading-relaxed mt-6 max-w-xl" style="animation-delay:.2s">
+          Malte premiscelate, rivestimenti e cemento sfuso a prestazione garantita.
+          Schede tecniche, marcatura CE e listini dedicati — tutto in un'unica piattaforma
+          pensata per magazzini e imprese.
+        </p>
+
+        <!-- intelligent search -->
+        <div class="rise mt-8 max-w-xl" style="animation-delay:.28s">
+          <div class="bg-surface rounded-2xl shadow-soft border border-line p-1.5 flex items-center gap-2">
+            <div class="pl-3 text-faint"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+            <input class="flex-1 bg-transparent outline-none text-[15px] py-2.5 placeholder:text-faint" placeholder="Es. malta da rasatura, EN 998-1, cappotto…" />
+            <button class="h-11 px-5 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition">Cerca</button>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-3 text-[12.5px]">
+            <span class="text-faint mono pt-1">FREQUENTI:</span>
+            <a class="px-2.5 py-1 rounded-full bg-bg2 border border-line hover:border-ink/30 transition" href="#">Sistema a cappotto</a>
+            <a class="px-2.5 py-1 rounded-full bg-bg2 border border-line hover:border-ink/30 transition" href="#">Adesivi cementizi</a>
+            <a class="px-2.5 py-1 rounded-full bg-bg2 border border-line hover:border-ink/30 transition" href="#">Linea bio</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- floating datasheet card -->
+      <div class="rise hidden lg:block mt-10 lg:mt-0" style="animation-delay:.35s">
+        <div class="relative">
+          <div class="absolute -inset-3 rounded-[28px] bg-gradient-to-br from-red/10 to-transparent blur-xl"></div>
+          <div class="relative bg-surface rounded-3xl shadow-lift border border-line overflow-hidden">
+            <div class="mat mat-grey h-40"></div>
+            <div class="p-6">
+              <div class="flex items-center justify-between">
+                <span class="kicker text-muted">MALTE DA RASATURA</span>
+                <span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">DISPONIBILE</span>
+              </div>
+              <h3 class="display font-bold text-2xl mt-1.5">Rasante MGX&nbsp;Fine</h3>
+              <div class="mono text-[12px] text-faint mt-1">SKU · MGX-RAS-0125</div>
+              <div class="grid grid-cols-3 gap-px bg-line rounded-xl overflow-hidden mt-5 text-center">
+                <div class="bg-surface py-3"><div class="mono text-[11px] text-faint">RESA</div><div class="font-semibold text-sm mt-0.5">1,4 kg/m²</div></div>
+                <div class="bg-surface py-3"><div class="mono text-[11px] text-faint">CLASSE</div><div class="font-semibold text-sm mt-0.5">EN 998-1</div></div>
+                <div class="bg-surface py-3"><div class="mono text-[11px] text-faint">FORMATO</div><div class="font-semibold text-sm mt-0.5">25 kg</div></div>
+              </div>
+              <div class="flex items-center justify-between mt-5">
+                <div><div class="mono text-[11px] text-faint">DA</div><div class="display font-bold text-xl">€ 14,90<span class="text-sm text-muted font-sans font-normal">/sacco</span></div></div>
+                <a href="#" data-view="contatti" class="h-10 px-4 grid place-items-center rounded-xl bg-graphite text-white text-sm font-semibold hover:bg-ink transition">Richiedi info →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- trust strip -->
+  <section class="border-b border-line bg-surface">
+    <div class="max-w-7xl mx-auto px-5 grid grid-cols-2 md:grid-cols-4 divide-x divide-line">
+      <div class="py-7 px-2 text-center reveal"><div class="display font-extrabold text-3xl">30+</div><div class="kicker text-muted mt-1">ANNI DI STORIA</div></div>
+      <div class="py-7 px-2 text-center reveal"><div class="display font-extrabold text-3xl">CE</div><div class="kicker text-muted mt-1">MARCATURA · DoP</div></div>
+      <div class="py-7 px-2 text-center reveal"><div class="display font-extrabold text-3xl">120+</div><div class="kicker text-muted mt-1">REFERENZE</div></div>
+      <div class="py-7 px-2 text-center reveal"><div class="display font-extrabold text-3xl">24h</div><div class="kicker text-muted mt-1">ASSISTENZA CANTIERE</div></div>
+    </div>
+  </section>
+
+  <!-- chi siamo (azienda) -->
+  <section class="max-w-7xl mx-auto px-5 py-20">
+    <div class="lg:grid lg:grid-cols-[.9fr,1.1fr] lg:gap-14 items-center">
+      <!-- visual -->
+      <div class="reveal relative order-last lg:order-first mt-10 lg:mt-0">
+        <div class="absolute -inset-3 rounded-[28px] bg-gradient-to-tr from-graphite/5 to-transparent blur-xl"></div>
+        <div class="relative grid grid-cols-3 gap-3">
+          <div class="mat mat-grey rounded-2xl h-40"></div>
+          <div class="mat mat-anthr rounded-2xl h-40 translate-y-6"></div>
+          <div class="mat mat-ochre rounded-2xl h-40"></div>
+          <div class="mat mat-bio rounded-2xl h-28 col-span-2"></div>
+          <div class="bg-graphite text-white rounded-2xl h-28 grid place-items-center text-center relative overflow-hidden">
+            <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
+            <div class="relative"><div class="display font-extrabold text-2xl">30+</div><div class="kicker text-white/50 mt-1">ANNI</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- text -->
+      <div class="reveal">
+        <div class="kicker text-red flex items-center gap-2"><span>◢</span> 01 — CHI SIAMO</div>
+        <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">Tradizione e innovazione,<br>dal 1990.</h2>
+        <p class="text-inksoft mt-5 leading-relaxed max-w-xl">
+          Magix nasce nei primi anni '90 dall'intuizione di <span class="font-semibold text-ink">Nicola Divincenzo</span>:
+          offrire al settore edile prodotti pronti all'uso, affidabili e di qualità costante.
+        </p>
+        <p class="text-muted mt-4 leading-relaxed max-w-xl">
+          Da una produzione manuale di poche pedane al giorno, l'azienda è cresciuta investendo
+          con costanza in tecnologia e formazione — fino a diventare oggi un punto di riferimento
+          riconosciuto per la qualità dei suoi prodotti in Puglia e Basilicata.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-3 mt-7 max-w-xl">
+          <div class="flex items-start gap-3 bg-surface rounded-xl border border-line shadow-soft p-4">
+            <span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></span>
+            <div><div class="font-semibold text-sm">Tradizione</div><div class="text-muted text-[13px] mt-0.5">Esperienza maturata in oltre trent'anni.</div></div>
+          </div>
+          <div class="flex items-start gap-3 bg-surface rounded-xl border border-line shadow-soft p-4">
+            <span class="w-9 h-9 rounded-lg bg-bio/10 text-bio grid place-items-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <div><div class="font-semibold text-sm">Innovazione</div><div class="text-muted text-[13px] mt-0.5">Impianti automatizzati e R&amp;D continua.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- categories -->
+  <section class="max-w-7xl mx-auto px-5 py-20 border-t border-line">
+    <div class="flex items-end justify-between reveal">
+      <div>
+        <div class="kicker text-red flex items-center gap-2"><span>◢</span> 02 — CATALOGO</div>
+        <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">La gamma, organizzata<br>come cerchi tu.</h2>
+      </div>
+      <a href="#" class="hidden sm:flex items-center gap-2 text-sm font-semibold underline-grow">Tutte le 18 categorie →</a>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+      <!-- cat card -->
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between">
+          <span class="mono text-[12px] text-faint">01</span>
+          <span class="mat mat-grey w-12 h-12 rounded-xl"></span>
+        </div>
+        <h3 class="display font-bold text-xl mt-5">Malte da intonaco</h3>
+        <p class="text-muted text-sm mt-1.5">Base, finitura, traspiranti per interni ed esterni.</p>
+        <div class="flex items-center justify-between mt-5 text-sm">
+          <span class="mono text-faint text-[12px]">14 prodotti</span>
+          <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
+        </div>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">02</span><span class="mat mat-white w-12 h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-xl mt-5">Sistema a cappotto</h3>
+        <p class="text-muted text-sm mt-1.5">Cicli ETICS completi: collanti, rasanti, primer.</p>
+        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">9 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">03</span><span class="mat mat-ochre w-12 h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-xl mt-5">Adesivi cementizi</h3>
+        <p class="text-muted text-sm mt-1.5">C1/C2 per ceramica, gres e grandi formati.</p>
+        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">11 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">04</span><span class="mat mat-bio w-12 h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-xl mt-5 flex items-center gap-2">Linea bio <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">ECO</span></h3>
+        <p class="text-muted text-sm mt-1.5">Leganti naturali a base calce, alta traspirabilità.</p>
+        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">7 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">05</span><span class="mat mat-red w-12 h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-xl mt-5">Malte rapide</h3>
+        <p class="text-muted text-sm mt-1.5">Presa e indurimento veloci per fissaggi e ripristini.</p>
+        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">6 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      </a>
+      <a href="#" class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-6 hover:shadow-lift relative overflow-hidden">
+        <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
+        <div class="relative">
+          <div class="flex items-start justify-between"><span class="mono text-[12px] text-white/40">06</span><span class="mat mat-anthr w-12 h-12 rounded-xl border border-white/10"></span></div>
+          <h3 class="display font-bold text-xl mt-5">Cemento sfuso</h3>
+          <p class="text-white/60 text-sm mt-1.5">Fornitura in silo, trasportato e pompato sui piani.</p>
+          <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-white/40 text-[12px]">su preventivo</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- featured products -->
+  <section class="bg-bg2 border-y border-line">
+    <div class="max-w-7xl mx-auto px-5 py-20">
+      <div class="reveal kicker text-red flex items-center gap-2"><span>◢</span> 03 — IN EVIDENZA</div>
+      <div class="flex items-end justify-between reveal mt-3">
+        <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight">I più richiesti<br>dai cantieri.</h2>
+        <div class="hidden md:flex gap-2 text-sm">
+          <button class="px-4 py-2 rounded-full bg-graphite text-white font-medium">Tutti</button>
+          <button class="px-4 py-2 rounded-full border border-line bg-surface hover:border-ink/30 transition">Malte</button>
+          <button class="px-4 py-2 rounded-full border border-line bg-surface hover:border-ink/30 transition">Rivestimenti</button>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
+        <!-- product card -->
+        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
+          <div class="mat mat-grey h-44 relative">
+            <span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">CE · EN 998-1</span>
+          </div>
+          <div class="p-5">
+            <div class="kicker text-faint">MALTE DA RASATURA</div>
+            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Rasante MGX Fine</h3>
+            <div class="flex gap-1.5 mt-3">
+              <span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">1,4 kg/m²</span>
+              <span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span>
+            </div>
+            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft">
+              <div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 14,90</div></div>
+              <a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
+          <div class="mat mat-ochre h-44 relative"><span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">CE · C2TE</span></div>
+          <div class="p-5">
+            <div class="kicker text-faint">ADESIVI CEMENTIZI</div>
+            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Adesivo MGX Flex</h3>
+            <div class="flex gap-1.5 mt-3"><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">C2TE</span><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span></div>
+            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft"><div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 11,50</div></div><a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a></div>
+          </div>
+        </div>
+
+        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
+          <div class="mat mat-bio h-44 relative"><span class="absolute top-3 left-3 text-[10px] font-semibold bg-biosoft text-bio border border-bio/20 px-2 py-1 rounded-md">LINEA BIO</span></div>
+          <div class="p-5">
+            <div class="kicker text-faint">INTONACI · CALCE</div>
+            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Bio Intonaco Calce</h3>
+            <div class="flex gap-1.5 mt-3"><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">traspirante</span><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span></div>
+            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft"><div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 18,20</div></div><a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a></div>
+          </div>
+        </div>
+
+        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
+          <div class="mat mat-white h-44 relative"><span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">ETICS</span></div>
+          <div class="p-5">
+            <div class="kicker text-faint">SISTEMA A CAPPOTTO</div>
+            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Collante MGX Cappotto</h3>
+            <div class="flex gap-1.5 mt-3"><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">EPS/lana</span><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span></div>
+            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft"><div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 13,40</div></div><a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- bio band -->
+  <section class="max-w-7xl mx-auto px-5 py-20">
+    <div class="reveal relative rounded-3xl overflow-hidden border border-bio/20 bg-biosoft p-10 lg:p-14 grid lg:grid-cols-2 gap-8 items-center">
+      <div class="absolute inset-0 grid-bg opacity-[.25]"></div>
+      <div class="relative">
+        <div class="kicker text-bio">◢ SOSTENIBILITÀ</div>
+        <h2 class="display font-extrabold text-[clamp(1.9rem,3.5vw,2.8rem)] leading-tight mt-3 text-ink">Magix Linea&nbsp;Bio.<br>Costruire respira meglio.</h2>
+        <p class="text-inksoft mt-4 max-w-md">Leganti a base calce naturale e materie prime selezionate per ambienti salubri e ad alta traspirabilità — senza compromessi sulla prestazione.</p>
+        <button class="mt-6 h-11 px-5 rounded-xl bg-bio text-white font-semibold text-sm hover:brightness-95 transition">Scopri la Linea Bio →</button>
+      </div>
+      <div class="relative grid grid-cols-3 gap-3">
+        <div class="mat mat-bio rounded-2xl h-28"></div>
+        <div class="mat mat-bio rounded-2xl h-28 translate-y-5"></div>
+        <div class="mat mat-bio rounded-2xl h-28"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2.5"><span class="w-9 h-9 rounded-lg bg-red grid place-items-center text-white display font-extrabold text-lg">M</span><span class="display font-extrabold text-xl text-white">magix</span></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<!-- ═══════════════════════ VIEW: PRODUCT ═══════════════════════ -->
+<section id="view-product" class="view">
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center gap-2.5 shrink-0"><span class="w-9 h-9 rounded-lg bg-red grid place-items-center text-white display font-extrabold text-lg">M</span><span class="display font-extrabold text-xl">magix</span></a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow text-red" href="#" data-view="product">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-5 pt-6">
+    <div class="mono text-[12px] text-faint flex items-center gap-2">
+      <a href="#" class="hover:text-ink">Prodotti</a><span>/</span><a href="#" class="hover:text-ink">Malte da rasatura</a><span>/</span><span class="text-ink">Rasante MGX Fine</span>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-5 py-8 lg:grid lg:grid-cols-2 lg:gap-14">
+    <!-- gallery -->
+    <div>
+      <div class="mat mat-grey rounded-3xl aspect-[4/3] shadow-soft border border-line relative" id="mainSwatch">
+        <span class="absolute top-4 left-4 mono text-[11px] bg-white/90 backdrop-blur px-2.5 py-1 rounded-md">CE · EN 998-1 · GP CSIV</span>
+        <button class="absolute bottom-4 right-4 h-10 px-3 rounded-lg glass border border-line text-sm font-medium flex items-center gap-2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-3-3"/><path d="M11 8v6M8 11h6"/></svg> Zoom</button>
+      </div>
+      <div class="grid grid-cols-4 gap-3 mt-3">
+        <button class="thumb mat mat-grey rounded-xl aspect-square border-2 border-red"></button>
+        <button class="thumb mat mat-white rounded-xl aspect-square border-2 border-transparent hover:border-line"></button>
+        <button class="thumb mat mat-anthr rounded-xl aspect-square border-2 border-transparent hover:border-line"></button>
+        <button class="thumb rounded-xl aspect-square border-2 border-line bg-bg2 grid place-items-center text-faint mono text-[11px]">+3</button>
+      </div>
+    </div>
+
+    <!-- info -->
+    <div class="mt-10 lg:mt-0">
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] font-semibold text-white bg-graphite rounded px-2 py-1">MAGIX MALTE</span>
+        <span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2.5 py-1 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-bio"></span> Disponibile · pronta consegna</span>
+      </div>
+      <h1 class="display font-extrabold text-[clamp(2rem,4vw,2.8rem)] leading-tight mt-4">Rasante MGX Fine</h1>
+      <p class="text-inksoft mt-3 text-[16px] leading-relaxed max-w-lg">Rasante cementizio a grana fine per la finitura liscia di intonaci, cappotti e supporti minerali, interni ed esterni. Alta lavorabilità e adesione.</p>
+      <div class="mono text-[12px] text-faint mt-3">SKU · MGX-RAS-0125</div>
+
+      <!-- variant selector -->
+      <div class="mt-7">
+        <div class="kicker text-muted mb-3">FORMATO / CONFEZIONE</div>
+        <div class="flex flex-wrap gap-2.5">
+          <button class="variant active px-4 py-3 rounded-xl border-2 text-left transition" data-price="14,90" data-unit="sacco 25 kg">
+            <div class="font-semibold text-sm">Sacco 25 kg</div><div class="mono text-[11px] text-faint mt-0.5">€ 14,90</div>
+          </button>
+          <button class="variant px-4 py-3 rounded-xl border-2 text-left transition" data-price="690,00" data-unit="bancale 1.200 kg">
+            <div class="font-semibold text-sm">Bancale · 48 sacchi</div><div class="mono text-[11px] text-faint mt-0.5">€ 690,00</div>
+          </button>
+          <button class="variant px-4 py-3 rounded-xl border-2 text-left transition" data-price="preventivo" data-unit="silo / sfuso">
+            <div class="font-semibold text-sm">Sfuso / silo</div><div class="mono text-[11px] text-faint mt-0.5">su preventivo</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- price + cta -->
+      <div class="mt-7 bg-surface rounded-2xl border border-line shadow-soft p-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="mono text-[11px] text-faint">PREZZO <span id="pUnit">· sacco 25 kg</span></div>
+            <div class="display font-extrabold text-3xl mt-1" id="pPrice">€ 14,90</div>
+            <div class="text-[12.5px] text-bio mt-1 font-medium" id="pTier">↳ Listino "Impresa": <span class="font-bold">€ 13,40</span> (accedi)</div>
+          </div>
+          <div class="flex items-center border border-line rounded-xl">
+            <button class="qty-btn w-10 h-11 text-lg text-muted hover:text-ink" data-d="-1">−</button>
+            <span id="qty" class="w-10 text-center font-semibold mono">1</span>
+            <button class="qty-btn w-10 h-11 text-lg text-muted hover:text-ink" data-d="1">+</button>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+          <a href="#" data-view="contatti" class="flex-1 h-12 rounded-xl bg-redcta text-white font-semibold hover:bg-reddeep transition shadow-soft flex items-center justify-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+            Richiedi disponibilità
+          </a>
+          <a href="#" data-view="contatti" class="h-12 px-5 grid place-items-center rounded-xl border border-line bg-surface font-semibold hover:border-ink/30 transition">Preventivo</a>
+          <button class="h-12 w-12 grid place-items-center rounded-xl border border-line bg-surface hover:border-ink/30 transition" title="Preferiti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
+        <div class="flex items-center gap-5 mt-4 pt-4 border-t border-linesoft text-[12.5px] text-muted">
+          <span class="flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E7D5B" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Spedizione su pallet</span>
+          <span class="flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E7D5B" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Fattura immediata</span>
+          <span class="flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E7D5B" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Assistenza tecnica</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- spec sheet + documents -->
+  <div class="max-w-7xl mx-auto px-5 pb-8 grid lg:grid-cols-3 gap-8">
+    <!-- datasheet -->
+    <div class="lg:col-span-2">
+      <div class="kicker text-red flex items-center gap-2"><span>◢</span> SCHEDA TECNICA</div>
+      <h2 class="display font-bold text-2xl mt-2 mb-5">Specifiche</h2>
+      <div class="bg-surface rounded-2xl border border-line shadow-soft overflow-hidden">
+        <table class="w-full text-sm">
+          <tbody class="divide-y divide-linesoft">
+            <tr><td class="px-5 py-3.5 text-muted w-1/2">Norma di riferimento</td><td class="px-5 py-3.5 mono font-medium text-right">EN 998-1 GP CSIV W1</td></tr>
+            <tr class="bg-bg/40"><td class="px-5 py-3.5 text-muted">Resa indicativa</td><td class="px-5 py-3.5 mono font-medium text-right">1,4 kg/m² per mm</td></tr>
+            <tr><td class="px-5 py-3.5 text-muted">Granulometria</td><td class="px-5 py-3.5 mono font-medium text-right">0 – 0,6 mm</td></tr>
+            <tr class="bg-bg/40"><td class="px-5 py-3.5 text-muted">Spessore applicabile</td><td class="px-5 py-3.5 mono font-medium text-right">1 – 5 mm</td></tr>
+            <tr><td class="px-5 py-3.5 text-muted">Acqua d'impasto</td><td class="px-5 py-3.5 mono font-medium text-right">≈ 6,5 L / sacco</td></tr>
+            <tr class="bg-bg/40"><td class="px-5 py-3.5 text-muted">Tempo di lavorabilità</td><td class="px-5 py-3.5 mono font-medium text-right">≈ 3 h (20°C)</td></tr>
+            <tr><td class="px-5 py-3.5 text-muted">Adesione (28 gg)</td><td class="px-5 py-3.5 mono font-medium text-right">≥ 0,5 N/mm²</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- documents -->
+    <div>
+      <div class="kicker text-red flex items-center gap-2"><span>◢</span> DOCUMENTAZIONE</div>
+      <h2 class="display font-bold text-2xl mt-2 mb-5">Download</h2>
+      <div class="space-y-3">
+        <a href="#" class="group flex items-center gap-3 bg-surface rounded-xl border border-line shadow-soft p-4 hover:border-ink/20 transition">
+          <span class="w-10 h-10 rounded-lg bg-red/10 text-red grid place-items-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
+          <div class="flex-1"><div class="font-semibold text-sm">Scheda Tecnica (TDS)</div><div class="mono text-[11px] text-faint">PDF · 240 KB · v2.1</div></div>
+          <svg class="text-faint group-hover:text-red transition" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+        </a>
+        <a href="#" class="group flex items-center gap-3 bg-surface rounded-xl border border-line shadow-soft p-4 hover:border-ink/20 transition">
+          <span class="w-10 h-10 rounded-lg bg-graphite/5 text-graphite grid place-items-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
+          <div class="flex-1"><div class="font-semibold text-sm">Dichiarazione di Prestazione</div><div class="mono text-[11px] text-faint">DoP · marcatura CE · PDF</div></div>
+          <svg class="text-faint group-hover:text-red transition" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+        </a>
+        <a href="#" class="group flex items-center gap-3 bg-surface rounded-xl border border-line shadow-soft p-4 hover:border-ink/20 transition">
+          <span class="w-10 h-10 rounded-lg bg-bio/10 text-bio grid place-items-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
+          <div class="flex-1"><div class="font-semibold text-sm">Scheda di Sicurezza (SDS)</div><div class="mono text-[11px] text-faint">PDF · 180 KB</div></div>
+          <svg class="text-faint group-hover:text-red transition" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+        </a>
+        <a href="#" class="group flex items-center gap-3 bg-surface rounded-xl border border-line shadow-soft p-4 hover:border-ink/20 transition">
+          <span class="w-10 h-10 rounded-lg bg-bg2 text-muted grid place-items-center shrink-0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>
+          <div class="flex-1"><div class="font-semibold text-sm">Voce di capitolato</div><div class="mono text-[11px] text-faint">DOCX · per progettisti</div></div>
+          <svg class="text-faint group-hover:text-red transition" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- related -->
+  <div class="bg-bg2 border-t border-line mt-8">
+    <div class="max-w-7xl mx-auto px-5 py-14">
+      <div class="kicker text-red flex items-center gap-2"><span>◢</span> SPESSO ORDINATI INSIEME</div>
+      <h2 class="display font-bold text-2xl mt-2 mb-6">Completa il ciclo applicativo</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift"><div class="mat mat-white h-32"></div><div class="p-4"><div class="kicker text-faint">PRIMER</div><div class="display font-bold mt-1">Primer MGX Grip</div><div class="display font-bold text-sm mt-2">€ 22,00</div></div></div>
+        <div class="lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift"><div class="mat mat-grey h-32"></div><div class="p-4"><div class="kicker text-faint">INTONACO</div><div class="display font-bold mt-1">Intonaco MGX Base</div><div class="display font-bold text-sm mt-2">€ 9,80</div></div></div>
+        <div class="lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift"><div class="mat mat-ochre h-32"></div><div class="p-4"><div class="kicker text-faint">RETE</div><div class="display font-bold mt-1">Rete MGX 160</div><div class="display font-bold text-sm mt-2">€ 1,90/m²</div></div></div>
+        <div class="lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift"><div class="mat mat-bio h-32"></div><div class="p-4"><div class="kicker text-faint">FINITURA</div><div class="display font-bold mt-1">Finitura Silossanica</div><div class="display font-bold text-sm mt-2">€ 38,00</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ VIEW: ADMIN ═══════════════════════ -->
+<section id="view-admin" class="view bg-bg2 min-h-screen">
+  <div class="flex">
+    <!-- sidebar -->
+    <aside class="hidden lg:flex flex-col w-60 bg-graphite text-white/70 min-h-screen sticky top-0 p-4">
+      <div class="flex items-center gap-2.5 px-2 py-2">
+        <span class="w-8 h-8 rounded-lg bg-red grid place-items-center text-white display font-extrabold">M</span>
+        <span class="display font-bold text-white">magix<span class="text-white/40 font-normal text-sm"> / admin</span></span>
+      </div>
+      <nav class="mt-6 space-y-1 text-sm">
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/10 text-white font-medium" href="#"><span class="w-1.5 h-1.5 rounded-full bg-red"></span> Dashboard</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Prodotti (PIM)</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Ordini</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Preventivi (RFQ)</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Clienti B2B</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Magazzino</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Media manager</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> SEO &amp; contenuti</a>
+        <div class="pt-4 mt-4 border-t border-white/10"></div>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Impostazioni · RBAC</a>
+      </nav>
+      <div class="mt-auto bg-white/5 rounded-xl p-3 text-[12px]">
+        <div class="mono text-white/40">SISTEMA</div>
+        <div class="flex items-center gap-2 mt-1.5 text-white/80"><span class="w-2 h-2 rounded-full bg-bio"></span> Tutti i servizi attivi</div>
+      </div>
+    </aside>
+
+    <!-- main -->
+    <main class="flex-1 min-w-0">
+      <!-- topbar -->
+      <div class="glass border-b border-line sticky top-0 z-30">
+        <div class="px-6 h-16 flex items-center gap-4">
+          <div>
+            <div class="display font-bold text-lg leading-none">Dashboard</div>
+            <div class="mono text-[11px] text-faint mt-1">Aggiornato ora · 29 mag 2026</div>
+          </div>
+          <div class="ml-auto hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface text-faint text-sm w-72">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <span>Ricerca globale…</span><kbd class="mono ml-auto text-[10px] border border-line rounded px-1.5 py-0.5">/</kbd>
+          </div>
+          <button class="h-10 w-10 grid place-items-center rounded-xl border border-line bg-surface relative">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red"></span>
+          </button>
+          <div class="w-9 h-9 rounded-full bg-graphite text-white grid place-items-center text-sm font-semibold mono">ND</div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <!-- KPI -->
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
+            <div class="flex items-center justify-between"><span class="kicker text-faint">VENDITE (MESE)</span><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2 py-0.5">+12,4%</span></div>
+            <div class="display font-extrabold text-3xl mt-3">€ 84.210</div>
+            <svg class="mt-3 w-full" height="36" viewBox="0 0 200 36" preserveAspectRatio="none"><polyline fill="none" stroke="#E4002B" stroke-width="2" points="0,28 25,24 50,26 75,18 100,20 125,12 150,14 175,8 200,6"/></svg>
+          </div>
+          <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
+            <div class="flex items-center justify-between"><span class="kicker text-faint">ORDINI</span><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2 py-0.5">+8</span></div>
+            <div class="display font-extrabold text-3xl mt-3">312</div>
+            <div class="flex items-end gap-1 mt-3 h-9">
+              <span class="flex-1 bg-graphite/10 rounded-t" style="height:40%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:60%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:50%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:80%"></span><span class="flex-1 bg-red rounded-t" style="height:100%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:70%"></span><span class="flex-1 bg-graphite/10 rounded-t" style="height:90%"></span>
+            </div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
+            <div class="flex items-center justify-between"><span class="kicker text-faint">PREVENTIVI APERTI</span><span class="text-[11px] font-semibold text-red bg-red/10 rounded-full px-2 py-0.5">3 urgenti</span></div>
+            <div class="display font-extrabold text-3xl mt-3">17</div>
+            <div class="mono text-[12px] text-muted mt-3">Valore stimato · € 142.300</div>
+          </div>
+          <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
+            <div class="flex items-center justify-between"><span class="kicker text-faint">LOW STOCK</span><span class="text-[11px] font-semibold text-ink bg-bg2 rounded-full px-2 py-0.5">attenzione</span></div>
+            <div class="display font-extrabold text-3xl mt-3">5</div>
+            <div class="mono text-[12px] text-muted mt-3">SKU sotto soglia minima</div>
+          </div>
+        </div>
+
+        <!-- products table -->
+        <div class="bg-surface rounded-2xl border border-line shadow-soft mt-6 overflow-hidden">
+          <div class="px-5 py-4 flex items-center gap-3 border-b border-line">
+            <div class="display font-bold">Prodotti</div>
+            <span class="mono text-[12px] text-faint">120 referenze</span>
+            <div class="ml-auto flex items-center gap-2">
+              <button class="h-9 px-3 rounded-lg border border-line text-sm font-medium hover:border-ink/30 transition flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Filtri</button>
+              <button class="h-9 px-3 rounded-lg border border-line text-sm font-medium hover:border-ink/30 transition flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg> Export CSV</button>
+              <button class="h-9 px-3.5 rounded-lg bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Nuovo</button>
+            </div>
+          </div>
+
+          <!-- bulk bar -->
+          <div id="bulkBar" class="hidden px-5 py-2.5 bg-graphite text-white text-sm items-center gap-3">
+            <span class="mono"><span id="bulkCount">0</span> selezionati</span>
+            <div class="ml-auto flex gap-2">
+              <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Pubblica</button>
+              <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Modifica prezzi</button>
+              <button class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-[13px]">Categoria</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+          <table class="w-full text-sm min-w-[760px]">
+            <thead class="bg-bg/50 text-faint">
+              <tr class="kicker">
+                <th class="px-5 py-3 text-left w-10"><input type="checkbox" id="checkAll" class="accent-red w-4 h-4 align-middle" /></th>
+                <th class="px-3 py-3 text-left font-normal">PRODOTTO</th>
+                <th class="px-3 py-3 text-left font-normal">SKU</th>
+                <th class="px-3 py-3 text-left font-normal">CATEGORIA</th>
+                <th class="px-3 py-3 text-right font-normal">PREZZO</th>
+                <th class="px-3 py-3 text-right font-normal">STOCK</th>
+                <th class="px-3 py-3 text-left font-normal">STATO</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-linesoft">
+              <tr class="hover:bg-bg/40 transition">
+                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
+                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-grey w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Rasante MGX Fine</span></div></td>
+                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-RAS-0125</td>
+                <td class="px-3 py-3 text-muted">Malte da rasatura</td>
+                <td class="px-3 py-3 text-right font-semibold mono">€ 14,90</td>
+                <td class="px-3 py-3 text-right mono">1.240</td>
+                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
+              </tr>
+              <tr class="hover:bg-bg/40 transition">
+                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
+                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-ochre w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Adesivo MGX Flex</span></div></td>
+                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-ADE-0220</td>
+                <td class="px-3 py-3 text-muted">Adesivi cementizi</td>
+                <td class="px-3 py-3 text-right font-semibold mono">€ 11,50</td>
+                <td class="px-3 py-3 text-right mono text-red">42</td>
+                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2.5 py-1">Low stock</span></td>
+              </tr>
+              <tr class="hover:bg-bg/40 transition">
+                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
+                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-bio w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Bio Intonaco Calce</span></div></td>
+                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-BIO-0301</td>
+                <td class="px-3 py-3 text-muted">Linea bio</td>
+                <td class="px-3 py-3 text-right font-semibold mono">€ 18,20</td>
+                <td class="px-3 py-3 text-right mono">860</td>
+                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
+              </tr>
+              <tr class="hover:bg-bg/40 transition">
+                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
+                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-white w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Collante MGX Cappotto</span></div></td>
+                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-CAP-0140</td>
+                <td class="px-3 py-3 text-muted">Sistema a cappotto</td>
+                <td class="px-3 py-3 text-right font-semibold mono">€ 13,40</td>
+                <td class="px-3 py-3 text-right mono">2.010</td>
+                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2.5 py-1">Bozza</span></td>
+              </tr>
+              <tr class="hover:bg-bg/40 transition">
+                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
+                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-anthr w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Cemento sfuso R32,5</span></div></td>
+                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-CEM-SILO</td>
+                <td class="px-3 py-3 text-muted">Cemento sfuso</td>
+                <td class="px-3 py-3 text-right font-semibold mono text-muted">preventivo</td>
+                <td class="px-3 py-3 text-right mono">∞</td>
+                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="px-5 py-3.5 flex items-center justify-between border-t border-line text-sm">
+            <span class="mono text-[12px] text-faint">1–5 di 120</span>
+            <div class="flex gap-1.5">
+              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">‹</button>
+              <button class="h-8 w-8 rounded-lg bg-graphite text-white">1</button>
+              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">2</button>
+              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">3</button>
+              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ═══════════════════════ VIEW: CEMENTO SFUSO ═══════════════════════ -->
+<section id="view-cemento" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-white transition">Area download</a>
+        <a href="#" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center gap-2.5 shrink-0">
+        <span class="w-9 h-9 rounded-lg bg-red flex items-center justify-center text-white display font-extrabold text-lg leading-none">M</span>
+        <span class="display font-extrabold text-xl tracking-tight">magix</span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow text-red" href="#" data-view="cemento">Cemento sfuso</a>
+        <a class="underline-grow" href="#" data-view="news">News</a>
+        <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2">
+        <button class="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface/70 text-muted text-sm hover:border-ink/30 transition w-64">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <span>Cerca prodotti, classi EN…</span>
+          <kbd class="mono ml-auto text-[10px] text-faint border border-line rounded px-1.5 py-0.5">⌘K</kbd>
+        </button>
+        <a href="#cemento-cta" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Preventivo</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- hero (dark / industrial) -->
+  <section class="relative overflow-hidden bg-graphite text-white">
+    <div class="absolute inset-0 grid-bg opacity-[.18]"></div>
+    <div class="absolute -top-40 -right-24 w-[520px] h-[520px] rounded-full" style="background:radial-gradient(circle,rgba(228,0,43,.28),transparent 70%)"></div>
+    <div class="relative max-w-7xl mx-auto px-5 pt-16 pb-20 lg:grid lg:grid-cols-[1.1fr,.9fr] lg:gap-12 items-center">
+      <div>
+        <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s">
+          <span class="w-6 h-px bg-red"></span> CEMENTO SFUSO · PUGLIA &amp; BASILICATA
+        </div>
+        <h1 class="rise display font-extrabold text-[clamp(2.6rem,6vw,4.7rem)] leading-[.96] mt-5" style="animation-delay:.12s">
+          Cemento sfuso,<br>fornitura <span class="text-red">senza attese.</span>
+        </h1>
+        <p class="rise text-[17px] text-white/65 leading-relaxed mt-6 max-w-xl" style="animation-delay:.2s">
+          Produzione e distribuzione di premiscelati, massetti e cemento per l'edilizia.
+          Trasporto in autobotte, stoccaggio in silo e fornitura puntuale per imprese e professionisti.
+        </p>
+
+        <div class="rise mt-8 flex flex-wrap items-center gap-3" style="animation-delay:.28s">
+          <a href="#cemento-cta" class="h-12 px-6 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2">
+            Richiedi preventivo
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>
+          </a>
+          <a href="#cemento-cta" class="h-12 px-5 rounded-xl border border-white/20 bg-white/5 text-white font-semibold text-sm hover:bg-white/10 transition flex items-center gap-2">
+            Contattaci
+          </a>
+        </div>
+
+        <!-- capability chips -->
+        <div class="rise flex flex-wrap gap-2 mt-8 text-[12.5px]" style="animation-delay:.34s">
+          <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/15 mono">Trasporto in autobotte</span>
+          <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/15 mono">Stoccaggio in silo</span>
+          <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/15 mono">Pompaggio sui piani</span>
+        </div>
+      </div>
+
+      <!-- silos visual -->
+      <div class="rise hidden lg:block mt-10 lg:mt-0" style="animation-delay:.4s">
+        <div class="relative">
+          <div class="absolute -inset-3 rounded-[28px] bg-gradient-to-br from-red/20 to-transparent blur-xl"></div>
+          <div class="relative bg-white/[.04] border border-white/10 rounded-3xl p-8 backdrop-blur">
+            <div class="flex items-end justify-center gap-4 h-60">
+              <div class="w-16 rounded-t-2xl mat mat-white" style="height:68%"></div>
+              <div class="w-20 rounded-t-2xl mat mat-grey" style="height:100%"></div>
+              <div class="w-16 rounded-t-2xl mat mat-anthr border border-white/10" style="height:54%"></div>
+            </div>
+            <div class="h-px bg-white/15 -mx-8 mb-5"></div>
+            <div class="grid grid-cols-3 gap-px bg-white/10 rounded-xl overflow-hidden text-center">
+              <div class="bg-graphite py-3"><div class="mono text-[11px] text-white/40">CLASSE</div><div class="font-semibold text-sm mt-0.5">R 32,5</div></div>
+              <div class="bg-graphite py-3"><div class="mono text-[11px] text-white/40">FORNITURA</div><div class="font-semibold text-sm mt-0.5">Silo</div></div>
+              <div class="bg-graphite py-3"><div class="mono text-[11px] text-white/40">CONSEGNA</div><div class="font-semibold text-sm mt-0.5">24/48h</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- azienda e valore -->
+  <section class="max-w-7xl mx-auto px-5 py-20 lg:grid lg:grid-cols-[1fr,1fr] lg:gap-16 items-start">
+    <div class="reveal lg:sticky lg:top-24">
+      <div class="kicker text-red flex items-center gap-2"><span>◢</span> 01 — L'AZIENDA</div>
+      <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">Tradizione e innovazione,<br>in ogni metro cubo.</h2>
+      <p class="text-inksoft mt-5 leading-relaxed max-w-xl">
+        Magix produce e distribuisce premiscelati, massetti e cemento per l'edilizia, mettendosi
+        al servizio di imprese edili e professionisti delle costruzioni di Puglia e Basilicata.
+      </p>
+      <p class="text-muted mt-4 leading-relaxed max-w-xl">
+        Materie prime selezionate, logistica ottimizzata e supporto tecnico costante: soluzioni
+        innovative e performanti, pensate per durare nel tempo.
+      </p>
+      <div class="inline-flex items-center gap-2 mt-6 px-3.5 py-2 rounded-full bg-biosoft border border-bio/20 text-bio text-[13px] font-semibold">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        Distribuzione capillare in Puglia e Basilicata
+      </div>
+    </div>
+
+    <!-- value list (definition style) -->
+    <div class="mt-12 lg:mt-0">
+      <div class="reveal flex items-start gap-4 py-5 border-t border-line">
+        <span class="w-11 h-11 rounded-xl bg-red/10 text-red grid place-items-center shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></span>
+        <div><h3 class="display font-bold text-lg">Esperienza</h3><p class="text-muted text-sm mt-1 leading-relaxed">Know-how maturato sul campo, al fianco di chi costruisce ogni giorno.</p></div>
+      </div>
+      <div class="reveal flex items-start gap-4 py-5 border-t border-line">
+        <span class="w-11 h-11 rounded-xl bg-red/10 text-red grid place-items-center shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <div><h3 class="display font-bold text-lg">Qualità</h3><p class="text-muted text-sm mt-1 leading-relaxed">Materie prime certificate e controlli costanti su ogni fornitura.</p></div>
+      </div>
+      <div class="reveal flex items-start gap-4 py-5 border-t border-line">
+        <span class="w-11 h-11 rounded-xl bg-red/10 text-red grid place-items-center shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <div><h3 class="display font-bold text-lg">Innovazione</h3><p class="text-muted text-sm mt-1 leading-relaxed">Impianti automatizzati e ricerca continua su prodotti e processi.</p></div>
+      </div>
+      <div class="reveal flex items-start gap-4 py-5 border-t border-line">
+        <span class="w-11 h-11 rounded-xl bg-red/10 text-red grid place-items-center shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 3h13v13H1zM14 8h5l3 3v5h-8z"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="17.5" cy="18.5" r="2"/></svg></span>
+        <div><h3 class="display font-bold text-lg">Logistica efficiente</h3><p class="text-muted text-sm mt-1 leading-relaxed">Consegne puntuali e organizzate sulle reali necessità del cantiere.</p></div>
+      </div>
+      <div class="reveal flex items-start gap-4 py-5 border-t border-b border-line">
+        <span class="w-11 h-11 rounded-xl bg-red/10 text-red grid place-items-center shrink-0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 11a8 8 0 0 1 16 0v5a3 3 0 0 1-3 3h-1v-7h4M4 12v4a3 3 0 0 0 3 3h1v-7H4"/></svg></span>
+        <div><h3 class="display font-bold text-lg">Supporto tecnico</h3><p class="text-muted text-sm mt-1 leading-relaxed">Un referente che ti segue dalla scelta del prodotto alla posa.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- gamma prodotti (bento) -->
+  <section class="bg-bg2 border-y border-line">
+    <div class="max-w-7xl mx-auto px-5 py-20">
+      <div class="reveal kicker text-red flex items-center gap-2"><span>◢</span> 02 — GAMMA PRODOTTI</div>
+      <div class="flex items-end justify-between reveal mt-3">
+        <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight">Cinque soluzioni,<br>una sola filiera.</h2>
+        <p class="hidden md:block text-muted text-sm max-w-xs text-right">Premiscelati e leganti studiati per alte prestazioni e massima affidabilità.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 lg:auto-rows-[212px]">
+        <!-- big: portland -->
+        <div class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 lg:col-span-2 lg:row-span-2 flex flex-col">
+          <div class="mat mat-grey relative flex-1 min-h-[120px]">
+            <span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">CEM · R 32,5</span>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-2 text-red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m21 16-9 5-9-5V8l9-5 9 5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg><span class="kicker text-faint">PRODOTTO DI PUNTA</span></div>
+            <h3 class="display font-bold text-2xl mt-2">Cemento Portland sfuso</h3>
+            <p class="text-muted text-sm mt-2 max-w-md leading-relaxed">Elevata solidità e versatilità per edifici, sottofondi alleggeriti e opere civili e industriali.</p>
+            <div class="flex items-center justify-between mt-4">
+              <span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">opere civili · industriali</span>
+              <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- massetto (wide) -->
+        <div class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 lg:col-span-2 flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <span class="w-12 h-12 rounded-xl bg-graphite/5 text-graphite grid place-items-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18"/></svg></span>
+            <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
+          </div>
+          <div class="mt-4">
+            <h3 class="display font-bold text-xl">Massetto autolivellante sfuso</h3>
+            <p class="text-muted text-sm mt-1.5 leading-relaxed">Pronto all'uso, garantisce perfetta planarità delle superfici riducendo tempi e costi.</p>
+          </div>
+        </div>
+
+        <!-- intofibra -->
+        <div class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <span class="w-12 h-12 rounded-xl bg-red/10 text-red grid place-items-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/></svg></span>
+            <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
+          </div>
+          <div class="mt-4"><h3 class="display font-bold text-lg leading-snug">Intonaco fibrato INTOFIBRA</h3><p class="text-muted text-sm mt-1.5 leading-relaxed">Malta con fibre: elevate prestazioni meccaniche.</p></div>
+        </div>
+
+        <!-- mm105 -->
+        <div class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <span class="w-12 h-12 rounded-xl bg-bg2 text-ink border border-line grid place-items-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 20 12 4l10 16M5.5 14h13"/></svg></span>
+            <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
+          </div>
+          <div class="mt-4"><h3 class="display font-bold text-lg leading-snug">Intonaco MM105</h3><p class="text-muted text-sm mt-1.5 leading-relaxed">Premiscelato per intonaci tradizionali.</p></div>
+        </div>
+
+        <!-- intoplaster (full width) -->
+        <div class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-6 hover:shadow-lift relative overflow-hidden lg:col-span-4 flex items-center gap-6">
+          <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
+          <span class="relative w-12 h-12 rounded-xl bg-white/10 text-white border border-white/10 grid place-items-center shrink-0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v16M3 9h18M3 15h18M9 3v6M15 9v6"/></svg></span>
+          <div class="relative flex-1">
+            <h3 class="display font-bold text-xl">Intonaco INTOPLASTER</h3>
+            <p class="text-white/60 text-sm mt-1 leading-relaxed max-w-2xl">Malta a base di gesso, calce idrata e inerti calcarei per intonacature interne con finitura omogenea.</p>
+          </div>
+          <span class="relative hidden sm:inline text-red font-semibold group-hover:translate-x-1 transition">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- perché magix (manifesto numerato) -->
+  <section class="max-w-7xl mx-auto px-5 py-20">
+    <div class="reveal max-w-2xl">
+      <div class="kicker text-red flex items-center gap-2"><span>◢</span> 03 — PERCHÉ MAGIX</div>
+      <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">Sei buoni motivi per<br>costruire con noi.</h2>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-9 mt-12">
+      <div class="reveal border-t border-line pt-5">
+        <div class="mono text-red text-sm">01</div>
+        <h3 class="display font-bold text-lg mt-2">Qualità certificata</h3>
+        <p class="text-muted text-sm mt-1.5 leading-relaxed">Materie prime selezionate e prodotti conformi agli standard del settore.</p>
+      </div>
+      <div class="reveal border-t border-line pt-5">
+        <div class="mono text-red text-sm">02</div>
+        <h3 class="display font-bold text-lg mt-2">Prodotti professionali</h3>
+        <p class="text-muted text-sm mt-1.5 leading-relaxed">Premiscelati e leganti studiati per il lavoro quotidiano in cantiere.</p>
+      </div>
+      <div class="reveal border-t border-line pt-5">
+        <div class="mono text-red text-sm">03</div>
+        <h3 class="display font-bold text-lg mt-2">Consegne rapide</h3>
+        <p class="text-muted text-sm mt-1.5 leading-relaxed">Logistica puntuale con tempi di consegna ridotti su tutto il territorio.</p>
+      </div>
+      <div class="reveal border-t border-line pt-5">
+        <div class="mono text-red text-sm">04</div>
+        <h3 class="display font-bold text-lg mt-2">Supporto tecnico</h3>
+        <p class="text-muted text-sm mt-1.5 leading-relaxed">Assistenza dedicata dalla scelta del prodotto alla risoluzione in cantiere.</p>
+      </div>
+      <div class="reveal border-t border-line pt-5">
+        <div class="mono text-red text-sm">05</div>
+        <h3 class="display font-bold text-lg mt-2">Copertura territoriale</h3>
+        <p class="text-muted text-sm mt-1.5 leading-relaxed">Distribuzione capillare in Puglia e Basilicata, dalla sede di Gravina.</p>
+      </div>
+      <div class="reveal border-t border-line pt-5">
+        <div class="mono text-red text-sm">06</div>
+        <h3 class="display font-bold text-lg mt-2">Affidabilità</h3>
+        <p class="text-muted text-sm mt-1.5 leading-relaxed">Oltre trent'anni di esperienza al servizio di imprese e professionisti.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- processo operativo (step orizzontali, dark) -->
+  <section class="relative overflow-hidden bg-graphite text-white">
+    <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
+    <div class="absolute -bottom-32 -left-24 w-[460px] h-[460px] rounded-full" style="background:radial-gradient(circle,rgba(228,0,43,.2),transparent 70%)"></div>
+    <div class="relative max-w-7xl mx-auto px-5 py-20">
+      <div class="reveal kicker text-red flex items-center gap-2"><span>◢</span> 04 — COME LAVORIAMO</div>
+      <h2 class="reveal display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3 max-w-2xl">Dalla richiesta al cantiere,<br>senza intoppi.</h2>
+
+      <div class="relative mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-10">
+        <!-- horizontal connector -->
+        <div class="hidden lg:block absolute left-0 right-0 top-6 h-px bg-white/15"></div>
+        <div class="reveal relative">
+          <div class="relative z-10 w-12 h-12 rounded-xl bg-red text-white grid place-items-center mono font-bold ring-4 ring-graphite">01</div>
+          <h3 class="display font-bold text-lg mt-4">Analisi esigenza</h3>
+          <p class="text-white/55 text-sm mt-1.5 leading-relaxed">Capiamo volumi, tempi e specifiche del tuo cantiere.</p>
+        </div>
+        <div class="reveal relative">
+          <div class="relative z-10 w-12 h-12 rounded-xl bg-white/10 border border-white/15 text-white grid place-items-center mono font-bold ring-4 ring-graphite">02</div>
+          <h3 class="display font-bold text-lg mt-4">Produzione</h3>
+          <p class="text-white/55 text-sm mt-1.5 leading-relaxed">Dosaggio automatico e controllo qualità sul lotto.</p>
+        </div>
+        <div class="reveal relative">
+          <div class="relative z-10 w-12 h-12 rounded-xl bg-white/10 border border-white/15 text-white grid place-items-center mono font-bold ring-4 ring-graphite">03</div>
+          <h3 class="display font-bold text-lg mt-4">Logistica</h3>
+          <p class="text-white/55 text-sm mt-1.5 leading-relaxed">Pianifichiamo autobotti e tempi di consegna su misura.</p>
+        </div>
+        <div class="reveal relative">
+          <div class="relative z-10 w-12 h-12 rounded-xl bg-white/10 border border-white/15 text-white grid place-items-center mono font-bold ring-4 ring-graphite">04</div>
+          <h3 class="display font-bold text-lg mt-4">Consegna in cantiere</h3>
+          <p class="text-white/55 text-sm mt-1.5 leading-relaxed">Scarico in silo e pompaggio diretto sui piani.</p>
+        </div>
+        <div class="reveal relative">
+          <div class="relative z-10 w-12 h-12 rounded-xl bg-white/10 border border-white/15 text-white grid place-items-center mono font-bold ring-4 ring-graphite">05</div>
+          <h3 class="display font-bold text-lg mt-4">Supporto tecnico</h3>
+          <p class="text-white/55 text-sm mt-1.5 leading-relaxed">Ti seguiamo anche dopo, fino a lavorazione conclusa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- soluzioni per l'edilizia (tile immagine) -->
+  <section class="max-w-7xl mx-auto px-5 py-20">
+    <div class="reveal kicker text-red flex items-center gap-2"><span>◢</span> 05 — SOLUZIONI PER L'EDILIZIA</div>
+    <h2 class="reveal display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3 max-w-2xl">Un solo fornitore,<br>ogni applicazione.</h2>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+      <a href="#" class="tile reveal group relative rounded-2xl overflow-hidden border border-line shadow-soft block h-60 lg:col-span-2">
+        <div class="tile-mat mat mat-anthr absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-graphite/90 via-graphite/30 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-end p-6 text-white">
+          <div class="mono text-[11px] text-white/60">01</div>
+          <h3 class="display font-bold text-2xl mt-1">Edilizia civile</h3>
+          <p class="text-white/70 text-sm mt-1 max-w-md">Strutture, tamponature e finiture per edifici residenziali.</p>
+        </div>
+      </a>
+      <a href="#" class="tile reveal group relative rounded-2xl overflow-hidden border border-line shadow-soft block h-60">
+        <div class="tile-mat mat mat-grey absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-graphite/90 via-graphite/30 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-end p-6 text-white">
+          <div class="mono text-[11px] text-white/60">02</div>
+          <h3 class="display font-bold text-2xl mt-1">Edilizia industriale</h3>
+          <p class="text-white/70 text-sm mt-1">Grandi volumi per capannoni e opere infrastrutturali.</p>
+        </div>
+      </a>
+      <a href="#" class="tile reveal group relative rounded-2xl overflow-hidden border border-line shadow-soft block h-56">
+        <div class="tile-mat mat mat-white absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-graphite/90 via-graphite/30 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-end p-6 text-white">
+          <div class="mono text-[11px] text-white/60">03</div>
+          <h3 class="display font-bold text-2xl mt-1">Sottofondi</h3>
+          <p class="text-white/70 text-sm mt-1">Basi alleggerite e livellate per ogni posa.</p>
+        </div>
+      </a>
+      <a href="#" class="tile reveal group relative rounded-2xl overflow-hidden border border-line shadow-soft block h-56">
+        <div class="tile-mat mat mat-ochre absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-graphite/90 via-graphite/30 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-end p-6 text-white">
+          <div class="mono text-[11px] text-white/60">04</div>
+          <h3 class="display font-bold text-2xl mt-1">Pavimentazioni</h3>
+          <p class="text-white/70 text-sm mt-1">Massetti pronti per pavimenti planari e resistenti.</p>
+        </div>
+      </a>
+      <a href="#" class="tile reveal group relative rounded-2xl overflow-hidden border border-line shadow-soft block h-56">
+        <div class="tile-mat mat mat-grey absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-graphite/90 via-graphite/30 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-end p-6 text-white">
+          <div class="mono text-[11px] text-white/60">05</div>
+          <h3 class="display font-bold text-2xl mt-1">Massetti</h3>
+          <p class="text-white/70 text-sm mt-1">Autolivellanti per planarità perfetta in tempi rapidi.</p>
+        </div>
+      </a>
+      <a href="#" class="tile reveal group relative rounded-2xl overflow-hidden border border-line shadow-soft block h-44 lg:col-span-3">
+        <div class="tile-mat mat mat-anthr absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-graphite/90 via-graphite/45 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-center p-7 text-white max-w-lg">
+          <div class="mono text-[11px] text-white/60">06</div>
+          <h3 class="display font-bold text-2xl mt-1">Intonaci</h3>
+          <p class="text-white/70 text-sm mt-1">Premiscelati e malte secche per intonacature interne ed esterne.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- faq (accordion) -->
+  <section class="bg-bg2 border-y border-line">
+    <div class="max-w-3xl mx-auto px-5 py-20">
+      <div class="reveal text-center">
+        <div class="kicker text-red inline-flex items-center gap-2"><span>◢</span> 06 — DOMANDE FREQUENTI</div>
+        <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">Tutto quello che serve sapere.</h2>
+      </div>
+
+      <div class="mt-10 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden divide-y divide-line">
+        <div class="faq-item reveal">
+          <button class="faq-q w-full flex items-center gap-4 text-left px-6 py-5" aria-expanded="false">
+            <span class="display font-bold text-lg flex-1">Cos'è il cemento sfuso e quando conviene usarlo?</span>
+            <svg class="faq-ico text-red shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner"><p class="px-6 pb-5 text-muted text-sm leading-relaxed">È il materiale fornito in grandi quantità, trasportato con autobotti e stoccato in silos. Ideale per cantieri di medie e grandi dimensioni: riduce i costi rispetto al sacco, velocizza le lavorazioni ed evita gli sprechi.</p></div></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q w-full flex items-center gap-4 text-left px-6 py-5" aria-expanded="false">
+            <span class="display font-bold text-lg flex-1">Quali tipi di cemento sfuso offre Magix?</span>
+            <svg class="faq-ico text-red shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner"><p class="px-6 pb-5 text-muted text-sm leading-relaxed">Diverse tipologie: cemento Portland, massetti autolivellanti, intonaci premiscelati e malte secche per intonacature interne ed esterne — tutti studiati per alte prestazioni e massima affidabilità.</p></div></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q w-full flex items-center gap-4 text-left px-6 py-5" aria-expanded="false">
+            <span class="display font-bold text-lg flex-1">Dove consegnate il cemento sfuso?</span>
+            <svg class="faq-ico text-red shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner"><p class="px-6 pb-5 text-muted text-sm leading-relaxed">Copriamo in modo capillare Puglia e Basilicata, con tempi rapidi e servizio logistico puntuale, gestito direttamente dalla sede di Gravina in Puglia.</p></div></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q w-full flex items-center gap-4 text-left px-6 py-5" aria-expanded="false">
+            <span class="display font-bold text-lg flex-1">Come avvengono consegna e stoccaggio in cantiere?</span>
+            <svg class="faq-ico text-red shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><div class="faq-a-inner"><p class="px-6 pb-5 text-muted text-sm leading-relaxed">Il materiale viene trasportato in autobotte e stoccato in silo direttamente in cantiere, con possibilità di pompaggio sui piani: una gestione ordinata che evita sprechi e velocizza la posa.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- cta finale (red full-bleed) -->
+  <section id="cemento-cta" class="max-w-7xl mx-auto px-5 py-20">
+    <div class="reveal relative rounded-3xl overflow-hidden bg-redcta text-white p-10 lg:p-16 text-center">
+      <div class="absolute inset-0 grid-bg opacity-[.18]"></div>
+      <div class="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full" style="background:radial-gradient(circle,rgba(156,0,28,.6),transparent 70%)"></div>
+      <div class="absolute -bottom-24 -right-24 w-[420px] h-[420px] rounded-full" style="background:radial-gradient(circle,rgba(156,0,28,.6),transparent 70%)"></div>
+      <div class="relative max-w-2xl mx-auto">
+        <div class="kicker text-white/70 inline-flex items-center gap-2"><span>◢</span> PARLIAMO DEL TUO CANTIERE</div>
+        <h2 class="display font-extrabold text-[clamp(2rem,4.5vw,3.4rem)] leading-[1.02] mt-3">Richiedi il preventivo<br>per il tuo cemento sfuso.</h2>
+        <p class="text-white/80 mt-5 max-w-lg mx-auto leading-relaxed">Dicci volumi, tempi e tipologia di prodotto: il nostro team commerciale ti risponde con una quotazione su misura.</p>
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
+          <a href="mailto:magixmalte@gmail.com" class="h-12 px-6 rounded-xl bg-white text-redcta font-semibold text-sm hover:bg-bg transition shadow-soft flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+            Richiedi preventivo
+          </a>
+          <a href="tel:+390803251769" class="h-12 px-5 rounded-xl border border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+            Contatta il commerciale
+          </a>
+        </div>
+        <div class="mono text-[12.5px] text-white/70 mt-6">(+39) 080.325.17.69 · Gravina in Puglia (BA)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2.5"><span class="w-9 h-9 rounded-lg bg-red grid place-items-center text-white display font-extrabold text-lg">M</span><span class="display font-extrabold text-xl text-white">magix</span></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<!-- ═══════════════════════ VIEW: NEWS ═══════════════════════ -->
+<section id="view-news" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-white transition">Area download</a>
+        <a href="#" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center gap-2.5 shrink-0">
+        <span class="w-9 h-9 rounded-lg bg-red flex items-center justify-center text-white display font-extrabold text-lg leading-none">M</span>
+        <span class="display font-extrabold text-xl tracking-tight">magix</span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
+        <a class="underline-grow text-red" href="#" data-view="news">News</a>
+        <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page header (slim) -->
+  <section class="relative overflow-hidden border-b border-line bg-surface">
+    <div class="absolute inset-0 grid-bg opacity-[.5]"></div>
+    <div class="relative max-w-7xl mx-auto px-5 pt-14 pb-12">
+      <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s"><span class="w-6 h-px bg-red"></span> NEWS · AGGIORNAMENTI</div>
+      <h1 class="rise display font-extrabold text-[clamp(2.4rem,5vw,3.8rem)] leading-[1] mt-4" style="animation-delay:.12s">News ed eventi.</h1>
+      <p class="rise text-[17px] text-inksoft/90 leading-relaxed mt-4 max-w-xl" style="animation-delay:.2s">Informazioni, notizie, fiere ed eventi dal mondo Magix Malte — per restare sempre aggiornato.</p>
+    </div>
+  </section>
+
+  <!-- featured article -->
+  <section class="max-w-7xl mx-auto px-5 py-14">
+    <article class="reveal lift bg-surface rounded-3xl border border-line shadow-soft overflow-hidden lg:grid lg:grid-cols-2 hover:shadow-lift hover:border-ink/20">
+      <div class="mat mat-ochre min-h-[240px] lg:min-h-full relative">
+        <span class="absolute top-4 left-4 text-[11px] font-semibold bg-white/90 backdrop-blur text-ink rounded-full px-3 py-1">IN EVIDENZA</span>
+      </div>
+      <div class="p-8 lg:p-12 flex flex-col justify-center">
+        <div class="flex items-center gap-3 mono text-[12px] text-faint">
+          <span class="text-red font-semibold">NEWS</span><span>·</span><span>23 NOV 2019</span>
+        </div>
+        <h2 class="display font-extrabold text-[clamp(1.7rem,3vw,2.5rem)] leading-tight mt-3">Linea KREATIV by Rofix</h2>
+        <p class="text-muted mt-4 leading-relaxed max-w-lg">Le facciate prendono vita: soluzioni creative come alternativa alle rifiniture tradizionali dei sistemi a cappotto.</p>
+        <a href="#" class="mt-7 inline-flex items-center gap-2 font-semibold text-red underline-grow w-fit">Leggi l'articolo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>
+        </a>
+      </div>
+    </article>
+  </section>
+
+  <!-- articles list -->
+  <section class="max-w-7xl mx-auto px-5 pb-8">
+    <div class="reveal flex items-end justify-between">
+      <h2 class="display font-extrabold text-2xl">Tutti gli articoli</h2>
+      <span class="mono text-[12px] text-faint">archivio</span>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-semibold text-red bg-red/10 border border-red/20 rounded-full px-2.5 py-0.5">EVENTO</span>
+          <span class="mono text-[11px] text-faint">27 APR 2018</span>
+        </div>
+        <h3 class="display font-bold text-xl mt-4 leading-snug">Incontro tecnico</h3>
+        <p class="text-muted text-sm mt-2 leading-relaxed flex-1">Incontro presso la sede dedicato al sistema contro l'umidità di risalita.</p>
+        <span class="mt-5 text-red font-semibold text-sm group-hover:translate-x-1 transition inline-block">Leggi →</span>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-semibold text-white bg-graphite rounded-full px-2.5 py-0.5">NEWS</span>
+          <span class="mono text-[11px] text-faint">29 MAR 2018</span>
+        </div>
+        <h3 class="display font-bold text-xl mt-4 leading-snug">Future now — 2019</h3>
+        <p class="text-muted text-sm mt-2 leading-relaxed flex-1">Una nuova generazione di edifici con approccio progettuale e costruttivo innovativo e misurabile.</p>
+        <span class="mt-5 text-red font-semibold text-sm group-hover:translate-x-1 transition inline-block">Leggi →</span>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2.5 py-0.5">PRODOTTI</span>
+          <span class="mono text-[11px] text-faint">29 MAG 2017</span>
+        </div>
+        <h3 class="display font-bold text-xl mt-4 leading-snug">La vita è piena di colori</h3>
+        <p class="text-muted text-sm mt-2 leading-relaxed flex-1">Nuova mazzetta colori per esterni e interni: 695 tonalità suddivise in 10 segmenti di colore.</p>
+        <span class="mt-5 text-red font-semibold text-sm group-hover:translate-x-1 transition inline-block">Leggi →</span>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2.5 py-0.5">NORMATIVA</span>
+          <span class="mono text-[11px] text-faint">13 GEN 2017</span>
+        </div>
+        <h3 class="display font-bold text-xl mt-4 leading-snug">DM 28 Maggio 2015</h3>
+        <p class="text-muted text-sm mt-2 leading-relaxed flex-1">Aggiornamento delle schede di sicurezza secondo la direttiva 2015/830/CE.</p>
+        <span class="mt-5 text-red font-semibold text-sm group-hover:translate-x-1 transition inline-block">Leggi →</span>
+      </a>
+      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-semibold text-red bg-red/10 border border-red/20 rounded-full px-2.5 py-0.5">TECNICA</span>
+          <span class="mono text-[11px] text-faint">12 GEN 2017</span>
+        </div>
+        <h3 class="display font-bold text-xl mt-4 leading-snug">Isolamento termico</h3>
+        <p class="text-muted text-sm mt-2 leading-relaxed flex-1">Soluzioni per l'isolamento termico degli stabili: a cappotto, intonaco o incollaggio, interni ed esterni.</p>
+        <span class="mt-5 text-red font-semibold text-sm group-hover:translate-x-1 transition inline-block">Leggi →</span>
+      </a>
+      <a href="#" class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-6 hover:shadow-lift relative overflow-hidden flex flex-col justify-center">
+        <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
+        <div class="relative">
+          <div class="kicker text-white/50">ARCHIVIO</div>
+          <h3 class="display font-bold text-xl mt-2">Cerchi una notizia<br>meno recente?</h3>
+          <span class="mt-4 inline-flex items-center gap-2 text-red font-semibold text-sm">Post precedenti
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>
+          </span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- closing cta band -->
+  <section class="max-w-7xl mx-auto px-5 py-14">
+    <div class="reveal rounded-3xl border border-line bg-bg2 p-8 lg:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+      <div>
+        <h3 class="display font-bold text-2xl">Magix, il partner ideale per il settore edilizio.</h3>
+        <p class="text-muted mt-1.5 max-w-xl">Esperienza trentennale e capacità di innovare, con lo sguardo sempre rivolto al futuro.</p>
+      </div>
+      <a href="#" data-view="contatti" class="h-12 px-6 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2 shrink-0">
+        Contattaci
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2.5"><span class="w-9 h-9 rounded-lg bg-red grid place-items-center text-white display font-extrabold text-lg">M</span><span class="display font-extrabold text-xl text-white">magix</span></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<!-- ═══════════════════════ VIEW: CONTATTI ═══════════════════════ -->
+<section id="view-contatti" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" class="hover:text-white transition">Area download</a>
+        <a href="#" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center gap-2.5 shrink-0">
+        <span class="w-9 h-9 rounded-lg bg-red flex items-center justify-center text-white display font-extrabold text-lg leading-none">M</span>
+        <span class="display font-extrabold text-xl tracking-tight">magix</span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
+        <a class="underline-grow" href="#" data-view="news">News</a>
+        <a class="underline-grow text-red" href="#" data-view="contatti">Contatti</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="tel:+390803251769" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Chiama ora</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="absolute inset-0 grid-bg"></div>
+    <div class="absolute -top-32 -right-32 w-[460px] h-[460px] rounded-full" style="background:radial-gradient(circle,rgba(228,0,43,.12),transparent 70%)"></div>
+    <div class="relative max-w-7xl mx-auto px-5 pt-14 pb-12">
+      <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s"><span class="w-6 h-px bg-red"></span> CONTATTI &amp; INFO</div>
+      <h1 class="rise display font-extrabold text-[clamp(2.4rem,5vw,4rem)] leading-[1] mt-4 max-w-3xl" style="animation-delay:.12s">Rimaniamo in contatto.</h1>
+      <p class="rise text-[17px] text-inksoft/90 leading-relaxed mt-4 max-w-xl" style="animation-delay:.2s">Hai bisogno di un chiarimento o di un approfondimento sui prodotti Magix? Scrivici: ti ricontattiamo noi.</p>
+    </div>
+  </section>
+
+  <!-- form + info -->
+  <section class="max-w-7xl mx-auto px-5 py-16 lg:grid lg:grid-cols-[1.15fr,.85fr] lg:gap-12 items-start">
+    <!-- form -->
+    <div class="reveal bg-surface rounded-3xl border border-line shadow-soft p-7 lg:p-9">
+      <div class="kicker text-red flex items-center gap-2"><span>◢</span> RICHIEDI INFORMAZIONI</div>
+      <h2 class="display font-bold text-2xl mt-2">Compila il modulo</h2>
+
+      <form id="contactForm" class="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-5" novalidate>
+        <div>
+          <label for="c-nome" class="kicker text-muted">Nome</label>
+          <input id="c-nome" name="nome" type="text" required class="field mt-2 w-full h-12 px-4 rounded-xl border border-line bg-bg/40 outline-none text-[15px] focus:border-red focus:bg-surface transition" placeholder="Mario" />
+        </div>
+        <div>
+          <label for="c-cognome" class="kicker text-muted">Cognome</label>
+          <input id="c-cognome" name="cognome" type="text" required class="field mt-2 w-full h-12 px-4 rounded-xl border border-line bg-bg/40 outline-none text-[15px] focus:border-red focus:bg-surface transition" placeholder="Rossi" />
+        </div>
+        <div>
+          <label for="c-email" class="kicker text-muted">Email</label>
+          <input id="c-email" name="email" type="email" required class="field mt-2 w-full h-12 px-4 rounded-xl border border-line bg-bg/40 outline-none text-[15px] focus:border-red focus:bg-surface transition" placeholder="mario.rossi@email.it" />
+        </div>
+        <div>
+          <label for="c-tel" class="kicker text-muted">Telefono</label>
+          <input id="c-tel" name="telefono" type="tel" class="field mt-2 w-full h-12 px-4 rounded-xl border border-line bg-bg/40 outline-none text-[15px] focus:border-red focus:bg-surface transition" placeholder="+39 ..." />
+        </div>
+        <div class="sm:col-span-2">
+          <label for="c-need" class="kicker text-muted">Di cosa hai bisogno?</label>
+          <select id="c-need" name="esigenza" class="field mt-2 w-full h-12 px-4 rounded-xl border border-line bg-bg/40 outline-none text-[15px] focus:border-red focus:bg-surface transition">
+            <option>Info prodotti</option>
+            <option>Noleggio macchine</option>
+            <option>Preventivo cemento sfuso</option>
+            <option>Altro</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <span class="kicker text-muted">Come vuoi essere ricontattato?</span>
+          <div class="flex gap-3 mt-2.5">
+            <label class="flex-1 flex items-center gap-2.5 h-12 px-4 rounded-xl border border-line bg-bg/40 cursor-pointer hover:border-ink/30 transition text-sm">
+              <input type="radio" name="canale" value="telefono" class="accent-red w-4 h-4" checked /> Telefono
+            </label>
+            <label class="flex-1 flex items-center gap-2.5 h-12 px-4 rounded-xl border border-line bg-bg/40 cursor-pointer hover:border-ink/30 transition text-sm">
+              <input type="radio" name="canale" value="email" class="accent-red w-4 h-4" /> Email
+            </label>
+          </div>
+        </div>
+        <div class="sm:col-span-2">
+          <label for="c-msg" class="kicker text-muted">Ulteriori indicazioni</label>
+          <textarea id="c-msg" name="messaggio" rows="4" class="field mt-2 w-full px-4 py-3 rounded-xl border border-line bg-bg/40 outline-none text-[15px] focus:border-red focus:bg-surface transition resize-y" placeholder="Descrivi la tua richiesta…"></textarea>
+        </div>
+        <div class="sm:col-span-2 flex items-start gap-2.5">
+          <input id="c-privacy" name="privacy" type="checkbox" required class="accent-red w-4 h-4 mt-0.5" />
+          <label for="c-privacy" class="text-[13px] text-muted leading-relaxed">Ho letto e accetto i <a href="#" class="text-red underline-grow">Termini e l'informativa privacy</a>.</label>
+        </div>
+        <div class="sm:col-span-2 flex items-center gap-4">
+          <button type="submit" class="h-12 px-7 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2">
+            Invia richiesta
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>
+          </button>
+          <p id="formMsg" class="hidden text-bio text-sm font-medium items-center gap-2"></p>
+        </div>
+      </form>
+    </div>
+
+    <!-- info column -->
+    <div class="mt-10 lg:mt-0 space-y-4">
+      <!-- map -->
+      <div class="reveal relative rounded-3xl overflow-hidden border border-line shadow-soft h-56 bg-bg2">
+        <div class="absolute inset-0 grid-bg opacity-[.6]"></div>
+        <div class="absolute inset-0 grid place-items-center">
+          <span class="relative grid place-items-center">
+            <span class="absolute w-14 h-14 rounded-full bg-red/15 animate-ping"></span>
+            <span class="relative w-10 h-10 rounded-full bg-red text-white grid place-items-center shadow-lift"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          </span>
+        </div>
+        <a href="https://www.google.com/maps/search/?api=1&query=Magix+Srl+Gravina+in+Puglia" target="_blank" rel="noopener" class="absolute bottom-3 right-3 h-9 px-3.5 rounded-lg glass border border-line text-sm font-medium flex items-center gap-2 hover:border-ink/30 transition">Apri in Maps →</a>
+      </div>
+
+      <!-- contact card -->
+      <div class="reveal bg-surface rounded-2xl border border-line shadow-soft p-6">
+        <div class="kicker text-muted">DOVE TROVARCI</div>
+        <ul class="mt-4 space-y-4 text-sm">
+          <li class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <span class="leading-relaxed">Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></span>
+            <a href="tel:+390803251769" class="mono hover:text-ink transition">(+39) 080.325.17.69<br>(+39) 080.325.11.06</a>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></span>
+            <a href="mailto:magixmalte@gmail.com" class="hover:text-ink transition">magixmalte@gmail.com</a>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-9 h-9 rounded-lg bg-bg2 text-muted border border-line grid place-items-center shrink-0 mono text-[11px]">P.I</span>
+            <span class="mono text-muted">08805080721</span>
+          </li>
+        </ul>
+        <div class="flex gap-2 mt-5 pt-5 border-t border-linesoft">
+          <a href="tel:+390803251769" class="flex-1 h-11 rounded-xl border border-line bg-surface font-semibold text-sm hover:border-ink/30 transition flex items-center justify-center gap-2">Chiama</a>
+          <a href="mailto:magixmalte@gmail.com" class="flex-1 h-11 rounded-xl bg-graphite text-white font-semibold text-sm hover:bg-ink transition flex items-center justify-center gap-2">Scrivi</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2.5"><span class="w-9 h-9 rounded-lg bg-red grid place-items-center text-white display font-extrabold text-lg">M</span><span class="display font-extrabold text-xl text-white">magix</span></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
