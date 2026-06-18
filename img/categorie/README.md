@@ -15,9 +15,10 @@ Nessuna modifica al codice è necessaria.
 
 ## Nomi file attesi
 
-### Grandi famiglie (intestazioni)
-- `famiglia-malte.jpg`
-- `famiglia-rivestimenti.jpg`
+### Sottocategorie — Rivestimenti e idropitture
+- `rivestimenti.jpg`
+- `idropitture.jpg`
+- `rivestimenti-per-esterni.jpg`
 
 ### Sottocategorie — Malte
 - `adesivi-cementizi.jpg`

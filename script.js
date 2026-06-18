@@ -76,16 +76,19 @@
       const open = acc.classList.toggle("open");
       accBtn.setAttribute("aria-expanded", open ? "true" : "false");
     });
-    const target = document.getElementById("mnavMalte");
-    if (target && megaMenu) {
-      megaMenu.querySelectorAll('.grid a[data-view="prodotti"]').forEach(a => {
+    const cloneLinks = (srcId, destId) => {
+      const src = document.getElementById(srcId), dest = document.getElementById(destId);
+      if (!src || !dest) return;
+      src.querySelectorAll("a").forEach(a => {
         const link = document.createElement("a");
         link.href = "#"; link.dataset.view = "prodotti";
         link.className = "block py-1 text-muted hover:text-red transition";
         link.textContent = a.textContent;
-        target.appendChild(link);
+        dest.appendChild(link);
       });
-    }
+    };
+    cloneLinks("megaMalteLinks", "mnavMalte");
+    cloneLinks("megaRivLinks", "mnavRiv");
   }
 
   // ── reveal on scroll ──

@@ -419,6 +419,13 @@
       <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s"><span class="w-6 h-px bg-red"></span> PRODOTTI</div>
       <h1 class="rise display font-extrabold text-[clamp(2.4rem,5vw,3.8rem)] leading-[1] mt-4" style="animation-delay:.12s">I nostri prodotti.</h1>
       <p class="rise text-[17px] text-inksoft/90 leading-relaxed mt-4 max-w-2xl" style="animation-delay:.2s">Due grandi famiglie a copertura di tutte le esigenze del settore edile: scegli la linea e scopri le categorie.</p>
+
+      <a href="#fam-malte" class="scroll-cue hidden md:flex absolute right-5 bottom-7 flex-col items-center gap-2 text-faint hover:text-red transition group" aria-label="Scorri alle categorie">
+        <span class="kicker">Categorie</span>
+        <span class="scroll-cue-arrow grid place-items-center w-11 h-11 rounded-full border border-line bg-surface shadow-soft group-hover:border-red/40 transition">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14m0 0-6-6m6 6 6-6"/></svg>
+        </span>
+      </a>
     </div>
   </section>
 
@@ -427,7 +434,7 @@
     <div class="sticky top-[68px] z-20 -mx-5 px-5 py-3 bg-bg/85 backdrop-blur border-b border-line flex flex-wrap items-center gap-2">
       <span class="kicker text-faint mr-1 hidden sm:inline">FAMIGLIE:</span>
       <a href="#fam-malte" class="flex items-center gap-2 px-4 py-2 rounded-full bg-graphite text-white text-sm font-medium hover:brightness-110 transition">Malte <span class="text-[10px] font-semibold bg-white/20 rounded-full px-1.5 py-0.5">18</span></a>
-      <a href="#fam-rivestimenti" class="flex items-center gap-2 px-4 py-2 rounded-full border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Rivestimenti e idropitture</a>
+      <a href="#fam-rivestimenti" class="flex items-center gap-2 px-4 py-2 rounded-full border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Rivestimenti e idropitture <span class="text-[10px] font-semibold bg-bg2 border border-line rounded-full px-1.5 py-0.5">3</span></a>
     </div>
 
     <!-- family: malte -->
@@ -478,11 +485,10 @@
         <h2 class="display font-extrabold text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight mt-3">Finiture e protezione.</h2>
         <p class="text-inksoft mt-4 leading-relaxed">Idropitture, rivestimenti murali e finiture decorative per la protezione e l'estetica delle superfici, interne ed esterne.</p>
       </div>
-      <div class="reveal mt-8 rounded-3xl border border-line bg-bg2 p-10 lg:p-14 text-center">
-        <span class="w-14 h-14 rounded-2xl bg-surface border border-line text-red grid place-items-center mx-auto"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2M9 7h6M15 13l6 6m0-6-6 6"/></svg></span>
-        <h3 class="display font-bold text-2xl mt-5">Catalogo in aggiornamento.</h3>
-        <p class="text-muted mt-2 max-w-lg mx-auto leading-relaxed">Stiamo completando le categorie di questa linea. Contattaci per ricevere la gamma completa di rivestimenti e idropitture.</p>
-        <a href="#" data-view="contatti" class="mt-6 inline-flex h-12 px-6 items-center gap-2 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft">Contattaci <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg></a>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+        <a href="#" data-view="product" data-name="rivestimenti" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-ochre h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Rivestimenti</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="idropitture" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-bio h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Idropitture</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="rivestimenti per esterni" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-anthr h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Rivestimenti per esterni</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
       </div>
     </div>
   </section>
@@ -2376,7 +2382,7 @@
           <a href="#" data-view="prodotti" class="kicker text-red hover:opacity-80 transition">MALTE</a>
           <span class="text-[10px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2 py-0.5">18 categorie</span>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-0.5 mt-4 text-[13.5px]">
+        <div id="megaMalteLinks" class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-0.5 mt-4 text-[13.5px]">
           <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Adesivi cementizi</a>
           <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Linea bio</a>
           <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da intonaco</a>
@@ -2399,10 +2405,16 @@
         <a href="#" data-view="prodotti" class="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-red underline-grow">Tutte le categorie →</a>
       </div>
       <div class="md:border-l md:border-line md:pl-6">
-        <div class="kicker text-red">RIVESTIMENTI E IDROPITTURE</div>
-        <p class="text-muted text-sm mt-3 leading-relaxed">Idropitture, rivestimenti murali e finiture decorative per interni ed esterni.</p>
-        <span class="inline-block mt-3 text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2.5 py-1">In aggiornamento</span>
-        <a href="#" data-view="contatti" class="block mt-4 text-sm font-semibold text-red underline-grow w-fit">Contattaci →</a>
+        <div class="flex items-center justify-between">
+          <a href="#" data-view="prodotti" class="kicker text-red hover:opacity-80 transition">RIVESTIMENTI E IDROPITTURE</a>
+          <span class="text-[10px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2 py-0.5">3</span>
+        </div>
+        <div id="megaRivLinks" class="grid gap-0.5 mt-4 text-[13.5px]">
+          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Rivestimenti</a>
+          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Idropitture</a>
+          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Rivestimenti per esterni</a>
+        </div>
+        <a href="#" data-view="contatti" class="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-red underline-grow">Contattaci →</a>
       </div>
     </div>
   </div>
@@ -2425,7 +2437,8 @@
         <div class="mnav-acc-body"><div class="mnav-acc-inner pb-3">
           <a href="#" data-view="prodotti" class="block py-1.5 text-sm font-semibold text-red">Malte · tutte le 18 →</a>
           <div id="mnavMalte" class="grid gap-0.5 pl-3 mt-1 text-[13.5px]"></div>
-          <a href="#" data-view="prodotti" class="block py-2 mt-1 text-sm font-semibold">Rivestimenti e idropitture</a>
+          <a href="#" data-view="prodotti" class="block py-1.5 mt-2 text-sm font-semibold text-red">Rivestimenti e idropitture →</a>
+          <div id="mnavRiv" class="grid gap-0.5 pl-3 mt-1 text-[13.5px]"></div>
         </div></div>
       </div>
       <a href="#" data-view="cemento" class="block py-3 border-b border-linesoft font-medium">Cemento sfuso</a>

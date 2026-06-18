@@ -1,4 +1,5 @@
   :root { color-scheme: light; }
+  html { scroll-behavior: smooth; }
   * { -webkit-font-smoothing: antialiased; }
   body { background: #F5F3EF; font-family: "Hanken Grotesk", sans-serif; color: #15171C; }
   ::selection { background: #E4002B; color: #fff; }
@@ -81,6 +82,11 @@
   .mnav-acc.open .mnav-acc-body { grid-template-rows:1fr; }
   .mnav-acc-inner { overflow:hidden; }
   .mnav-acc.open .mnav-chev { transform: rotate(180deg); }
+
+  /* scroll-down cue (catalogo prodotti) */
+  @keyframes cueBob { 0%, 100% { transform: translateY(0); opacity:.85; } 50% { transform: translateY(7px); opacity:1; } }
+  .scroll-cue-arrow { animation: cueBob 1.5s cubic-bezier(.45,0,.55,1) infinite; }
+  @media (prefers-reduced-motion: reduce) { .scroll-cue-arrow { animation: none; } }
 
   /* mega menu open animation */
   #megaMenu { opacity:0; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease; pointer-events:none; }
