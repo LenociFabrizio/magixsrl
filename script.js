@@ -1,5 +1,5 @@
   // ── view router ──
-  const views = { home: "view-home", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", product: "view-product", admin: "view-admin" };
+  const views = { home: "view-home", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", product: "view-product", admin: "view-admin" };
   function setView(name) {
     const targetId = views[name] || views.home;
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
@@ -117,6 +117,39 @@
       msg.classList.remove("hidden");
       msg.classList.add("flex");
     });
+  }
+
+  // ── download center: search + category filter ──
+  const dlGrid = document.getElementById("downloadGrid");
+  if (dlGrid) {
+    const cards = [...dlGrid.querySelectorAll(".doc-card")];
+    const pills = [...document.querySelectorAll(".dl-pill")];
+    const search = document.getElementById("dlSearch");
+    const empty = document.getElementById("dlEmpty");
+    let cat = "all";
+    function apply() {
+      const q = (search && search.value || "").trim().toLowerCase();
+      let shown = 0;
+      cards.forEach(c => {
+        const ok = (cat === "all" || c.dataset.cat === cat) && (!q || c.dataset.title.includes(q));
+        c.classList.toggle("hidden", !ok);
+        if (ok) shown++;
+      });
+      if (empty) empty.classList.toggle("hidden", shown !== 0);
+    }
+    pills.forEach(p => p.addEventListener("click", () => {
+      cat = p.dataset.filter;
+      pills.forEach(x => {
+        const on = x === p;
+        x.classList.toggle("bg-graphite", on);
+        x.classList.toggle("text-white", on);
+        x.classList.toggle("border", !on);
+        x.classList.toggle("border-line", !on);
+        x.classList.toggle("bg-surface", !on);
+      });
+      apply();
+    }));
+    if (search) search.addEventListener("input", apply);
   }
 
   // ── init ──
