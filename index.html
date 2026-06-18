@@ -97,19 +97,13 @@
           pensata per magazzini e imprese.
         </p>
 
-        <!-- intelligent search -->
-        <div class="rise mt-8 max-w-xl" style="animation-delay:.28s">
-          <div class="bg-surface rounded-2xl shadow-soft border border-line p-1.5 flex items-center gap-2">
-            <div class="pl-3 text-faint"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
-            <input class="flex-1 bg-transparent outline-none text-[15px] py-2.5 placeholder:text-faint" placeholder="Es. malta da rasatura, EN 998-1, cappotto…" />
-            <button class="h-11 px-5 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition">Cerca</button>
-          </div>
-          <div class="flex flex-wrap gap-2 mt-3 text-[12.5px]">
-            <span class="text-faint mono pt-1">FREQUENTI:</span>
-            <a class="px-2.5 py-1 rounded-full bg-bg2 border border-line hover:border-ink/30 transition" href="#">Sistema a cappotto</a>
-            <a class="px-2.5 py-1 rounded-full bg-bg2 border border-line hover:border-ink/30 transition" href="#">Adesivi cementizi</a>
-            <a class="px-2.5 py-1 rounded-full bg-bg2 border border-line hover:border-ink/30 transition" href="#">Linea bio</a>
-          </div>
+        <!-- cta -->
+        <div class="rise mt-8 flex flex-wrap items-center gap-3" style="animation-delay:.28s">
+          <a href="#" data-view="product" class="h-12 px-6 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2">
+            Scopri i prodotti
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>
+          </a>
+          <a href="#" data-view="contatti" class="h-12 px-5 rounded-xl border border-line bg-surface/70 font-semibold text-sm hover:border-ink/30 transition flex items-center gap-2">Contattaci</a>
         </div>
       </div>
 
@@ -385,6 +379,22 @@
 
 <!-- ═══════════════════════ VIEW: PRODUCT ═══════════════════════ -->
 <section id="view-product" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center gap-2.5 shrink-0"><span class="w-9 h-9 rounded-lg bg-red grid place-items-center text-white display font-extrabold text-lg">M</span><span class="display font-extrabold text-xl">magix</span></a>
@@ -536,6 +546,48 @@
       </div>
     </div>
   </div>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2.5"><span class="w-9 h-9 rounded-lg bg-red grid place-items-center text-white display font-extrabold text-lg">M</span><span class="display font-extrabold text-xl text-white">magix</span></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="download">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="lavora">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
 </section>
 
 <!-- ═══════════════════════ VIEW: ADMIN ═══════════════════════ -->
