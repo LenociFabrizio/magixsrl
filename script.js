@@ -258,5 +258,33 @@
     });
   }
 
+  // ── prodotti: auto-carica le immagini categoria se presenti in img/categorie/ ──
+  // Convenzione: <nome categoria in minuscolo, spazi -> trattini>.{jpg|png|webp}
+  // Finché il file non esiste resta lo sfondo materico. Vedi img/categorie/README.md
+  function autoCatImage(thumb, slug) {
+    if (!thumb || !slug) return;
+    const exts = ["jpg", "png", "webp"];
+    let i = 0;
+    (function tryNext() {
+      if (i >= exts.length) return;
+      const url = "img/categorie/" + slug + "." + exts[i++];
+      const probe = new Image();
+      probe.onload = () => {
+        thumb.style.backgroundImage = 'url("' + url + '")';
+        thumb.style.backgroundSize = "cover";
+        thumb.style.backgroundPosition = "center";
+        thumb.classList.remove("mat", "mat-grey", "mat-white", "mat-ochre", "mat-bio", "mat-anthr", "mat-red");
+      };
+      probe.onerror = tryNext;
+      probe.src = url;
+    })();
+  }
+  document.querySelectorAll(".subcat-card").forEach(card => {
+    autoCatImage(card.querySelector("div"), (card.dataset.name || "").replace(/\s+/g, "-"));
+  });
+  document.querySelectorAll(".cat-tab").forEach(tab => {
+    autoCatImage(tab.querySelector("div"), "famiglia-" + tab.dataset.cat);
+  });
+
   // ── init ──
   setView("home");
