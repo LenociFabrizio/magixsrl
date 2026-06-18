@@ -10,10 +10,83 @@
     runReveal();
   }
 
-  // ── nav links (logo, header nav, footer, in-page CTAs) ──
-  document.querySelectorAll("[data-view]").forEach(el =>
-    el.addEventListener("click", (e) => { e.preventDefault(); setView(el.dataset.view); })
-  );
+  // ── menus (mega menu desktop + drawer mobile) ──
+  const megaMenu = document.getElementById("megaMenu");
+  const mobileNav = document.getElementById("mobileNav");
+  let megaTimer;
+  function openMega() {
+    if (!megaMenu) return;
+    clearTimeout(megaTimer);
+    const hdr = document.querySelector(".view.active header");
+    if (hdr) megaMenu.style.top = Math.max(0, hdr.getBoundingClientRect().bottom) + "px";
+    megaMenu.classList.remove("hidden");
+    requestAnimationFrame(() => megaMenu.classList.add("open"));
+  }
+  function closeMega(now) {
+    if (!megaMenu) return;
+    megaMenu.classList.remove("open");
+    clearTimeout(megaTimer);
+    megaTimer = setTimeout(() => megaMenu.classList.add("hidden"), now ? 0 : 160);
+  }
+  function openMobile() { if (mobileNav) { mobileNav.classList.remove("hidden"); requestAnimationFrame(() => mobileNav.classList.add("open")); } }
+  function closeMobile() { if (mobileNav) { mobileNav.classList.remove("open"); setTimeout(() => mobileNav.classList.add("hidden"), 300); } }
+
+  // ── nav routing (delegated: copre anche elementi iniettati/clonati) ──
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-view]");
+    if (!el) return;
+    e.preventDefault();
+    setView(el.dataset.view);
+    closeMega(true); closeMobile();
+  });
+
+  // desktop: chevron su "Prodotti" + mega menu su hover/focus
+  document.querySelectorAll('.view header nav a[data-view="prodotti"]').forEach(link => {
+    if (!link.querySelector(".nav-chev")) {
+      link.insertAdjacentHTML("beforeend", ' <svg class="nav-chev inline-block align-middle -mt-0.5 transition" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>');
+    }
+    link.addEventListener("mouseenter", openMega);
+    link.addEventListener("focus", openMega);
+    link.addEventListener("mouseleave", () => closeMega());
+  });
+  if (megaMenu) {
+    megaMenu.addEventListener("mouseenter", () => clearTimeout(megaTimer));
+    megaMenu.addEventListener("mouseleave", () => closeMega());
+    window.addEventListener("scroll", () => closeMega(true), { passive: true });
+  }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeMega(true); closeMobile(); } });
+
+  // mobile: inietta hamburger in ogni header pubblico
+  document.querySelectorAll(".view header .ml-auto").forEach(c => {
+    if (c.querySelector(".burger")) return;
+    const b = document.createElement("button");
+    b.className = "burger lg:hidden h-10 w-10 grid place-items-center rounded-xl border border-line bg-surface/70 text-ink hover:border-ink/30 transition";
+    b.setAttribute("aria-label", "Apri menu");
+    b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+    b.addEventListener("click", openMobile);
+    c.appendChild(b);
+  });
+
+  // mobile drawer: chiusura, accordion, clone categorie malte
+  if (mobileNav) {
+    mobileNav.querySelectorAll("[data-mclose]").forEach(x => x.addEventListener("click", closeMobile));
+    const acc = mobileNav.querySelector(".mnav-acc");
+    const accBtn = mobileNav.querySelector(".mnav-acc-btn");
+    if (acc && accBtn) accBtn.addEventListener("click", () => {
+      const open = acc.classList.toggle("open");
+      accBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    const target = document.getElementById("mnavMalte");
+    if (target && megaMenu) {
+      megaMenu.querySelectorAll('.grid a[data-view="prodotti"]').forEach(a => {
+        const link = document.createElement("a");
+        link.href = "#"; link.dataset.view = "prodotti";
+        link.className = "block py-1 text-muted hover:text-red transition";
+        link.textContent = a.textContent;
+        target.appendChild(link);
+      });
+    }
+  }
 
   // ── reveal on scroll ──
   let io;
