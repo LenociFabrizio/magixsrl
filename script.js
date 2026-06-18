@@ -152,5 +152,82 @@
     if (search) search.addEventListener("input", apply);
   }
 
+  // ── admin: panel switching ──
+  const adminTitles = { dashboard: "Dashboard", prodotti: "Prodotti", news: "News", download: "Cataloghi & download" };
+  const adminPanels = [...document.querySelectorAll(".admin-panel")];
+  const apanelLinks = [...document.querySelectorAll(".apanel-link")];
+  function showAdminPanel(name) {
+    if (!adminPanels.length) return;
+    adminPanels.forEach(p => p.classList.toggle("hidden", p.dataset.panel !== name));
+    apanelLinks.forEach(l => {
+      const on = l.dataset.panel === name;
+      l.classList.toggle("bg-white/10", on);
+      l.classList.toggle("text-white", on);
+      l.classList.toggle("font-medium", on);
+      const dot = l.querySelector(".dot");
+      if (dot) { dot.classList.toggle("bg-red", on); dot.classList.toggle("bg-white/20", !on); }
+    });
+    const t = document.getElementById("adminTitle");
+    if (t && adminTitles[name]) t.textContent = adminTitles[name];
+  }
+  document.querySelectorAll("[data-panel]").forEach(el =>
+    el.addEventListener("click", (e) => { e.preventDefault(); showAdminPanel(el.dataset.panel); })
+  );
+
+  // ── admin: dynamic technical-data rows ──
+  const specRows = document.getElementById("specRows");
+  const addSpec = document.getElementById("addSpec");
+  if (addSpec && specRows) {
+    addSpec.addEventListener("click", () => {
+      const row = document.createElement("div");
+      row.className = "spec-row flex gap-2";
+      row.innerHTML = '<input class="adm-in flex-1" placeholder="Caratteristica" /><input class="adm-in flex-1" placeholder="Valore" /><button type="button" class="spec-del h-11 w-11 grid place-items-center rounded-xl border border-line text-faint hover:text-red hover:border-red/40 transition shrink-0" aria-label="Rimuovi riga">✕</button>';
+      specRows.appendChild(row);
+    });
+    specRows.addEventListener("click", (e) => {
+      const del = e.target.closest(".spec-del");
+      if (del && specRows.querySelectorAll(".spec-row").length > 1) del.closest(".spec-row").remove();
+    });
+  }
+
+  // ── admin: image previews ──
+  function bindImgPreview(inputId, previewId) {
+    const input = document.getElementById(inputId), prev = document.getElementById(previewId);
+    if (!input || !prev) return;
+    input.addEventListener("change", () => {
+      const f = input.files[0];
+      if (!f) return;
+      prev.style.backgroundImage = "url(" + URL.createObjectURL(f) + ")";
+      prev.style.backgroundSize = "cover";
+      prev.style.backgroundPosition = "center";
+      prev.classList.remove("mat", "mat-grey", "mat-ochre");
+      prev.innerHTML = "";
+    });
+  }
+  bindImgPreview("p-img", "p-imgPreview");
+  bindImgPreview("n-img", "n-imgPreview");
+
+  // ── admin: download file name ──
+  const fFile = document.getElementById("f-file"), fName = document.getElementById("f-name");
+  if (fFile && fName) fFile.addEventListener("change", () => {
+    fName.textContent = fFile.files[0] ? fFile.files[0].name : "Nessun file selezionato";
+  });
+
+  // ── admin: fake submits (prototype) ──
+  function bindFakeSubmit(formId, msgId, text) {
+    const form = document.getElementById(formId), msg = document.getElementById(msgId);
+    if (!form) return;
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      form.reset();
+      if (fName && formId === "fileForm") fName.textContent = "Nessun file selezionato";
+      if (msg) { msg.textContent = text; msg.classList.remove("hidden"); }
+    });
+  }
+  bindFakeSubmit("productForm", "productMsg", "✓ Prodotto salvato — la scheda è pronta per la pubblicazione.");
+  bindFakeSubmit("newsForm", "newsMsg", "✓ News pubblicata nella sezione News.");
+  bindFakeSubmit("fileForm", "fileMsg", "✓ Documento caricato nell'Area download.");
+
   // ── init ──
   setView("home");

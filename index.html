@@ -548,16 +548,16 @@
         <span class="display font-bold text-white">magix<span class="text-white/40 font-normal text-sm"> / admin</span></span>
       </div>
       <nav class="mt-6 space-y-1 text-sm">
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/10 text-white font-medium" href="#"><span class="w-1.5 h-1.5 rounded-full bg-red"></span> Dashboard</a>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Prodotti (PIM)</a>
+        <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/10 text-white font-medium" href="#" data-panel="dashboard"><span class="dot w-1.5 h-1.5 rounded-full bg-red"></span> Dashboard</a>
+        <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="prodotti"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Prodotti (PIM)</a>
+        <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="news"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> News</a>
+        <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="download"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Cataloghi &amp; download</a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Ordini</a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Preventivi (RFQ)</a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Clienti B2B</a>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Magazzino</a>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Media manager</a>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> SEO &amp; contenuti</a>
         <div class="pt-4 mt-4 border-t border-white/10"></div>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Impostazioni · RBAC</a>
+        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-view="home"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> ← Torna al sito</a>
       </nav>
       <div class="mt-auto bg-white/5 rounded-xl p-3 text-[12px]">
         <div class="mono text-white/40">SISTEMA</div>
@@ -571,8 +571,8 @@
       <div class="glass border-b border-line sticky top-0 z-30">
         <div class="px-6 h-16 flex items-center gap-4">
           <div>
-            <div class="display font-bold text-lg leading-none">Dashboard</div>
-            <div class="mono text-[11px] text-faint mt-1">Aggiornato ora · 29 mag 2026</div>
+            <div id="adminTitle" class="display font-bold text-lg leading-none">Dashboard</div>
+            <div class="mono text-[11px] text-faint mt-1">Aggiornato ora · 18 giu 2026</div>
           </div>
           <div class="ml-auto hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface text-faint text-sm w-72">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -586,7 +586,8 @@
         </div>
       </div>
 
-      <div class="p-6">
+      <!-- panel: dashboard -->
+      <div class="admin-panel p-6" data-panel="dashboard">
         <!-- KPI -->
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
@@ -621,7 +622,7 @@
             <div class="ml-auto flex items-center gap-2">
               <button class="h-9 px-3 rounded-lg border border-line text-sm font-medium hover:border-ink/30 transition flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Filtri</button>
               <button class="h-9 px-3 rounded-lg border border-line text-sm font-medium hover:border-ink/30 transition flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg> Export CSV</button>
-              <button class="h-9 px-3.5 rounded-lg bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Nuovo</button>
+              <button data-panel="prodotti" class="h-9 px-3.5 rounded-lg bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Nuovo</button>
             </div>
           </div>
 
@@ -705,6 +706,226 @@
               <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">2</button>
               <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">3</button>
               <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- panel: prodotti (nuovo prodotto) -->
+      <div class="admin-panel hidden p-6" data-panel="prodotti">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="display font-bold text-xl">Nuovo prodotto</div>
+            <div class="mono text-[11px] text-faint mt-1">Compila i campi e pubblica la scheda visibile sul sito</div>
+          </div>
+          <div class="flex gap-2">
+            <button form="productForm" type="reset" class="h-10 px-4 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Annulla</button>
+            <button form="productForm" type="submit" class="h-10 px-4 rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Salva prodotto</button>
+          </div>
+        </div>
+        <p id="productMsg" class="hidden mt-4 text-bio text-sm font-medium"></p>
+
+        <form id="productForm" class="mt-6 grid lg:grid-cols-3 gap-6" novalidate>
+          <div class="lg:col-span-2 space-y-6">
+            <!-- info generali -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">INFORMAZIONI GENERALI</div>
+              <div class="grid sm:grid-cols-2 gap-4 mt-4">
+                <div><label class="adm-label" for="p-nome">Nome prodotto</label><input id="p-nome" class="adm-in" required placeholder="Es. Binder" /></div>
+                <div>
+                  <label class="adm-label" for="p-cat">Categoria</label>
+                  <select id="p-cat" class="adm-in" required>
+                    <option value="">Seleziona…</option>
+                    <option>Adesivi cementizi</option>
+                    <option>Malte da rasatura</option>
+                    <option>Malte da intonaco</option>
+                    <option>Sistema a cappotto</option>
+                    <option>Linea bio</option>
+                    <option>Cemento sfuso</option>
+                    <option>Massetti</option>
+                    <option>Rivestimenti e idropitture</option>
+                  </select>
+                </div>
+                <div><label class="adm-label" for="p-sku">SKU / Codice</label><input id="p-sku" class="adm-in mono" placeholder="MGX-ADE-0220" /></div>
+                <div><label class="adm-label" for="p-norma">Norma di riferimento</label><input id="p-norma" class="adm-in mono" placeholder="EN 12004" /></div>
+                <div class="sm:col-span-2"><label class="adm-label" for="p-sintesi">Sintesi</label><input id="p-sintesi" class="adm-in" placeholder="Adesivo cementizio normale per interni ed esterni" /></div>
+                <div class="sm:col-span-2"><label class="adm-label" for="p-tag">Tag <span class="text-faint normal-case tracking-normal">(separati da virgola)</span></label><input id="p-tag" class="adm-in" placeholder="Adesivo cementizio, Alta prestazione, Classe C1T, Interni ed esterni" /></div>
+              </div>
+            </div>
+
+            <!-- dati tecnici -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="flex items-center justify-between">
+                <div class="kicker text-red">DATI TECNICI</div>
+                <button id="addSpec" type="button" class="h-9 px-3 rounded-lg border border-line text-sm font-medium hover:border-ink/30 transition flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Aggiungi riga</button>
+              </div>
+              <p class="text-muted text-[13px] mt-1.5">Caratteristica + valore (es. Resa · 1,4 kg/m² · Granulometria · 0–0,6 mm · Confezione · Sacco 25 kg).</p>
+              <div id="specRows" class="mt-4 space-y-2">
+                <div class="spec-row flex gap-2"><input class="adm-in flex-1" placeholder="Caratteristica (es. Resa)" /><input class="adm-in flex-1" placeholder="Valore (es. 1,4 kg/m²)" /><button type="button" class="spec-del h-11 w-11 grid place-items-center rounded-xl border border-line text-faint hover:text-red hover:border-red/40 transition shrink-0" aria-label="Rimuovi riga">✕</button></div>
+                <div class="spec-row flex gap-2"><input class="adm-in flex-1" placeholder="Caratteristica (es. Granulometria)" /><input class="adm-in flex-1" placeholder="Valore (es. 0–0,6 mm)" /><button type="button" class="spec-del h-11 w-11 grid place-items-center rounded-xl border border-line text-faint hover:text-red hover:border-red/40 transition shrink-0" aria-label="Rimuovi riga">✕</button></div>
+                <div class="spec-row flex gap-2"><input class="adm-in flex-1" placeholder="Caratteristica (es. Confezione)" /><input class="adm-in flex-1" placeholder="Valore (es. Sacco 25 kg)" /><button type="button" class="spec-del h-11 w-11 grid place-items-center rounded-xl border border-line text-faint hover:text-red hover:border-red/40 transition shrink-0" aria-label="Rimuovi riga">✕</button></div>
+              </div>
+            </div>
+
+            <!-- descrizione tecnica -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">DESCRIZIONE TECNICA</div>
+              <div class="grid gap-4 mt-4">
+                <div><label class="adm-label" for="p-comp">Composizione</label><textarea id="p-comp" class="adm-in" rows="2" placeholder="Malta secca composta da cemento Portland, inerti silicei ed additivi specifici…"></textarea></div>
+                <div><label class="adm-label" for="p-fondo">Preparazione del fondo</label><textarea id="p-fondo" class="adm-in" rows="2" placeholder="Il supporto deve essere pulito, privo di efflorescenze…"></textarea></div>
+                <div><label class="adm-label" for="p-appl">Applicazione</label><textarea id="p-appl" class="adm-in" rows="2" placeholder="Lavorazione manuale con circa 6,25 litri di acqua per sacco…"></textarea></div>
+                <div><label class="adm-label" for="p-impiego">Impiego</label><textarea id="p-impiego" class="adm-in" rows="2" placeholder="Incollaggio di rivestimenti bicottura, monocottura, cotto, klinker…"></textarea></div>
+                <div class="grid sm:grid-cols-2 gap-4">
+                  <div><label class="adm-label" for="p-conserv">Conservazione</label><textarea id="p-conserv" class="adm-in" rows="2" placeholder="Circa 12 mesi dalla data di produzione, in locali asciutti…"></textarea></div>
+                  <div><label class="adm-label" for="p-qualita">Qualità / Controllo</label><textarea id="p-qualita" class="adm-in" rows="2" placeholder="Controllato secondo la norma europea EN 12004…"></textarea></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- right column -->
+          <div class="space-y-6">
+            <!-- foto -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">FOTO PRODOTTO</div>
+              <label for="p-img" class="mt-4 block cursor-pointer">
+                <div id="p-imgPreview" class="mat mat-grey rounded-xl aspect-[4/3] border border-line grid place-items-center text-center overflow-hidden">
+                  <span class="text-white/90 text-sm font-medium px-4 flex flex-col items-center gap-2">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15l-5-5L5 21"/><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="9" cy="9" r="1.5"/></svg>
+                    Trascina o seleziona un'immagine
+                  </span>
+                </div>
+              </label>
+              <input id="p-img" type="file" accept="image/*" class="hidden" />
+              <p class="mono text-[11px] text-faint mt-2">JPG o PNG · consigliato 1200×900</p>
+            </div>
+
+            <!-- documenti -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">DOCUMENTI (PDF)</div>
+              <div class="space-y-2.5 mt-4">
+                <label class="flex items-center gap-3 h-11 px-3.5 rounded-xl border border-dashed border-line bg-bg/40 cursor-pointer hover:border-ink/30 transition">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red shrink-0" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                  <span class="text-sm">Scheda tecnica (TDS)</span><span class="ml-auto text-[13px] font-semibold text-red">Carica</span>
+                  <input type="file" accept=".pdf" class="hidden" />
+                </label>
+                <label class="flex items-center gap-3 h-11 px-3.5 rounded-xl border border-dashed border-line bg-bg/40 cursor-pointer hover:border-ink/30 transition">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red shrink-0" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                  <span class="text-sm">Scheda sicurezza (SDS)</span><span class="ml-auto text-[13px] font-semibold text-red">Carica</span>
+                  <input type="file" accept=".pdf" class="hidden" />
+                </label>
+                <label class="flex items-center gap-3 h-11 px-3.5 rounded-xl border border-dashed border-line bg-bg/40 cursor-pointer hover:border-ink/30 transition">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red shrink-0" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                  <span class="text-sm">Dichiarazione di prestazione (DoP)</span><span class="ml-auto text-[13px] font-semibold text-red">Carica</span>
+                  <input type="file" accept=".pdf" class="hidden" />
+                </label>
+              </div>
+            </div>
+
+            <!-- pubblicazione -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">PUBBLICAZIONE</div>
+              <div class="grid gap-4 mt-4">
+                <div>
+                  <label class="adm-label" for="p-disp">Disponibilità</label>
+                  <select id="p-disp" class="adm-in"><option>Disponibile · pronta consegna</option><option>Su preventivo</option><option>Esaurito</option></select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="adm-label" for="p-prezzo">Prezzo (€)</label><input id="p-prezzo" class="adm-in mono" placeholder="14,90" /></div>
+                  <div><label class="adm-label" for="p-formato">Formato</label><input id="p-formato" class="adm-in" placeholder="Sacco 25 kg" /></div>
+                </div>
+                <div>
+                  <label class="adm-label" for="p-stato">Stato</label>
+                  <select id="p-stato" class="adm-in"><option>Pubblicato</option><option>Bozza</option></select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- panel: news -->
+      <div class="admin-panel hidden p-6" data-panel="news">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="display font-bold text-xl">Nuova news</div>
+            <div class="mono text-[11px] text-faint mt-1">Pubblica un articolo nella sezione News</div>
+          </div>
+          <div class="flex gap-2">
+            <button form="newsForm" type="reset" class="h-10 px-4 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Annulla</button>
+            <button form="newsForm" type="submit" class="h-10 px-4 rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Pubblica</button>
+          </div>
+        </div>
+        <p id="newsMsg" class="hidden mt-4 text-bio text-sm font-medium"></p>
+
+        <form id="newsForm" class="mt-6 grid lg:grid-cols-3 gap-6" novalidate>
+          <div class="lg:col-span-2 space-y-6">
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6 grid sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2"><label class="adm-label" for="n-titolo">Titolo</label><input id="n-titolo" class="adm-in" required placeholder="Es. Linea KREATIV by Rofix" /></div>
+              <div>
+                <label class="adm-label" for="n-cat">Categoria</label>
+                <select id="n-cat" class="adm-in"><option>News</option><option>Evento</option><option>Prodotti</option><option>Normativa</option><option>Tecnica</option></select>
+              </div>
+              <div><label class="adm-label" for="n-data">Data</label><input id="n-data" type="date" class="adm-in" required /></div>
+              <div class="sm:col-span-2"><label class="adm-label" for="n-estratto">Estratto</label><textarea id="n-estratto" class="adm-in" rows="2" placeholder="Breve anteprima mostrata nella card…"></textarea></div>
+              <div class="sm:col-span-2"><label class="adm-label" for="n-corpo">Contenuto</label><textarea id="n-corpo" class="adm-in" rows="6" placeholder="Testo completo dell'articolo…"></textarea></div>
+            </div>
+          </div>
+          <div class="space-y-6">
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">IMMAGINE DI COPERTINA</div>
+              <label for="n-img" class="mt-4 block cursor-pointer">
+                <div id="n-imgPreview" class="mat mat-ochre rounded-xl aspect-[4/3] border border-line grid place-items-center overflow-hidden">
+                  <span class="text-white/90 text-sm font-medium flex flex-col items-center gap-2"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15l-5-5L5 21"/><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="9" cy="9" r="1.5"/></svg> Seleziona immagine</span>
+                </div>
+              </label>
+              <input id="n-img" type="file" accept="image/*" class="hidden" />
+            </div>
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">STATO</div>
+              <select id="n-stato" class="adm-in mt-4"><option>Pubblicato</option><option>Bozza</option></select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- panel: download -->
+      <div class="admin-panel hidden p-6" data-panel="download">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="display font-bold text-xl">Carica documento</div>
+            <div class="mono text-[11px] text-faint mt-1">Aggiungi un file all'Area download</div>
+          </div>
+          <button form="fileForm" type="submit" class="h-10 px-4 rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> Carica</button>
+        </div>
+        <p id="fileMsg" class="hidden mt-4 text-bio text-sm font-medium"></p>
+
+        <div class="mt-6 grid lg:grid-cols-3 gap-6">
+          <form id="fileForm" class="lg:col-span-1 bg-surface rounded-2xl border border-line shadow-soft p-6 grid gap-4 self-start" novalidate>
+            <div><label class="adm-label" for="f-nome">Nome documento</label><input id="f-nome" class="adm-in" required placeholder="Es. Catalogo Magix 2025" /></div>
+            <div>
+              <label class="adm-label" for="f-cat">Categoria</label>
+              <select id="f-cat" class="adm-in"><option>Company</option><option>Certificazioni</option><option>Schede tecniche</option><option>Listini</option></select>
+            </div>
+            <div>
+              <span class="adm-label">File</span>
+              <label for="f-file" class="flex items-center gap-3 h-11 px-3.5 rounded-xl border border-dashed border-line bg-bg/40 cursor-pointer hover:border-ink/30 transition">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red shrink-0" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4-4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                <span id="f-name" class="text-sm text-muted truncate">Nessun file selezionato</span>
+              </label>
+              <input id="f-file" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" required class="hidden" />
+              <p class="mono text-[11px] text-faint mt-1.5">PDF, DOC, XLS — max 10 MB</p>
+            </div>
+          </form>
+
+          <!-- existing files -->
+          <div class="lg:col-span-2 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden self-start">
+            <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Documenti pubblicati</div><span class="mono text-[12px] text-faint">4 file</span></div>
+            <div class="divide-y divide-linesoft">
+              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-red text-white">PDF</span><span class="font-medium text-sm flex-1">Catalogo Magix 2019</span><span class="mono text-[11px] text-faint">Company</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
+              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-bio text-white">XLSX</span><span class="font-medium text-sm flex-1">Voci di capitolato</span><span class="mono text-[11px] text-faint">Company</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
+              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-red text-white">PDF</span><span class="font-medium text-sm flex-1">Certificato di conformità FPC</span><span class="mono text-[11px] text-faint">Certificazioni</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
+              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-red text-white">PDF</span><span class="font-medium text-sm flex-1">Certificazione CAM</span><span class="mono text-[11px] text-faint">Certificazioni</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
             </div>
           </div>
         </div>
