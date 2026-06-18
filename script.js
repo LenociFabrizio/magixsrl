@@ -1,5 +1,5 @@
   // ── view router ──
-  const views = { home: "view-home", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", product: "view-product", admin: "view-admin" };
+  const views = { home: "view-home", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", product: "view-product", admin: "view-admin" };
   function setView(name) {
     const targetId = views[name] || views.home;
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
@@ -89,6 +89,31 @@
       const msg = document.getElementById("formMsg");
       contactForm.reset();
       msg.textContent = "✓ Richiesta inviata — ti ricontatteremo al più presto.";
+      msg.classList.remove("hidden");
+      msg.classList.add("flex");
+    });
+  }
+
+  // ── job application form ──
+  const jobForm = document.getElementById("jobForm");
+  if (jobForm) {
+    const cvFile = document.getElementById("cv-file");
+    const cvName = document.getElementById("cv-name");
+    if (cvFile) cvFile.addEventListener("change", () => {
+      cvName.textContent = cvFile.files[0] ? cvFile.files[0].name : "Nessun file selezionato";
+    });
+    jobForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = cvFile && cvFile.files[0];
+      if (f) {
+        if (!/\.(doc|docx|pdf)$/i.test(f.name)) { alert("Formati ammessi: .doc, .docx, .pdf"); return; }
+        if (f.size > 1024 * 1024) { alert("Il curriculum supera 1 MB."); return; }
+      }
+      if (!jobForm.checkValidity()) { jobForm.reportValidity(); return; }
+      const msg = document.getElementById("jobFormMsg");
+      jobForm.reset();
+      if (cvName) cvName.textContent = "Nessun file selezionato";
+      msg.textContent = "✓ Candidatura inviata — ti ricontatteremo se il profilo è in linea.";
       msg.classList.remove("hidden");
       msg.classList.add("flex");
     });
