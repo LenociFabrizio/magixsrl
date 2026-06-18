@@ -62,7 +62,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
-        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
@@ -98,7 +98,7 @@
 
         <!-- cta -->
         <div class="rise mt-8 flex flex-wrap items-center gap-3" style="animation-delay:.28s">
-          <a href="#" data-view="product" class="h-12 px-6 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2">
+          <a href="#" data-view="prodotti" class="h-12 px-6 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2">
             Scopri i prodotti
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg>
           </a>
@@ -376,6 +376,173 @@
   </footer>
 </section>
 
+<!-- ═══════════════════════ VIEW: PRODOTTI (catalogo) ═══════════════════════ -->
+<section id="view-prodotti" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center shrink-0">
+        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+      </a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
+        <a class="underline-grow" href="#" data-view="news">News</a>
+        <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="relative overflow-hidden border-b border-line bg-surface">
+    <div class="absolute inset-0 grid-bg opacity-[.5]"></div>
+    <div class="relative max-w-7xl mx-auto px-5 pt-14 pb-12">
+      <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s"><span class="w-6 h-px bg-red"></span> PRODOTTI</div>
+      <h1 class="rise display font-extrabold text-[clamp(2.4rem,5vw,3.8rem)] leading-[1] mt-4" style="animation-delay:.12s">I nostri prodotti.</h1>
+      <p class="rise text-[17px] text-inksoft/90 leading-relaxed mt-4 max-w-2xl" style="animation-delay:.2s">Due grandi famiglie a copertura di tutte le esigenze del settore edile: scegli la linea e scopri le categorie.</p>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-5 py-14">
+    <!-- big category switch -->
+    <div class="grid sm:grid-cols-2 gap-4">
+      <button class="cat-tab group relative rounded-2xl overflow-hidden border-2 border-red h-36 text-left transition" data-cat="malte">
+        <div class="mat mat-grey absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-graphite/90 via-graphite/40 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-end p-6 text-white">
+          <h2 class="display font-bold text-2xl">Malte</h2>
+          <span class="text-white/70 text-sm mt-0.5">18 categorie</span>
+        </div>
+      </button>
+      <button class="cat-tab group relative rounded-2xl overflow-hidden border-2 border-transparent h-36 text-left transition" data-cat="rivestimenti">
+        <div class="mat mat-ochre absolute inset-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-graphite/90 via-graphite/40 to-transparent"></div>
+        <div class="relative h-full flex flex-col justify-end p-6 text-white">
+          <h2 class="display font-bold text-2xl">Rivestimenti e idropitture</h2>
+          <span class="text-white/70 text-sm mt-0.5">finiture e protezione</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- panel: malte -->
+    <div class="cat-panel mt-12" data-cat="malte">
+      <div class="reveal max-w-3xl">
+        <div class="kicker text-red flex items-center gap-2"><span>◢</span> LE NOSTRE MALTE</div>
+        <h2 class="display font-extrabold text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight mt-3">Qualità in ogni formula.</h2>
+        <p class="text-inksoft mt-4 leading-relaxed">Caratteristica strutturale dei prodotti Magix è la qualità. Ogni malta prodotta è ricca, indipendentemente dalla formula, e può essere fornita sia in sacchi che sfusa — in silo, trasportata e pompata sui piani.</p>
+        <p class="text-muted mt-3 leading-relaxed">La gamma dei prodotti e delle malte Magix è ampissima e copre tutte le esigenze del settore edile.</p>
+      </div>
+
+      <!-- search -->
+      <div class="reveal mt-8 max-w-md">
+        <div class="bg-surface rounded-2xl shadow-soft border border-line p-1.5 flex items-center gap-2">
+          <div class="pl-3 text-faint"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></div>
+          <input id="malteSearch" class="flex-1 bg-transparent outline-none text-[15px] py-2.5 placeholder:text-faint" placeholder="Cerca una categoria di malta…" aria-label="Cerca categoria" />
+        </div>
+      </div>
+
+      <!-- subcategory grid -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-8">
+        <a href="#" data-view="product" data-name="adesivi cementizi" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-grey h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Adesivi cementizi</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="linea bio" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-bio h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug flex items-center gap-2">Linea bio <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">ECO</span></h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da intonaco" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-white h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da intonaco</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte rapide" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-ochre h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte rapide</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da ripristino" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-grey h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da ripristino</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malta antincendio" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-red h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malta antincendio</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="legante premiscelato" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-anthr h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Legante premiscelato</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da massetto" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-white h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da massetto</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da rasatura" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-grey h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da rasatura</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="sistema a cappotto" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-ochre h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Sistema a cappotto</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malta impermeabilizzante" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-anthr h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malta impermeabilizzante</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="linea deumidificanti" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-bio h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Linea deumidificanti</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da muratura" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-grey h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da muratura</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="primer monocomponente" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-white h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Primer monocomponente</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="ciclo calcestruzzo autoclavato" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-anthr h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Ciclo calcestruzzo autoclavato</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da finitura" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-ochre h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da finitura</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da muratura facciavista" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-grey h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da muratura facciavista</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+        <a href="#" data-view="product" data-name="malte da rinzaffo" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20"><div class="mat mat-white h-28"></div><div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">Malte da rinzaffo</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div></a>
+      </div>
+      <p id="malteEmpty" class="hidden text-center text-muted mt-10">Nessuna categoria corrisponde alla ricerca.</p>
+    </div>
+
+    <!-- panel: rivestimenti -->
+    <div class="cat-panel hidden mt-12" data-cat="rivestimenti">
+      <div class="reveal max-w-3xl">
+        <div class="kicker text-red flex items-center gap-2"><span>◢</span> RIVESTIMENTI E IDROPITTURE</div>
+        <h2 class="display font-extrabold text-[clamp(1.8rem,3.5vw,2.6rem)] leading-tight mt-3">Finiture e protezione.</h2>
+        <p class="text-inksoft mt-4 leading-relaxed">Idropitture, rivestimenti murali e finiture decorative per la protezione e l'estetica delle superfici, interne ed esterne.</p>
+      </div>
+      <div class="reveal mt-8 rounded-3xl border border-line bg-bg2 p-10 lg:p-14 text-center">
+        <span class="w-14 h-14 rounded-2xl bg-surface border border-line text-red grid place-items-center mx-auto"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2M9 7h6M15 13l6 6m0-6-6 6"/></svg></span>
+        <h3 class="display font-bold text-2xl mt-5">Catalogo in aggiornamento.</h3>
+        <p class="text-muted mt-2 max-w-lg mx-auto leading-relaxed">Stiamo completando le categorie di questa linea. Contattaci per ricevere la gamma completa di rivestimenti e idropitture.</p>
+        <a href="#" data-view="contatti" class="mt-6 inline-flex h-12 px-6 items-center gap-2 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft">Contattaci <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="download">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="lavora">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
+</section>
+
 <!-- ═══════════════════════ VIEW: PRODUCT ═══════════════════════ -->
 <section id="view-product" class="view">
 
@@ -397,7 +564,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
-      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow text-red" href="#" data-view="product">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
       <div class="ml-auto flex items-center gap-2">
         <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
       </div>
@@ -556,10 +723,10 @@
       <div>
         <div class="kicker text-white/40">PRODOTTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
-          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
         </ul>
       </div>
       <div>
@@ -985,7 +1152,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
-        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow text-red" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
@@ -1449,7 +1616,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
-        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow text-red" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
@@ -1578,10 +1745,10 @@
       <div>
         <div class="kicker text-white/40">PRODOTTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
-          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
         </ul>
       </div>
       <div>
@@ -1636,7 +1803,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
-        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow text-red" href="#" data-view="contatti">Contatti</a>
@@ -1779,10 +1946,10 @@
       <div>
         <div class="kicker text-white/40">PRODOTTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
-          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
         </ul>
       </div>
       <div>
@@ -1837,7 +2004,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
-        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
@@ -2015,10 +2182,10 @@
       <div>
         <div class="kicker text-white/40">PRODOTTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
-          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
         </ul>
       </div>
       <div>
@@ -2073,7 +2240,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
-        <a class="underline-grow" href="#" data-view="product">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
@@ -2180,10 +2347,10 @@
       <div>
         <div class="kicker text-white/40">PRODOTTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
-          <li><a class="hover:text-white transition" href="#" data-view="product">Malte</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
-          <li><a class="hover:text-white transition" href="#" data-view="product">Linea bio</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
         </ul>
       </div>
       <div>

@@ -1,5 +1,5 @@
   // ── view router ──
-  const views = { home: "view-home", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", product: "view-product", admin: "view-admin" };
+  const views = { home: "view-home", prodotti: "view-prodotti", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", product: "view-product", admin: "view-admin" };
   function setView(name) {
     const targetId = views[name] || views.home;
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
@@ -230,6 +230,33 @@
   bindFakeSubmit("productForm", "productMsg", "✓ Prodotto salvato — la scheda è pronta per la pubblicazione.");
   bindFakeSubmit("newsForm", "newsMsg", "✓ News pubblicata nella sezione News.");
   bindFakeSubmit("fileForm", "fileMsg", "✓ Documento caricato nell'Area download.");
+
+  // ── prodotti: category tabs + malte search ──
+  const catTabs = [...document.querySelectorAll(".cat-tab")];
+  const catPanels = [...document.querySelectorAll(".cat-panel")];
+  if (catTabs.length) {
+    catTabs.forEach(tab => tab.addEventListener("click", () => {
+      const cat = tab.dataset.cat;
+      catPanels.forEach(p => p.classList.toggle("hidden", p.dataset.cat !== cat));
+      catTabs.forEach(t => {
+        const on = t === tab;
+        t.classList.toggle("border-red", on);
+        t.classList.toggle("border-transparent", !on);
+      });
+      runReveal();
+    }));
+  }
+  const malteSearch = document.getElementById("malteSearch");
+  if (malteSearch) {
+    const cards = [...document.querySelectorAll(".subcat-card")];
+    const empty = document.getElementById("malteEmpty");
+    malteSearch.addEventListener("input", () => {
+      const q = malteSearch.value.trim().toLowerCase();
+      let shown = 0;
+      cards.forEach(c => { const ok = !q || c.dataset.name.includes(q); c.classList.toggle("hidden", !ok); if (ok) shown++; });
+      if (empty) empty.classList.toggle("hidden", shown !== 0);
+    });
+  }
 
   // ── init ──
   setView("home");
