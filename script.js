@@ -18,7 +18,8 @@
     if (!megaMenu) return;
     clearTimeout(megaTimer);
     const hdr = document.querySelector(".view.active header");
-    if (hdr) megaMenu.style.top = Math.max(0, hdr.getBoundingClientRect().bottom) + "px";
+    // -12px: il padding-top del pannello fa da "ponte" sul gap header→menu (così l'hover non si interrompe)
+    if (hdr) megaMenu.style.top = Math.max(0, hdr.getBoundingClientRect().bottom - 12) + "px";
     megaMenu.classList.remove("hidden");
     requestAnimationFrame(() => megaMenu.classList.add("open"));
   }
@@ -26,7 +27,7 @@
     if (!megaMenu) return;
     megaMenu.classList.remove("open");
     clearTimeout(megaTimer);
-    megaTimer = setTimeout(() => megaMenu.classList.add("hidden"), now ? 0 : 160);
+    megaTimer = setTimeout(() => megaMenu.classList.add("hidden"), now ? 0 : 240);
   }
   function openMobile() { if (mobileNav) { mobileNav.classList.remove("hidden"); requestAnimationFrame(() => mobileNav.classList.add("open")); } }
   function closeMobile() { if (mobileNav) { mobileNav.classList.remove("open"); setTimeout(() => mobileNav.classList.add("hidden"), 300); } }
