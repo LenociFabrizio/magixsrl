@@ -538,6 +538,64 @@
 </section>
 
 <!-- ═══════════════════════ VIEW: PRODUCT ═══════════════════════ -->
+<!-- ═══════════════════════ VIEW: CATALOGO CATEGORIA ═══════════════════════ -->
+<section id="view-catalog" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="relative overflow-hidden border-b border-line bg-surface">
+    <div class="absolute inset-0 grid-bg opacity-[.5]"></div>
+    <div class="relative max-w-7xl mx-auto px-5 pt-10 pb-9">
+      <div class="mono text-[12px] text-faint flex items-center gap-2">
+        <a href="#" data-view="prodotti" class="hover:text-ink">Prodotti</a><span>/</span><span class="text-ink" id="catCrumb">Categoria</span>
+      </div>
+      <div class="kicker text-red flex items-center gap-2 mt-4"><span class="w-6 h-px bg-red"></span> CATEGORIA</div>
+      <h1 id="catTitle" class="display font-extrabold text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] mt-3">Categoria</h1>
+      <p id="catIntro" class="text-[16px] text-inksoft/90 leading-relaxed mt-4 max-w-2xl"></p>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-5 py-12">
+    <div id="catalogGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="catalogExtra" class="mt-12"></div>
+  </section>
+
+  <footer class="bg-graphite text-white/70 mt-8">
+    <div class="max-w-7xl mx-auto px-5 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+      <a href="#" data-view="contatti" class="h-11 px-5 inline-flex items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Richiedi informazioni o preventivo</a>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 text-[12.5px] text-white/40">2026 © Magix S.r.l. — P.IVA 08805080721</div>
+    </div>
+  </footer>
+</section>
+
+<!-- ═══════════════════════ VIEW: SCHEDA PRODOTTO ═══════════════════════ -->
 <section id="view-product" class="view">
 
   <!-- top bar -->
@@ -567,7 +625,7 @@
 
   <div class="max-w-7xl mx-auto px-5 pt-6">
     <div class="mono text-[12px] text-faint flex items-center gap-2">
-      <a href="#" data-view="prodotti" class="hover:text-ink">Prodotti</a><span>/</span><a href="#" data-view="prodotti" id="pCrumbCat" class="hover:text-ink">Malte da rasatura</a><span>/</span><span class="text-ink">Rasante MGX Fine</span>
+      <a href="#" data-view="prodotti" class="hover:text-ink">Prodotti</a><span>/</span><a href="#" data-view="catalog" id="pCrumbCat" class="hover:text-ink">Malte da rasatura</a><span>/</span><span class="text-ink" id="pCrumbName">Rasante MGX Fine</span>
     </div>
   </div>
 
@@ -575,7 +633,7 @@
     <!-- gallery -->
     <div>
       <div class="mat mat-grey rounded-3xl aspect-[4/3] shadow-soft border border-line relative" id="mainSwatch">
-        <span class="absolute top-4 left-4 mono text-[11px] bg-white/90 backdrop-blur px-2.5 py-1 rounded-md">CE · EN 998-1 · GP CSIV</span>
+        <span class="absolute top-4 left-4 mono text-[11px] bg-white/90 backdrop-blur px-2.5 py-1 rounded-md" id="pNormaChip">CE · EN 998-1 · GP CSIV</span>
         <button class="absolute bottom-4 right-4 h-10 px-3 rounded-lg glass border border-line text-sm font-medium flex items-center gap-2"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-3-3"/><path d="M11 8v6M8 11h6"/></svg> Zoom</button>
       </div>
       <div class="grid grid-cols-4 gap-3 mt-3">
@@ -590,11 +648,12 @@
     <div class="mt-10 lg:mt-0">
       <div class="flex items-center gap-2">
         <span class="text-[11px] font-semibold text-white bg-graphite rounded px-2 py-1">MAGIX MALTE</span>
-        <span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2.5 py-1 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-bio"></span> Disponibile · pronta consegna</span>
+        <span id="pAvail" class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2.5 py-1 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-bio"></span> Disponibile · pronta consegna</span>
+        <span id="pCam" class="hidden text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2.5 py-1">CAM · Criteri Ambientali Minimi</span>
       </div>
-      <h1 class="display font-extrabold text-[clamp(2rem,4vw,2.8rem)] leading-tight mt-4">Rasante MGX Fine</h1>
-      <p class="text-inksoft mt-3 text-[16px] leading-relaxed max-w-lg">Rasante cementizio a grana fine per la finitura liscia di intonaci, cappotti e supporti minerali, interni ed esterni. Alta lavorabilità e adesione.</p>
-      <div class="mono text-[12px] text-faint mt-3">SKU · MGX-RAS-0125</div>
+      <h1 id="pName" class="display font-extrabold text-[clamp(2rem,4vw,2.8rem)] leading-tight mt-4">Rasante MGX Fine</h1>
+      <p id="pDesc" class="text-inksoft mt-3 text-[16px] leading-relaxed max-w-lg">Rasante cementizio a grana fine per la finitura liscia di intonaci, cappotti e supporti minerali, interni ed esterni. Alta lavorabilità e adesione.</p>
+      <div id="pSku" class="mono text-[12px] text-faint mt-3">SKU · MGX-RAS-0125</div>
 
       <!-- variant selector -->
       <div class="mt-7">
@@ -650,7 +709,7 @@
       <h2 class="display font-bold text-2xl mt-2 mb-5">Specifiche</h2>
       <div class="bg-surface rounded-2xl border border-line shadow-soft overflow-hidden">
         <table class="w-full text-sm">
-          <tbody class="divide-y divide-linesoft">
+          <tbody class="divide-y divide-linesoft" id="pSpecBody">
             <tr><td class="px-5 py-3.5 text-muted w-1/2">Norma di riferimento</td><td class="px-5 py-3.5 mono font-medium text-right">EN 998-1 GP CSIV W1</td></tr>
             <tr class="bg-bg/40"><td class="px-5 py-3.5 text-muted">Resa indicativa</td><td class="px-5 py-3.5 mono font-medium text-right">1,4 kg/m² per mm</td></tr>
             <tr><td class="px-5 py-3.5 text-muted">Granulometria</td><td class="px-5 py-3.5 mono font-medium text-right">0 – 0,6 mm</td></tr>
@@ -661,6 +720,9 @@
           </tbody>
         </table>
       </div>
+
+      <!-- sezioni descrittive (popolate da JS: composizione, impiego, applicazione, avvertenze) -->
+      <div id="pSections" class="mt-8 space-y-6"></div>
     </div>
 
     <!-- documents -->
@@ -2780,6 +2842,7 @@
   </span>
 </a>
 
+<script src="catalog-data.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

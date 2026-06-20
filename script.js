@@ -1,5 +1,10 @@
   // ── view router ──
-  const views = { home: "view-home", prodotti: "view-prodotti", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", product: "view-product", privacy: "view-privacy", cookie: "view-cookie", admin: "view-admin" };
+  const views = { home: "view-home", prodotti: "view-prodotti", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", catalog: "view-catalog", product: "view-product", privacy: "view-privacy", cookie: "view-cookie", admin: "view-admin" };
+  // ── catalogo prodotti (dati da catalog-data.js) ──
+  const CATALOG = window.MAGIX_CATALOG || {};
+  const CINDEX = window.MAGIX_CATALOG_INDEX || {};
+  let currentCatKey = null; // categoria attualmente mostrata (per breadcrumb "indietro")
+
   function setView(name) {
     const targetId = views[name] || views.home;
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
@@ -15,7 +20,7 @@
   function highlightNav(name) {
     const nav = document.querySelector(".view.active header nav");
     if (!nav) return;
-    const key = name === "product" ? "prodotti" : name;
+    const key = (name === "product" || name === "catalog") ? "prodotti" : name;
     nav.querySelectorAll("a[data-view]").forEach(a => a.classList.toggle("text-red", a.dataset.view === key));
   }
 
@@ -56,11 +61,27 @@
     const el = e.target.closest("[data-view]");
     if (!el) return;
     e.preventDefault();
-    if (el.dataset.view === "product") {
-      const cat = el.dataset.name || (el.classList.contains("mega-cat") ? el.textContent : "");
-      if (cat) setProductCategory(cat.trim());
+    let targetView = el.dataset.view;
+
+    // prodotto specifico (card elenco categoria o "spesso ordinati insieme")
+    if (targetView === "product" && el.dataset.prod) {
+      if (renderProduct(el.dataset.prod.trim())) { setView("product"); closeMega(true); closeMobile(); return; }
     }
-    setView(el.dataset.view);
+
+    // categoria: card subcat / voce mega menu. Se la categoria ha prodotti a catalogo
+    // mostro l'elenco (view-catalog), altrimenti mantengo il vecchio comportamento.
+    if (targetView === "product" || targetView === "catalog") {
+      const cat = (el.dataset.name || (el.classList.contains("mega-cat") ? el.textContent : "") || "").trim();
+      if (cat && CATALOG && CATALOG[cat.toLowerCase()]) {
+        renderCatalog(cat.toLowerCase());
+        setView("catalog"); closeMega(true); closeMobile(); return;
+      }
+      // fallback: categoria non ancora popolata → vecchia scheda mockup
+      if (cat) setProductCategory(cat);
+      targetView = "product";
+    }
+
+    setView(targetView);
     closeMega(true); closeMobile();
   });
 
@@ -71,6 +92,159 @@
     const crumb = document.getElementById("pCrumbCat");
     if (crumb) crumb.textContent = label;
   }
+
+  // ── helpers catalogo ──
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const skuOf = (code) => "MGX-" + String(code).toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  function setSeo(title, description) {
+    if (title) document.title = title;
+    if (description != null) {
+      let m = document.querySelector('meta[name="description"]');
+      if (!m) { m = document.createElement("meta"); m.setAttribute("name", "description"); document.head.appendChild(m); }
+      m.setAttribute("content", description);
+    }
+  }
+
+  function setProductJsonLd(p) {
+    let s = document.getElementById("pJsonLd");
+    if (!s) { s = document.createElement("script"); s.type = "application/ld+json"; s.id = "pJsonLd"; document.head.appendChild(s); }
+    s.textContent = JSON.stringify({
+      "@context": "https://schema.org", "@type": "Product",
+      name: "Magix " + p.name, sku: skuOf(p.code), brand: { "@type": "Brand", name: "Magix" },
+      category: (CINDEX[p.code] && CINDEX[p.code].catKey) || undefined,
+      description: (p.seo && p.seo.description) || p.subtitle || ""
+    });
+  }
+
+  // elenco prodotti di una categoria (view-catalog)
+  function renderCatalog(catKey) {
+    const cat = CATALOG[catKey];
+    if (!cat) return false;
+    currentCatKey = catKey;
+    const title = document.getElementById("catTitle");
+    const crumb = document.getElementById("catCrumb");
+    const intro = document.getElementById("catIntro");
+    const grid = document.getElementById("catalogGrid");
+    const extra = document.getElementById("catalogExtra");
+    if (title) title.textContent = cat.label;
+    if (crumb) crumb.textContent = cat.label;
+    if (intro) intro.textContent = cat.intro || "";
+    setSeo((cat.seo && cat.seo.title) || (cat.label + " | Magix"), cat.seo && cat.seo.description);
+
+    if (grid) {
+      grid.innerHTML = (cat.products || []).map(p => {
+        const badge = p.cam
+          ? '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">CAM</span>'
+          : (p.availability === "order"
+            ? '<span class="text-[10px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">su ordinazione</span>'
+            : '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">disponibile</span>');
+        return '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">'
+          + '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>'
+          + '<div class="p-5 flex-1 flex flex-col">'
+          + '<div class="flex items-center justify-between gap-2"><span class="mono text-[12px] text-faint">' + esc(p.code) + '</span>' + badge + '</div>'
+          + '<h3 class="display font-bold text-lg leading-snug mt-1.5">' + esc(p.name) + '</h3>'
+          + '<p class="text-muted text-sm mt-1.5 leading-relaxed flex-1">' + esc(p.subtitle) + '</p>'
+          + '<div class="flex items-center justify-between mt-4"><span class="mono text-[10px] bg-bg2 border border-line rounded px-2 py-1">' + esc(p.norma || "") + '</span>'
+          + '<span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div>'
+          + '</div></a>';
+      }).join("");
+    }
+
+    // blocco extra di categoria (es. tabella consumi muratura)
+    if (extra) {
+      if (cat.consumi) {
+        const c = cat.consumi;
+        extra.innerHTML = '<div class="kicker text-red flex items-center gap-2"><span>◢</span> ' + esc(c.title.toUpperCase()) + '</div>'
+          + '<h2 class="display font-bold text-2xl mt-2 mb-5">' + esc(c.title) + '</h2>'
+          + '<div class="bg-surface rounded-2xl border border-line shadow-soft overflow-hidden overflow-x-auto"><table class="w-full text-sm"><thead><tr class="bg-bg2 text-left">'
+          + c.head.map(h => '<th class="px-5 py-3 font-semibold">' + esc(h) + '</th>').join("")
+          + '</tr></thead><tbody class="divide-y divide-linesoft">'
+          + c.rows.map((r, i) => '<tr' + (i % 2 ? ' class="bg-bg/40"' : '') + '>' + r.map((cell, j) => '<td class="px-5 py-3 ' + (j ? 'mono text-right' : 'font-medium') + '">' + esc(cell) + '</td>').join("") + '</tr>').join("")
+          + '</tbody></table></div>';
+      } else {
+        extra.innerHTML = "";
+      }
+    }
+    runReveal();
+    return true;
+  }
+
+  // scheda tecnica prodotto (view-product, template esistente popolato da dati)
+  function renderProduct(code) {
+    const entry = CINDEX[code];
+    if (!entry) return false;
+    const p = entry.product;
+    const cat = CATALOG[entry.catKey];
+    currentCatKey = entry.catKey;
+
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set("pName", "Magix " + p.name);
+    set("pCrumbName", p.name);
+    set("pDesc", p.subtitle || "");
+    set("pSku", "SKU · " + skuOf(p.code));
+    set("pNormaChip", p.norma ? ("CE · " + p.norma) : "CE");
+
+    // breadcrumb categoria → torna all'elenco categoria
+    const crumbCat = document.getElementById("pCrumbCat");
+    if (crumbCat) { crumbCat.textContent = cat ? cat.label : ""; crumbCat.dataset.name = entry.catKey; }
+
+    // swatch colore coerente col prodotto
+    const swatch = document.getElementById("mainSwatch");
+    if (swatch) swatch.className = "mat " + (p.mat || "mat-grey") + " rounded-3xl aspect-[4/3] shadow-soft border border-line relative";
+
+    // badge disponibilità + CAM
+    const avail = document.getElementById("pAvail");
+    if (avail) {
+      if (p.availability === "order") {
+        avail.className = "text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2.5 py-1 flex items-center gap-1.5";
+        avail.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-faint"></span> Disponibile su ordinazione';
+      } else {
+        avail.className = "text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2.5 py-1 flex items-center gap-1.5";
+        avail.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-bio"></span> Disponibile · pronta consegna';
+      }
+    }
+    const camBadge = document.getElementById("pCam");
+    if (camBadge) camBadge.classList.toggle("hidden", !p.cam);
+
+    // tabella scheda tecnica
+    const body = document.getElementById("pSpecBody");
+    if (body && p.spec) {
+      const rows = [["Norma di riferimento", p.norma || "—"]].concat(Object.keys(p.spec).map(k => [k, p.spec[k]]));
+      body.innerHTML = rows.map(([k, v], i) =>
+        '<tr' + (i % 2 ? ' class="bg-bg/40"' : '') + '><td class="px-5 py-3.5 text-muted w-1/2">' + esc(k) + '</td><td class="px-5 py-3.5 mono font-medium text-right">' + esc(v) + '</td></tr>'
+      ).join("");
+    }
+
+    // sezioni descrittive
+    const sections = document.getElementById("pSections");
+    if (sections) {
+      const block = (label, txt) => txt ? '<div><div class="kicker text-faint">' + esc(label) + '</div><p class="text-inksoft mt-2 leading-relaxed">' + esc(txt) + '</p></div>' : "";
+      let html = "";
+      html += block("Composizione", p.composizione);
+      html += block("Impiego", p.impiego);
+      html += block("Applicazione e lavorazione", p.applicazione);
+      if (p.fornitura && p.fornitura.length) {
+        html += '<div><div class="kicker text-faint">Fornitura</div><ul class="mt-2 space-y-1.5 text-inksoft">' + p.fornitura.map(f => '<li class="flex gap-2"><span class="text-red">•</span><span>' + esc(f) + '</span></li>').join("") + '</ul></div>';
+      }
+      if (p.cam_note) html += block("CAM — Criteri Ambientali Minimi", p.cam_note);
+      if (p.conservazione_note) html += block("Conservazione", p.conservazione_note);
+      if (p.avvertenze && p.avvertenze.length) {
+        html += '<div class="bg-bg2 border border-line rounded-2xl p-5"><div class="kicker text-red">Avvertenze</div><ul class="mt-2 space-y-1.5 text-inksoft text-sm">' + p.avvertenze.map(a => '<li class="flex gap-2"><span class="text-red">•</span><span>' + esc(a) + '</span></li>').join("") + '</ul></div>';
+      }
+      html += '<p class="text-[11px] text-faint leading-relaxed">' + esc(window.MAGIX_CATALOG_DISCLAIMER || "") + '</p>';
+      sections.innerHTML = html;
+    }
+
+    setSeo((p.seo && p.seo.title) || ("Magix " + p.name), p.seo && p.seo.description);
+    setProductJsonLd(p);
+    runReveal();
+    return true;
+  }
+
+  // espongo per debug/uso esterno
+  window.renderCatalog = renderCatalog;
+  window.renderProduct = renderProduct;
 
   // desktop: chevron su "Prodotti" + mega menu su hover/focus
   document.querySelectorAll('.view header nav a[data-view="prodotti"]').forEach(link => {
