@@ -25,9 +25,19 @@
   }
   function closeMega(now) {
     if (!megaMenu) return;
-    megaMenu.classList.remove("open");
     clearTimeout(megaTimer);
-    megaTimer = setTimeout(() => megaMenu.classList.add("hidden"), now ? 0 : 240);
+    if (now) {
+      megaMenu.classList.remove("open");
+      megaMenu.classList.add("hidden");
+      return;
+    }
+    // Chiusura ritardata: .open (e quindi pointer-events:auto) resta attivo durante
+    // il periodo di grazia, così il puntatore può transitare verso il pannello e
+    // riaprirlo. La .open viene tolta solo allo scadere del timer.
+    megaTimer = setTimeout(() => {
+      megaMenu.classList.remove("open");
+      megaTimer = setTimeout(() => megaMenu.classList.add("hidden"), 200);
+    }, 200);
   }
   function openMobile() { if (mobileNav) { mobileNav.classList.remove("hidden"); requestAnimationFrame(() => mobileNav.classList.add("open")); } }
   function closeMobile() { if (mobileNav) { mobileNav.classList.remove("open"); setTimeout(() => mobileNav.classList.add("hidden"), 300); } }
@@ -51,7 +61,8 @@
     link.addEventListener("mouseleave", () => closeMega());
   });
   if (megaMenu) {
-    megaMenu.addEventListener("mouseenter", () => clearTimeout(megaTimer));
+    // openMega è idempotente: annulla la chiusura e riporta .open se era in fase di fade-out
+    megaMenu.addEventListener("mouseenter", openMega);
     megaMenu.addEventListener("mouseleave", () => closeMega());
     window.addEventListener("scroll", () => closeMega(true), { passive: true });
   }
