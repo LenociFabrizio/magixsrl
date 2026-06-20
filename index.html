@@ -46,7 +46,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
@@ -62,13 +62,14 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
       </nav>
       <div class="ml-auto flex items-center gap-2">
-        <button class="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface/70 text-muted text-sm hover:border-ink/30 transition w-64">
+        <button type="button" data-search class="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface/70 text-muted text-sm hover:border-ink/30 transition w-64">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
           <span>Cerca prodotti, classi EN…</span>
           <kbd class="mono ml-auto text-[10px] text-faint border border-line rounded px-1.5 py-0.5">⌘K</kbd>
@@ -152,10 +153,10 @@
       <div class="reveal relative order-last lg:order-first mt-10 lg:mt-0">
         <div class="absolute -inset-3 rounded-[28px] bg-gradient-to-tr from-graphite/5 to-transparent blur-xl"></div>
         <div class="relative grid grid-cols-3 gap-3">
-          <div class="mat mat-grey rounded-2xl h-40"></div>
-          <div class="mat mat-anthr rounded-2xl h-40 translate-y-6"></div>
-          <div class="mat mat-ochre rounded-2xl h-40"></div>
-          <div class="mat mat-bio rounded-2xl h-28 col-span-2"></div>
+          <img src="img/cantiere_magix_1.jpg" alt="Cantiere Magix" loading="lazy" class="rounded-2xl h-40 w-full object-cover border border-line shadow-soft" />
+          <img src="img/MAGIX_STORIA.jpg" alt="La storia di Magix" loading="lazy" class="rounded-2xl h-40 w-full object-cover border border-line shadow-soft translate-y-6" />
+          <img src="img/sacchi_magix.jpg" alt="Sacchi di malta Magix" loading="lazy" class="rounded-2xl h-40 w-full object-cover border border-line shadow-soft" />
+          <img src="img/sacchi_magix_2.jpg" alt="Produzione e confezionamento Magix" loading="lazy" class="rounded-2xl h-28 w-full object-cover border border-line shadow-soft col-span-2" />
           <div class="bg-graphite text-white rounded-2xl h-28 grid place-items-center text-center relative overflow-hidden">
             <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
             <div class="relative"><div class="display font-extrabold text-2xl">30+</div><div class="kicker text-white/50 mt-1">ANNI</div></div>
@@ -196,12 +197,12 @@
         <div class="kicker text-red flex items-center gap-2"><span>◢</span> 02 — CATALOGO</div>
         <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">La gamma, organizzata<br>come cerchi tu.</h2>
       </div>
-      <a href="#" class="hidden sm:flex items-center gap-2 text-sm font-semibold underline-grow">Tutte le 18 categorie →</a>
+      <a href="#" data-view="prodotti" class="hidden sm:flex items-center gap-2 text-sm font-semibold underline-grow">Tutte le 18 categorie →</a>
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
       <!-- cat card -->
-      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+      <a href="#" data-view="prodotti" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
         <div class="flex items-start justify-between">
           <span class="mono text-[12px] text-faint">01</span>
           <span class="mat mat-grey w-12 h-12 rounded-xl"></span>
@@ -213,31 +214,31 @@
           <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
         </div>
       </a>
-      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+      <a href="#" data-view="prodotti" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
         <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">02</span><span class="mat mat-white w-12 h-12 rounded-xl"></span></div>
         <h3 class="display font-bold text-xl mt-5">Sistema a cappotto</h3>
         <p class="text-muted text-sm mt-1.5">Cicli ETICS completi: collanti, rasanti, primer.</p>
         <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">9 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+      <a href="#" data-view="prodotti" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
         <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">03</span><span class="mat mat-ochre w-12 h-12 rounded-xl"></span></div>
         <h3 class="display font-bold text-xl mt-5">Adesivi cementizi</h3>
         <p class="text-muted text-sm mt-1.5">C1/C2 per ceramica, gres e grandi formati.</p>
         <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">11 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+      <a href="#" data-view="prodotti" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
         <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">04</span><span class="mat mat-bio w-12 h-12 rounded-xl"></span></div>
         <h3 class="display font-bold text-xl mt-5 flex items-center gap-2">Linea bio <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">ECO</span></h3>
         <p class="text-muted text-sm mt-1.5">Leganti naturali a base calce, alta traspirabilità.</p>
         <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">7 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+      <a href="#" data-view="prodotti" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
         <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">05</span><span class="mat mat-red w-12 h-12 rounded-xl"></span></div>
         <h3 class="display font-bold text-xl mt-5">Malte rapide</h3>
         <p class="text-muted text-sm mt-1.5">Presa e indurimento veloci per fissaggi e ripristini.</p>
         <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">6 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-6 hover:shadow-lift relative overflow-hidden">
+      <a href="#" data-view="cemento" class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-6 hover:shadow-lift relative overflow-hidden">
         <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
         <div class="relative">
           <div class="flex items-start justify-between"><span class="mono text-[12px] text-white/40">06</span><span class="mat mat-anthr w-12 h-12 rounded-xl border border-white/10"></span></div>
@@ -362,7 +363,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -370,7 +371,7 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
@@ -385,7 +386,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
@@ -401,7 +402,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
-        <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
@@ -522,7 +523,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -530,7 +531,7 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
@@ -545,7 +546,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
@@ -557,7 +558,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
-      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
       <div class="ml-auto flex items-center gap-2">
         <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
       </div>
@@ -566,7 +567,7 @@
 
   <div class="max-w-7xl mx-auto px-5 pt-6">
     <div class="mono text-[12px] text-faint flex items-center gap-2">
-      <a href="#" class="hover:text-ink">Prodotti</a><span>/</span><a href="#" class="hover:text-ink">Malte da rasatura</a><span>/</span><span class="text-ink">Rasante MGX Fine</span>
+      <a href="#" data-view="prodotti" class="hover:text-ink">Prodotti</a><span>/</span><a href="#" data-view="prodotti" id="pCrumbCat" class="hover:text-ink">Malte da rasatura</a><span>/</span><span class="text-ink">Rasante MGX Fine</span>
     </div>
   </div>
 
@@ -619,10 +620,9 @@
             <div class="display font-extrabold text-3xl mt-1" id="pPrice">€ 14,90</div>
             <div class="text-[12.5px] text-bio mt-1 font-medium" id="pTier">↳ Listino "Impresa": <span class="font-bold">€ 13,40</span> (accedi)</div>
           </div>
-          <div class="flex items-center border border-line rounded-xl">
-            <button class="qty-btn w-10 h-11 text-lg text-muted hover:text-ink" data-d="-1">−</button>
-            <span id="qty" class="w-10 text-center font-semibold mono">1</span>
-            <button class="qty-btn w-10 h-11 text-lg text-muted hover:text-ink" data-d="1">+</button>
+          <div class="text-right">
+            <div class="mono text-[11px] text-faint">ACQUISTO</div>
+            <div class="text-[12.5px] text-muted mt-1 max-w-[150px] leading-snug">Vendita non online:<br>contattaci per l'ordine</div>
           </div>
         </div>
         <div class="flex gap-3 mt-5">
@@ -735,7 +735,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -743,7 +743,7 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
@@ -1129,7 +1129,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
@@ -1145,13 +1145,14 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow text-red" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
         <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
       </nav>
       <div class="ml-auto flex items-center gap-2">
-        <button class="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface/70 text-muted text-sm hover:border-ink/30 transition w-64">
+        <button type="button" data-search class="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface/70 text-muted text-sm hover:border-ink/30 transition w-64">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
           <span>Cerca prodotti, classi EN…</span>
           <kbd class="mono ml-auto text-[10px] text-faint border border-line rounded px-1.5 py-0.5">⌘K</kbd>
@@ -1536,7 +1537,7 @@
             Contatta il commerciale
           </a>
         </div>
-        <div class="mono text-[12.5px] text-white/70 mt-6">(+39) 080.325.17.69 · Gravina in Puglia (BA)</div>
+        <div class="mono text-[12.5px] text-white/70 mt-6">080.325.17.69 · Gravina in Puglia (BA)</div>
       </div>
     </div>
   </section>
@@ -1570,7 +1571,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -1578,7 +1579,7 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
@@ -1593,7 +1594,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
@@ -1609,6 +1610,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow text-red" href="#" data-view="news">News</a>
@@ -1757,7 +1759,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -1765,7 +1767,7 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
@@ -1780,7 +1782,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
@@ -1796,6 +1798,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
@@ -1871,7 +1874,7 @@
         </div>
         <div class="sm:col-span-2 flex items-start gap-2.5">
           <input id="c-privacy" name="privacy" type="checkbox" required class="accent-red w-4 h-4 mt-0.5" />
-          <label for="c-privacy" class="text-[13px] text-muted leading-relaxed">Ho letto e accetto i <a href="#" class="text-red underline-grow">Termini e l'informativa privacy</a>.</label>
+          <label for="c-privacy" class="text-[13px] text-muted leading-relaxed">Ho letto e accetto l'<a href="#" data-view="privacy" class="text-red underline-grow">informativa privacy</a>.</label>
         </div>
         <div class="sm:col-span-2 flex items-center gap-4">
           <button type="submit" class="h-12 px-7 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2">
@@ -1904,7 +1907,7 @@
           </li>
           <li class="flex items-start gap-3">
             <span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></span>
-            <a href="tel:+390803251769" class="mono hover:text-ink transition">(+39) 080.325.17.69<br>(+39) 080.325.11.06</a>
+            <a href="tel:+390803251769" class="mono hover:text-ink transition">080.325.17.69<br>080.325.11.06</a>
           </li>
           <li class="flex items-start gap-3">
             <span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center shrink-0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></span>
@@ -1958,7 +1961,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -1966,7 +1969,7 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
@@ -1981,7 +1984,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
@@ -1997,6 +2000,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
@@ -2194,7 +2198,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -2202,7 +2206,7 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
@@ -2217,7 +2221,7 @@
       <div class="flex items-center gap-4">
         <span class="mono">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
-        <a href="#" class="hidden sm:inline hover:text-white transition">(+39) 080.325.17.69</a>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
         <a href="#" data-view="download" class="text-white transition">Area download</a>
@@ -2233,6 +2237,7 @@
         <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
         <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
         <a class="underline-grow" href="#" data-view="news">News</a>
@@ -2359,7 +2364,7 @@
         <div class="kicker text-white/40">CONTATTI</div>
         <ul class="mt-4 space-y-2.5 text-sm">
           <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
-          <li><a class="hover:text-white transition mono" href="#">(+39) 080.325.17.69</a></li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
           <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
         </ul>
       </div>
@@ -2367,11 +2372,323 @@
     <div class="border-t border-white/10">
       <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
         <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
-        <span class="mono">Privacy · Cookie Policy · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
       </div>
     </div>
   </footer>
 </section>
+
+<!-- ═══════════════════════ VIEW: PRIVACY POLICY ═══════════════════════ -->
+<section id="view-privacy" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
+        <a class="underline-grow" href="#" data-view="news">News</a>
+        <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="relative overflow-hidden border-b border-line bg-surface">
+    <div class="absolute inset-0 grid-bg opacity-[.5]"></div>
+    <div class="relative max-w-3xl mx-auto px-5 pt-14 pb-12">
+      <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s"><span class="w-6 h-px bg-red"></span> INFORMATIVA PRIVACY</div>
+      <h1 class="rise display font-extrabold text-[clamp(2.2rem,5vw,3.4rem)] leading-[1.02] mt-4" style="animation-delay:.12s">Privacy policy.</h1>
+      <p class="rise text-[16px] text-inksoft/90 leading-relaxed mt-4" style="animation-delay:.2s">Informativa resa ai sensi degli artt. 13 e 14 del Regolamento UE 2016/679 (GDPR) e del D.Lgs. 196/2003 come modificato dal D.Lgs. 101/2018.</p>
+      <div class="mono text-[12px] text-faint mt-4">Ultimo aggiornamento: giugno 2026</div>
+    </div>
+  </section>
+
+  <!-- legal body -->
+  <section class="max-w-3xl mx-auto px-5 py-14 leading-relaxed text-inksoft">
+    <div class="space-y-10">
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">1. Titolare del trattamento</h2>
+        <p class="text-muted mt-3">Il Titolare del trattamento dei dati è <span class="font-semibold text-ink">Magix S.r.l.</span>, con sede in Zona PIP Via Sette SNC, 70024 Gravina in Puglia (BA) — P.IVA 08805080721.</p>
+        <p class="text-muted mt-2">Per qualsiasi richiesta relativa al trattamento dei dati è possibile scrivere a <a href="mailto:magixmalte@gmail.com" class="text-red underline-grow">magixmalte@gmail.com</a> o telefonare al <span class="mono">080.325.17.69</span>.</p>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">2. Tipologie di dati trattati</h2>
+        <ul class="mt-3 space-y-2 text-muted list-disc pl-5">
+          <li><span class="font-medium text-ink">Dati di contatto</span> conferiti tramite i moduli del sito (nome, cognome, email, telefono) e contenuto delle richieste.</li>
+          <li><span class="font-medium text-ink">Dati curriculari</span> conferiti tramite il modulo "Lavora con noi" (CV e lettera di presentazione).</li>
+          <li><span class="font-medium text-ink">Dati di navigazione</span> e cookie tecnici, secondo quanto descritto nella <a href="#" data-view="cookie" class="text-red underline-grow">Cookie Policy</a>.</li>
+        </ul>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">3. Finalità e base giuridica</h2>
+        <p class="text-muted mt-3">I dati sono trattati per le seguenti finalità:</p>
+        <ul class="mt-3 space-y-2 text-muted list-disc pl-5">
+          <li>rispondere alle richieste di informazioni, preventivi e assistenza (esecuzione di misure precontrattuali — art. 6.1.b GDPR);</li>
+          <li>gestire le candidature ricevute (consenso dell'interessato — art. 6.1.a GDPR);</li>
+          <li>adempiere a obblighi di legge, contabili e fiscali (art. 6.1.c GDPR).</li>
+        </ul>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">4. Modalità e periodo di conservazione</h2>
+        <p class="text-muted mt-3">Il trattamento è effettuato con strumenti informatici e/o cartacei, con logiche strettamente correlate alle finalità indicate e adottando misure di sicurezza adeguate. I dati sono conservati per il tempo necessario a soddisfare la richiesta e, ove previsto, per gli obblighi di legge; i dati curriculari sono conservati per un massimo di 24 mesi salvo diversa indicazione dell'interessato.</p>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">5. Comunicazione e diffusione</h2>
+        <p class="text-muted mt-3">I dati non sono oggetto di diffusione. Possono essere comunicati a soggetti che svolgono attività strumentali per il Titolare (es. fornitori di servizi IT, consulenti, professionisti) nominati, ove necessario, Responsabili del trattamento. Non è previsto alcun trasferimento di dati al di fuori dell'Unione Europea.</p>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">6. Diritti dell'interessato</h2>
+        <p class="text-muted mt-3">L'interessato può in ogni momento esercitare i diritti previsti dagli artt. 15-22 del GDPR: accesso, rettifica, cancellazione, limitazione, portabilità, opposizione al trattamento e revoca del consenso. Le richieste vanno inoltrate a <a href="mailto:magixmalte@gmail.com" class="text-red underline-grow">magixmalte@gmail.com</a>.</p>
+        <p class="text-muted mt-2">L'interessato ha inoltre diritto di proporre reclamo all'Autorità di controllo (Garante per la protezione dei dati personali — <span class="mono">www.garanteprivacy.it</span>).</p>
+      </div>
+
+      <div class="reveal rounded-2xl border border-line bg-bg2 p-6">
+        <p class="text-muted text-sm">Hai domande sul trattamento dei tuoi dati? <a href="#" data-view="contatti" class="text-red font-semibold underline-grow">Contattaci</a> e ti risponderemo al più presto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="download">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="lavora">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<!-- ═══════════════════════ VIEW: COOKIE POLICY ═══════════════════════ -->
+<section id="view-cookie" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
+        <a class="underline-grow" href="#" data-view="home">Home</a>
+        <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
+        <a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a>
+        <a class="underline-grow" href="#" data-view="news">News</a>
+        <a class="underline-grow" href="#" data-view="contatti">Contatti</a>
+      </nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="relative overflow-hidden border-b border-line bg-surface">
+    <div class="absolute inset-0 grid-bg opacity-[.5]"></div>
+    <div class="relative max-w-3xl mx-auto px-5 pt-14 pb-12">
+      <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s"><span class="w-6 h-px bg-red"></span> COOKIE POLICY</div>
+      <h1 class="rise display font-extrabold text-[clamp(2.2rem,5vw,3.4rem)] leading-[1.02] mt-4" style="animation-delay:.12s">Cookie policy.</h1>
+      <p class="rise text-[16px] text-inksoft/90 leading-relaxed mt-4" style="animation-delay:.2s">Informativa sull'uso dei cookie ai sensi del Provvedimento del Garante per la protezione dei dati personali del 10 giugno 2021 e della Direttiva ePrivacy 2002/58/CE.</p>
+      <div class="mono text-[12px] text-faint mt-4">Ultimo aggiornamento: giugno 2026</div>
+    </div>
+  </section>
+
+  <!-- legal body -->
+  <section class="max-w-3xl mx-auto px-5 py-14 leading-relaxed text-inksoft">
+    <div class="space-y-10">
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">Cosa sono i cookie</h2>
+        <p class="text-muted mt-3">I cookie sono piccoli file di testo che i siti visitati inviano al dispositivo dell'utente, dove vengono memorizzati per essere ritrasmessi agli stessi siti alla visita successiva. Si distinguono in cookie <span class="font-medium text-ink">tecnici</span> (necessari al funzionamento) e cookie di <span class="font-medium text-ink">profilazione</span> (volti a creare profili dell'utente).</p>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">Cookie utilizzati da questo sito</h2>
+        <p class="text-muted mt-3">Questo sito utilizza esclusivamente <span class="font-medium text-ink">cookie tecnici</span>, necessari alla corretta navigazione, per i quali non è richiesto il consenso preventivo dell'utente. Non vengono utilizzati cookie di profilazione propri.</p>
+        <div class="mt-5 overflow-x-auto bg-surface rounded-2xl border border-line shadow-soft">
+          <table class="w-full text-sm min-w-[480px]">
+            <thead class="bg-bg/50 text-faint kicker">
+              <tr>
+                <th class="px-4 py-3 text-left font-normal">COOKIE</th>
+                <th class="px-4 py-3 text-left font-normal">TIPOLOGIA</th>
+                <th class="px-4 py-3 text-left font-normal">FINALITÀ</th>
+                <th class="px-4 py-3 text-left font-normal">DURATA</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-linesoft">
+              <tr><td class="px-4 py-3 mono text-[12px]">tecnici di sessione</td><td class="px-4 py-3 text-muted">Tecnico</td><td class="px-4 py-3 text-muted">Funzionamento e navigazione del sito</td><td class="px-4 py-3 text-muted">Sessione</td></tr>
+              <tr class="bg-bg/40"><td class="px-4 py-3 mono text-[12px]">Google Maps</td><td class="px-4 py-3 text-muted">Terza parte</td><td class="px-4 py-3 text-muted">Visualizzazione della mappa nella pagina Contatti</td><td class="px-4 py-3 text-muted">Secondo Google</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">Cookie di terze parti</h2>
+        <p class="text-muted mt-3">Nella pagina Contatti è incorporata la mappa di <span class="font-medium text-ink">Google Maps</span>, che può installare cookie propri al caricamento. Tali cookie sono gestiti direttamente da Google secondo la relativa informativa, consultabile su <span class="mono">policies.google.com/technologies/cookies</span>.</p>
+      </div>
+
+      <div class="reveal">
+        <h2 class="display font-bold text-xl text-ink">Gestione e disattivazione dei cookie</h2>
+        <p class="text-muted mt-3">L'utente può gestire le preferenze relative ai cookie direttamente dalle impostazioni del proprio browser, disabilitandone in tutto o in parte l'utilizzo. Si segnala che la disabilitazione dei cookie tecnici potrebbe compromettere la corretta fruizione del sito. Le istruzioni sono disponibili nelle pagine di supporto dei principali browser (Chrome, Firefox, Safari, Edge).</p>
+      </div>
+
+      <div class="reveal rounded-2xl border border-line bg-bg2 p-6">
+        <p class="text-muted text-sm">Per maggiori informazioni sul trattamento dei dati personali, consulta la nostra <a href="#" data-view="privacy" class="text-red font-semibold underline-grow">Privacy Policy</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <footer class="bg-graphite text-white/70">
+    <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
+      <div class="md:col-span-1">
+        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
+      </div>
+      <div>
+        <div class="kicker text-white/40">PRODOTTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Malte</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Rivestimenti e idropitture</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="cemento">Cemento sfuso</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="prodotti">Linea bio</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">AZIENDA</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a class="hover:text-white transition" href="#" data-view="home">Chi siamo</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="download">Area download</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="news">News</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="lavora">Lavora con noi</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="kicker text-white/40">CONTATTI</div>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>Zona PIP Via Sette SNC<br>70024 Gravina in Puglia (BA)</li>
+          <li><a class="hover:text-white transition mono" href="#">080.325.17.69</a></li>
+          <li><a class="hover:text-white transition" href="#" data-view="contatti">magixmalte@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[12.5px] text-white/40">
+        <span>2026 © Magix S.r.l. — P.IVA 08805080721</span>
+        <span class="mono"><a href="#" data-view="privacy" class="hover:text-white/70 transition">Privacy</a> · <a href="#" data-view="cookie" class="hover:text-white/70 transition">Cookie Policy</a> · <a href="#" data-view="admin" class="hover:text-white/70 transition">Area riservata</a></span>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<!-- ░░ search overlay (global) ░░ -->
+<div id="searchOverlay" class="hidden fixed inset-0 z-[70]">
+  <div class="absolute inset-0 bg-graphite/50 backdrop-blur-sm" data-search-close></div>
+  <div class="relative max-w-xl mx-auto mt-[12vh] px-4">
+    <div class="bg-surface rounded-2xl shadow-glass border border-line overflow-hidden">
+      <div class="flex items-center gap-3 px-4 border-b border-line">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-faint shrink-0" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="searchInput" class="flex-1 bg-transparent outline-none text-[16px] py-4 placeholder:text-faint" placeholder="Cerca prodotti, categorie, pagine…" aria-label="Cerca nel sito" />
+        <button data-search-close class="h-7 px-2 grid place-items-center rounded-md border border-line text-faint mono text-[11px] hover:border-ink/30 transition">ESC</button>
+      </div>
+      <div id="searchResults" class="max-h-[55vh] overflow-y-auto p-2"></div>
+      <div class="px-4 py-2.5 border-t border-line bg-bg/40 mono text-[11px] text-faint">Il sito è una vetrina: per ordinare un prodotto contatta Magix.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ░░ article reader overlay (news) ░░ -->
+<div id="articleOverlay" class="hidden fixed inset-0 z-[70]">
+  <div class="absolute inset-0 bg-graphite/55 backdrop-blur-sm" data-article-close></div>
+  <div class="relative max-w-2xl mx-auto mt-[8vh] px-4 pb-[8vh]">
+    <article class="bg-surface rounded-3xl shadow-glass border border-line overflow-hidden max-h-[84vh] flex flex-col">
+      <div id="articleCover" class="mat mat-ochre h-44 relative shrink-0">
+        <button data-article-close class="absolute top-4 right-4 h-9 w-9 grid place-items-center rounded-full glass border border-line text-ink hover:border-ink/30 transition" aria-label="Chiudi articolo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="p-7 lg:p-9 overflow-y-auto">
+        <div class="flex items-center gap-3 mono text-[12px] text-faint">
+          <span id="articleCat" class="text-red font-semibold">NEWS</span><span>·</span><span id="articleDate">—</span>
+        </div>
+        <h2 id="articleTitle" class="display font-extrabold text-[clamp(1.6rem,3vw,2.3rem)] leading-tight mt-3">Titolo</h2>
+        <div id="articleBody" class="mt-5 space-y-4 text-inksoft leading-relaxed"></div>
+        <div class="mt-8 pt-6 border-t border-linesoft flex flex-wrap items-center gap-3">
+          <a href="#" data-view="contatti" data-article-close class="h-11 px-5 rounded-xl bg-redcta text-white font-semibold text-sm hover:bg-reddeep transition shadow-soft flex items-center gap-2">Richiedi informazioni</a>
+          <button data-article-close class="h-11 px-5 rounded-xl border border-line bg-surface font-semibold text-sm hover:border-ink/30 transition">Chiudi</button>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
 
 <!-- ░░ mega menu prodotti (desktop) ░░ -->
 <div id="megaMenu" class="hidden fixed left-0 right-0 z-[45] px-5 pt-3" aria-label="Categorie prodotti">
@@ -2383,24 +2700,24 @@
           <span class="text-[10px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2 py-0.5">18 categorie</span>
         </div>
         <div id="megaMalteLinks" class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-0.5 mt-4 text-[13.5px]">
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Adesivi cementizi</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Linea bio</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da intonaco</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte rapide</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da ripristino</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malta antincendio</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Legante premiscelato</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da massetto</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da rasatura</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Sistema a cappotto</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malta impermeabilizzante</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Linea deumidificanti</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da muratura</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Primer monocomponente</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Ciclo calcestruzzo autoclavato</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da finitura</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da muratura facciavista</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Malte da rinzaffo</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Adesivi cementizi</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Linea bio</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da intonaco</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte rapide</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da ripristino</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malta antincendio</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Legante premiscelato</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da massetto</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da rasatura</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Sistema a cappotto</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malta impermeabilizzante</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Linea deumidificanti</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da muratura</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Primer monocomponente</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Ciclo calcestruzzo autoclavato</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da finitura</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da muratura facciavista</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da rinzaffo</a>
         </div>
         <a href="#" data-view="prodotti" class="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-red underline-grow">Tutte le categorie →</a>
       </div>
@@ -2410,9 +2727,9 @@
           <span class="text-[10px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2 py-0.5">3</span>
         </div>
         <div id="megaRivLinks" class="grid gap-0.5 mt-4 text-[13.5px]">
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Rivestimenti</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Idropitture</a>
-          <a href="#" data-view="prodotti" class="text-inksoft hover:text-red transition py-1">Rivestimenti per esterni</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Rivestimenti</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Idropitture</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Rivestimenti per esterni</a>
         </div>
         <a href="#" data-view="contatti" class="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-red underline-grow">Contattaci →</a>
       </div>

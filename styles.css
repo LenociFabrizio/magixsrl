@@ -92,6 +92,17 @@
   #megaMenu { opacity:0; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease; pointer-events:none; }
   #megaMenu.open { opacity:1; transform:none; pointer-events:auto; }
 
+  /* overlay panels (search + article reader) */
+  #searchOverlay:not(.hidden), #articleOverlay:not(.hidden) { animation: fade .2s ease both; }
+  #searchOverlay:not(.hidden) > div:last-child,
+  #articleOverlay:not(.hidden) > div:last-child { animation: rise .35s cubic-bezier(.2,.7,.2,1) both; }
+  body.ov-lock { overflow: hidden; }
+
+  /* search result row */
+  .sr-item { display:flex; align-items:center; gap:.75rem; padding:.7rem .8rem; border-radius:.75rem; cursor:pointer; transition:background .15s; }
+  .sr-item:hover, .sr-item.active { background:#ECE8E1; }
+  .sr-ico { width:2.25rem; height:2.25rem; border-radius:.6rem; display:grid; place-items:center; flex-shrink:0; }
+
   @media (prefers-reduced-motion: reduce) {
     .drawer-panel, .mnav-acc-body, #megaMenu { transition: none; }
   }
