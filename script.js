@@ -341,6 +341,104 @@
     els.forEach(el => io.observe(el));
   }
 
+  // ── prodotti "in evidenza" (home): selezione casuale + rotazione animata ──
+  const FEAT_COUNT = 4;
+  const FEAT_INTERVAL = 3600;   // ms tra una rotazione e l'altra
+  let featCards = [];           // <a> attualmente in griglia
+  let featShown = [];           // codici attualmente mostrati (per evitare doppioni)
+  let featTimer = null;
+
+  function featuredPool() {
+    return Object.keys(CINDEX).map(c => CINDEX[c]).filter(e => e && e.product && e.product.code);
+  }
+
+  function featuredCardInner(entry) {
+    const p = entry.product;
+    const cat = CATALOG[entry.catKey] || {};
+    const badge = p.cam
+      ? '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">CAM</span>'
+      : (p.availability === "order"
+        ? '<span class="text-[10px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">su ordinazione</span>'
+        : '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">disponibile</span>');
+    const media = p.img
+      ? '<div class="h-44 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img src="' + encodeURI(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-3"></div>'
+      : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-44 relative"><span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">' + (p.norma ? "CE" : "MGX") + '</span></div>';
+    return media
+      + '<div class="p-5 flex-1 flex flex-col">'
+      + '<div class="kicker text-faint">' + esc(String(cat.label || "Prodotti").toUpperCase()) + '</div>'
+      + '<h3 class="display font-bold text-lg mt-1.5 leading-snug">' + esc(p.name) + '</h3>'
+      + '<p class="text-muted text-sm mt-1.5 leading-relaxed flex-1">' + esc(p.subtitle || "") + '</p>'
+      + '<div class="flex items-center justify-between mt-4 pt-4 border-t border-linesoft">'
+      + '<span class="mono text-[10px] bg-bg2 border border-line rounded px-2 py-1">' + esc(p.norma || "Scheda tecnica") + '</span>'
+      + '<span class="text-red font-semibold inline-flex items-center gap-1">' + badge + '<span class="group-hover:translate-x-1 transition">→</span></span>'
+      + '</div></div>';
+  }
+
+  function fillFeatCard(a, entry) {
+    a.href = "#";
+    a.dataset.view = "product";
+    a.dataset.prod = entry.product.code;
+    a.innerHTML = featuredCardInner(entry);
+  }
+
+  function pickFeatured(exclude) {
+    const pool = featuredPool().filter(e => exclude.indexOf(e.product.code) === -1);
+    if (!pool.length) return null;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function renderFeatured() {
+    const grid = document.getElementById("featuredGrid");
+    if (!grid) return;
+    const pool = featuredPool();
+    if (!pool.length) return; // nessun catalogo → mantiene le card statiche di fallback
+
+    // mescola e prendi i primi N senza ripetizioni
+    const bag = pool.slice();
+    for (let i = bag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = bag[i]; bag[i] = bag[j]; bag[j] = t;
+    }
+    const n = Math.min(FEAT_COUNT, bag.length);
+    grid.innerHTML = "";
+    featCards = [];
+    featShown = [];
+    for (let i = 0; i < n; i++) {
+      const a = document.createElement("a");
+      a.className = "feat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col cursor-pointer";
+      a.style.transitionDelay = (i * 70) + "ms";
+      fillFeatCard(a, bag[i]);
+      grid.appendChild(a);
+      featCards.push(a);
+      featShown.push(bag[i].product.code);
+    }
+    runReveal();
+    startFeaturedCycle();
+  }
+
+  function startFeaturedCycle() {
+    if (featTimer) { clearInterval(featTimer); featTimer = null; }
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;                                   // niente rotazione con motion ridotto
+    if (featuredPool().length <= featCards.length) return; // nient'altro da mostrare
+    featTimer = setInterval(() => {
+      const home = document.getElementById("view-home");
+      if (!home || !home.classList.contains("active") || document.hidden) return; // pausa fuori dalla home
+      const slot = Math.floor(Math.random() * featCards.length);
+      const next = pickFeatured(featShown);
+      if (!next) return;
+      const a = featCards[slot];
+      a.style.transitionDelay = "0ms";
+      a.classList.add("feat-out");
+      setTimeout(() => {
+        fillFeatCard(a, next);
+        featShown[slot] = next.product.code;
+        a.classList.add("in");                            // resta visibile (entrata già avvenuta)
+        requestAnimationFrame(() => a.classList.remove("feat-out"));
+      }, 430);
+    }, FEAT_INTERVAL);
+  }
+
   // ── faq accordion ──
   document.querySelectorAll(".faq-q").forEach(q => q.addEventListener("click", () => {
     const item = q.closest(".faq-item");
@@ -1681,6 +1779,7 @@
         applyCatalog(cat.value);
         injectNewCategoryCards();
         populateProductCatSelect();
+        renderFeatured();
         if (currentCatKey && CATALOG[currentCatKey]) renderCatalog(currentCatKey);
       }
       if (news.status === "fulfilled" && Array.isArray(news.value)) { NEWS = news.value; renderNews(); }
@@ -1691,3 +1790,4 @@
 
   // ── init ──
   setView("home");
+  renderFeatured();

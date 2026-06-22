@@ -50,6 +50,10 @@
     .rise { animation:none; }
   }
 
+  /* prodotti in evidenza (home): entrata via .reveal, rotazione via .feat-out */
+  .feat-card.feat-out { opacity: 0 !important; transform: translateY(-12px) scale(.985) !important; transition: opacity .42s cubic-bezier(.4,0,.2,1), transform .42s cubic-bezier(.4,0,.2,1) !important; }
+  @media (prefers-reduced-motion: reduce) { .feat-card, .feat-card.feat-out { transition: none !important; transform: none !important; } }
+
   .view { display: none; }
   .view.active { display: block; animation: fade .45s ease both; }
   @keyframes fade { from{opacity:0; transform: translateY(8px);} to{opacity:1; transform:none;} }

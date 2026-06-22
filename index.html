@@ -264,7 +264,9 @@
         </div>
       </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
+      <!-- popolata dinamicamente con prodotti casuali (renderFeatured in script.js).
+           Le card statiche qui sotto restano come fallback se il catalogo non è disponibile. -->
+      <div id="featuredGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
         <!-- product card -->
         <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
           <div class="mat mat-grey h-44 relative">
