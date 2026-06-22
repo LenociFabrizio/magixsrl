@@ -1,5 +1,5 @@
   // ── view router ──
-  const views = { home: "view-home", prodotti: "view-prodotti", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", catalog: "view-catalog", product: "view-product", privacy: "view-privacy", cookie: "view-cookie", admin: "view-admin" };
+  const views = { home: "view-home", prodotti: "view-prodotti", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", catalog: "view-catalog", product: "view-product", preferiti: "view-preferiti", privacy: "view-privacy", cookie: "view-cookie", admin: "view-admin" };
   // ── catalogo prodotti (dati da catalog-data.js) ──
   const CATALOG = window.MAGIX_CATALOG || {};
   const CINDEX = window.MAGIX_CATALOG_INDEX || {};
@@ -8,10 +8,13 @@
 
   function setView(name) {
     const targetId = views[name] || views.home;
+    if (name === "preferiti") renderFavorites();
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
     document.getElementById(targetId).classList.add("active");
     const fab = document.getElementById("waFab");
     if (fab) fab.classList.toggle("hidden", targetId === "view-admin");
+    const favFab = document.getElementById("favFab");
+    if (favFab) favFab.classList.toggle("hidden", targetId === "view-admin" || targetId === "view-preferiti");
     highlightNav(name);
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     runReveal();
@@ -423,7 +426,70 @@
   if (favBtn) favBtn.addEventListener("click", () => {
     if (!currentProductCode) return;
     paintFav(favBtn, toggleFav(currentProductCode));
+    updateFavCount();
+    renderFavorites();
   });
+
+  // contatore sul pulsante flottante (badge rosso)
+  function updateFavCount() {
+    const n = getFavs().length;
+    const badge = document.getElementById("favFabCount");
+    if (!badge) return;
+    badge.textContent = n;
+    badge.classList.toggle("hidden", n === 0);
+  }
+
+  // pagina "I tuoi preferiti": card prodotto + pulsante rimuovi
+  function renderFavorites() {
+    const grid = document.getElementById("favGrid");
+    const empty = document.getElementById("favEmpty");
+    const pageCount = document.getElementById("favPageCount");
+    if (!grid) return;
+    const items = getFavs().map(code => CINDEX[code]).filter(Boolean);
+    if (empty) empty.classList.toggle("hidden", items.length > 0);
+    grid.classList.toggle("hidden", items.length === 0);
+    if (pageCount) pageCount.textContent = items.length ? ("(" + items.length + (items.length === 1 ? " prodotto)" : " prodotti)")) : "";
+    grid.innerHTML = items.map(({ catKey, product: p }) => {
+      const cat = CATALOG[catKey] || {};
+      const badge = p.cam
+        ? '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">CAM</span>'
+        : (p.availability === "order"
+          ? '<span class="text-[10px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">su ordinazione</span>'
+          : '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">disponibile</span>');
+      const media = p.img
+        ? '<div class="h-32 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img src="' + encodeURI(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-2"></div>'
+        : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>';
+      return '<div class="relative reveal">'
+        + '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="subcat-card lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col h-full">'
+        + media
+        + '<div class="p-5 flex-1 flex flex-col">'
+        + '<div class="flex items-center justify-between gap-2"><span class="mono text-[12px] text-faint">' + esc(p.code) + '</span>' + badge + '</div>'
+        + '<h3 class="display font-bold text-lg leading-snug mt-1.5">' + esc(p.name) + '</h3>'
+        + '<p class="text-muted text-sm mt-1.5 leading-relaxed flex-1">' + esc(p.subtitle) + '</p>'
+        + '<div class="flex items-center justify-between mt-4"><span class="mono text-[10px] bg-bg2 border border-line rounded px-2 py-1">' + esc(p.norma || "") + '</span>'
+        + '<span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div>'
+        + '</div></a>'
+        + '<button type="button" data-fav-remove="' + esc(p.code) + '" title="Rimuovi dai preferiti" aria-label="Rimuovi dai preferiti" class="absolute top-3 right-3 h-9 w-9 grid place-items-center rounded-full bg-white/95 border border-line text-red shadow-soft hover:bg-red hover:text-white transition"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>'
+        + '</div>';
+    }).join("");
+    runReveal();
+  }
+
+  // rimozione dalla pagina preferiti (delegato)
+  document.addEventListener("click", (e) => {
+    const rm = e.target.closest("[data-fav-remove]");
+    if (!rm) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const code = rm.getAttribute("data-fav-remove");
+    const a = getFavs(); const i = a.indexOf(code);
+    if (i !== -1) { a.splice(i, 1); setFavs(a); }
+    if (currentProductCode === code) paintFav(document.getElementById("favBtn"), false);
+    updateFavCount();
+    renderFavorites();
+  });
+
+  updateFavCount();
 
   // ── prodotti: barra famiglie con stato attivo (click + scrollspy) ──
   (function () {

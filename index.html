@@ -602,6 +602,70 @@
   </footer>
 </section>
 
+<!-- ═══════════════════════ VIEW: PREFERITI ═══════════════════════ -->
+<section id="view-preferiti" class="view">
+
+  <!-- top bar -->
+  <div class="bg-graphite text-white/70 text-[12.5px]">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <span class="mono">📍 Gravina in Puglia (BA)</span>
+        <span class="hidden sm:inline text-white/30">|</span>
+        <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 glass border-b border-line">
+    <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- page header -->
+  <section class="relative overflow-hidden border-b border-line bg-surface">
+    <div class="absolute inset-0 grid-bg opacity-[.5]"></div>
+    <div class="relative max-w-7xl mx-auto px-5 pt-10 pb-9">
+      <div class="mono text-[12px] text-faint flex items-center gap-2">
+        <a href="#" data-view="prodotti" class="hover:text-ink">Prodotti</a><span>/</span><span class="text-ink">Preferiti</span>
+      </div>
+      <div class="kicker text-red flex items-center gap-2 mt-4"><span class="w-6 h-px bg-red"></span> PREFERITI</div>
+      <h1 class="display font-extrabold text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.05] mt-3">I tuoi preferiti</h1>
+      <p class="text-[16px] text-inksoft/90 leading-relaxed mt-4 max-w-2xl">I prodotti che hai salvato toccando il cuore. <span id="favPageCount" class="text-faint"></span></p>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto px-5 py-12">
+    <div id="favGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="favEmpty" class="text-center py-16 hidden">
+      <div class="mx-auto w-16 h-16 rounded-full bg-bg2 border border-line grid place-items-center text-faint mb-5">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+      </div>
+      <h2 class="display font-bold text-xl">Nessun preferito ancora</h2>
+      <p class="text-muted mt-2 max-w-md mx-auto">Apri la scheda di un prodotto e tocca il cuore per salvarlo qui.</p>
+      <a href="#" data-view="prodotti" class="mt-6 inline-flex h-11 px-5 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Sfoglia i prodotti</a>
+    </div>
+  </section>
+
+  <footer class="bg-graphite text-white/70 mt-8">
+    <div class="max-w-7xl mx-auto px-5 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+      <a href="#" data-view="contatti" class="h-11 px-5 inline-flex items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Richiedi informazioni o preventivo</a>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-7xl mx-auto px-5 py-5 text-[12.5px] text-white/40">2026 © Magix S.r.l. — P.IVA 08805080721</div>
+    </div>
+  </footer>
+</section>
+
 <!-- ═══════════════════════ VIEW: SCHEDA PRODOTTO ═══════════════════════ -->
 <section id="view-product" class="view">
 
@@ -2940,6 +3004,16 @@
     </div>
   </aside>
 </div>
+
+<!-- ░░ floating Preferiti ░░ -->
+<button id="favFab" type="button" data-view="preferiti" aria-label="I tuoi preferiti"
+   class="group fixed bottom-24 right-5 z-50">
+  <span class="absolute right-16 top-1/2 -translate-y-1/2 whitespace-nowrap bg-graphite text-white text-sm font-semibold px-3 py-2 rounded-lg shadow-lift opacity-0 translate-x-2 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 transition duration-300 hidden sm:block">I tuoi preferiti</span>
+  <span class="relative w-14 h-14 rounded-full grid place-items-center bg-white border border-line text-red shadow-lift hover:-translate-y-0.5 transition">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+    <span id="favFabCount" class="hidden absolute -top-1 -right-1 min-w-[20px] h-5 px-1 grid place-items-center rounded-full bg-redcta text-white text-[11px] font-bold leading-none">0</span>
+  </span>
+</button>
 
 <!-- ░░ floating WhatsApp ░░ -->
 <a id="waFab" href="https://wa.me/393391427563?text=Salve%2C%20vorrei%20informazioni%20sui%20prodotti%20Magix."
