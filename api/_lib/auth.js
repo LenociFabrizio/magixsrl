@@ -13,10 +13,22 @@ const crypto = require("crypto");
 const COOKIE = "magix_session";
 const TTL_MS = 12 * 60 * 60 * 1000; // 12 ore
 
+// ⚠ BYPASS TEMPORANEO PER TEST — attivo SOLO se la env ADMIN_BYPASS è impostata
+// (1/true/on/yes). Quando attivo, il login non richiede password e la sessione
+// viene comunque firmata (con un segreto di sviluppo se AUTH_SECRET manca), così
+// si può testare l'intera area admin senza configurare ADMIN_PASSWORD/AUTH_SECRET.
+// DISATTIVARE prima di andare in produzione: basta rimuovere/azzerare ADMIN_BYPASS.
+const DEV_SECRET = "magix-dev-bypass-secret-NON-PER-PRODUZIONE";
+function bypassEnabled() {
+  const v = String(process.env.ADMIN_BYPASS || "").trim().toLowerCase();
+  return v === "1" || v === "true" || v === "on" || v === "yes";
+}
+
 function secret() {
   const s = process.env.AUTH_SECRET;
-  if (!s) throw new Error("AUTH_SECRET non configurato");
-  return s;
+  if (s) return s;
+  if (bypassEnabled()) return DEV_SECRET; // permette di firmare la sessione in modalità test
+  throw new Error("AUTH_SECRET non configurato");
 }
 
 function b64url(buf) {
@@ -110,4 +122,5 @@ module.exports = {
   clearSession,
   isAuthed,
   requireAuth,
+  bypassEnabled,
 };

@@ -3,13 +3,14 @@
 // GET  /api/auth?action=me                            → { authed: bool }
 "use strict";
 
-const { checkPassword, setSession, clearSession, isAuthed } = require("./_lib/auth");
+const { checkPassword, setSession, clearSession, isAuthed, bypassEnabled } = require("./_lib/auth");
 
 module.exports = async function handler(req, res) {
   const action = (req.query && req.query.action) || "";
 
   if (action === "me") {
-    return res.status(200).json({ authed: isAuthed(req) });
+    // `bypass` informa il frontend per mostrare l'avviso "modalità test"
+    return res.status(200).json({ authed: isAuthed(req), bypass: bypassEnabled() });
   }
 
   if (action === "logout") {
@@ -19,6 +20,11 @@ module.exports = async function handler(req, res) {
 
   if (action === "login") {
     if (req.method !== "POST") return res.status(405).json({ error: "Metodo non consentito" });
+    // ⚠ BYPASS TEST: con ADMIN_BYPASS attivo si entra senza password
+    if (bypassEnabled()) {
+      setSession(res);
+      return res.status(200).json({ ok: true, bypass: true });
+    }
     let password = req.body && req.body.password;
     if (password == null && typeof req.body === "string") {
       try { password = JSON.parse(req.body).password; } catch { /* ignore */ }

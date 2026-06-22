@@ -1289,11 +1289,31 @@
       el.classList.add(ok === false ? "text-red" : "text-bio");
       if (ok !== false) setTimeout(() => el.classList.add("hidden"), 4000);
     }
+    // ⚠ avviso visibile quando il bypass password di test è attivo lato server
+    function applyBypassUi(on) {
+      if (passInput) {
+        passInput.required = !on;
+        if (on) passInput.placeholder = "(bypass test attivo — lascia vuoto)";
+      }
+      let strip = document.getElementById("adminBypassStrip");
+      if (on) {
+        if (!strip) {
+          strip = document.createElement("div");
+          strip.id = "adminBypassStrip";
+          strip.className = "fixed top-0 inset-x-0 z-[80] bg-red text-white text-center text-[12px] font-semibold py-1.5 px-4 shadow-soft";
+          strip.textContent = "⚠ MODALITÀ TEST — bypass password attivo (ADMIN_BYPASS). Disattivalo prima di andare online.";
+          document.body.appendChild(strip);
+        }
+        strip.classList.remove("hidden");
+      } else if (strip) {
+        strip.classList.add("hidden");
+      }
+    }
     async function checkAuth() {
-      try {
-        const me = await API.get("/api/auth?action=me");
-        authed = !!(me && me.authed);
-      } catch (_) { authed = false; }
+      let me = null;
+      try { me = await API.get("/api/auth?action=me"); } catch (_) {}
+      authed = !!(me && me.authed);
+      applyBypassUi(!!(me && me.bypass));
       if (loginOverlay) loginOverlay.classList.toggle("hidden", authed);
       if (authed && !adminLoaded) { adminLoaded = true; loadAdmin(); }
       return authed;
