@@ -777,32 +777,32 @@
           elCover = document.getElementById("articleCover");
 
     const articles = {
-      "Linea KREATIV by Rofix": { cat: "NEWS", date: "23 NOV 2019", mat: "mat-ochre", body: [
+      "Linea KREATIV by Rofix": { cat: "NEWS", date: "23 NOV 2019", img: "img/news/rofix.webp", body: [
         "Le facciate prendono vita con la linea KREATIV by Rofix: una gamma di finiture decorative pensata come alternativa creativa alle rifiniture tradizionali dei sistemi a cappotto.",
         "Texture, effetti materici e una vasta scelta cromatica permettono di personalizzare l'estetica dell'edificio mantenendo intatte le prestazioni di isolamento e protezione del sistema ETICS.",
         "Una soluzione ideale per progettisti e imprese che vogliono unire resa estetica e durabilità nel tempo."
       ] },
-      "Incontro tecnico": { cat: "EVENTO", date: "27 APR 2018", mat: "mat-grey", body: [
+      "Incontro tecnico": { cat: "EVENTO", date: "27 APR 2018", img: "img/news/incontro.webp", body: [
         "Si è tenuto presso la nostra sede un incontro tecnico dedicato al sistema contro l'umidità di risalita, con il coinvolgimento di tecnici, applicatori e imprese del territorio.",
         "Durante la giornata sono state illustrate le cause dell'umidità di risalita e le soluzioni Magix per il risanamento delle murature, con dimostrazioni pratiche di applicazione.",
         "Un'occasione di formazione e confronto diretto, in linea con il nostro impegno nel supporto tecnico al cantiere."
       ] },
-      "Future now — 2019": { cat: "NEWS", date: "29 MAR 2018", mat: "mat-anthr", body: [
+      "Future now — 2019": { cat: "NEWS", date: "29 MAR 2018", img: "img/news/future_now.webp", body: [
         "Future now: una nuova generazione di edifici nasce da un approccio progettuale e costruttivo innovativo, efficiente e misurabile.",
         "Materiali ad alte prestazioni, attenzione all'efficienza energetica e processi controllati sono i pilastri di un modo di costruire orientato al futuro.",
         "Magix accompagna questa evoluzione con prodotti studiati per durare e per ridurre l'impatto ambientale delle costruzioni."
       ] },
-      "La vita è piena di colori": { cat: "PRODOTTI", date: "29 MAG 2017", mat: "mat-ochre", body: [
+      "La vita è piena di colori": { cat: "PRODOTTI", date: "29 MAG 2017", img: "img/news/colori.webp", body: [
         "È disponibile la nuova mazzetta colori per esterni e interni: 695 tonalità suddivise in 10 segmenti di colore, per dare libertà espressiva a ogni progetto.",
         "Le tinte sono studiate per garantire stabilità e resistenza nel tempo, anche in condizioni di forte esposizione, mantenendo brillantezza e uniformità.",
         "Uno strumento pratico per architetti, imprese e privati alla ricerca della finitura perfetta."
       ] },
-      "DM 28 Maggio 2015": { cat: "NORMATIVA", date: "13 GEN 2017", mat: "mat-white", body: [
+      "DM 28 Maggio 2015": { cat: "NORMATIVA", date: "13 GEN 2017", img: "img/news/gazzetta_ufficiale-copia.webp", body: [
         "A seguito dell'entrata in vigore della direttiva 2015/830/CE, le schede di sicurezza dei prodotti sono state aggiornate secondo il nuovo formato previsto dalla normativa.",
         "L'aggiornamento riguarda la classificazione, l'etichettatura e le informazioni sulla manipolazione e lo stoccaggio in sicurezza dei materiali.",
         "Le schede aggiornate sono disponibili nell'Area download del sito o su richiesta tramite i nostri contatti."
       ] },
-      "Isolamento termico": { cat: "TECNICA", date: "12 GEN 2017", mat: "mat-bio", body: [
+      "Isolamento termico": { cat: "TECNICA", date: "12 GEN 2017", img: "img/news/isolamento-termico.webp", body: [
         "L'isolamento termico degli edifici può essere realizzato con diverse tecniche: sistema a cappotto, intonaco termoisolante o incollaggio di pannelli, sia per interni che per esterni.",
         "La scelta della soluzione più adatta dipende dalle caratteristiche dell'edificio, dagli obiettivi di efficienza energetica e dai vincoli di cantiere.",
         "Magix offre cicli completi e supporto tecnico per individuare la configurazione ottimale in ogni situazione."
@@ -811,7 +811,15 @@
 
     function open(title, a) {
       elCat.textContent = a.cat; elDate.textContent = a.date; elTitle.textContent = title;
-      elCover.className = "mat " + (a.mat || "mat-ochre") + " h-44 relative shrink-0";
+      if (a.img) {
+        elCover.className = "h-44 relative shrink-0 overflow-hidden bg-bg2";
+        elCover.style.backgroundImage = "url('" + encodeURI(a.img) + "')";
+        elCover.style.backgroundSize = "cover";
+        elCover.style.backgroundPosition = "center";
+      } else {
+        elCover.className = "mat " + (a.mat || "mat-ochre") + " h-44 relative shrink-0";
+        elCover.style.backgroundImage = "";
+      }
       elBody.innerHTML = a.body.map(p => '<p>' + p + '</p>').join("");
       overlay.classList.remove("hidden"); document.body.classList.add("ov-lock");
       overlay.scrollTop = 0;
