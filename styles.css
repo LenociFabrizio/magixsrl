@@ -1,8 +1,16 @@
   :root { color-scheme: light; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   * { -webkit-font-smoothing: antialiased; }
-  body { background: #F5F3EF; font-family: "Hanken Grotesk", sans-serif; color: #15171C; }
+  body { background: #F5F3EF; font-family: "Hanken Grotesk", sans-serif; color: #15171C; overflow-x: hidden; }
   ::selection { background: #E4002B; color: #fff; }
+
+  /* mobile: niente flash grigio al tap, tap reattivo (no 300ms delay) */
+  a, button, [role="button"], [data-view], label, summary, input[type="submit"] {
+    -webkit-tap-highlight-color: rgba(228,0,43,.12);
+    touch-action: manipulation;
+  }
+  /* immagini/iframe non sforano mai la viewport su mobile */
+  img, svg, iframe, video { max-width: 100%; }
 
   .kicker { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; }
   .mono { font-family: "JetBrains Mono", monospace; }
@@ -47,11 +55,17 @@
   @keyframes fade { from{opacity:0; transform: translateY(8px);} to{opacity:1; transform:none;} }
 
   .lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s, border-color .35s; }
-  .lift:hover { transform: translateY(-4px); }
 
   .underline-grow { position: relative; }
   .underline-grow::after { content:""; position:absolute; left:0; bottom:-2px; height:1.5px; width:0; background:#E4002B; transition:width .3s; }
-  .underline-grow:hover::after { width:100%; }
+
+  /* effetti hover solo su dispositivi con puntatore reale: su touch non "si incollano" */
+  @media (hover: hover) {
+    .lift:hover { transform: translateY(-4px); }
+    .underline-grow:hover::after { width:100%; }
+    .tile:hover .tile-mat { transform: scale(1.07); }
+    .sr-item:hover { background:#ECE8E1; }
+  }
 
   /* faq accordion (cemento sfuso) */
   .faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s cubic-bezier(.2,.7,.2,1); }
@@ -62,7 +76,6 @@
 
   /* image tiles with hover zoom (cemento sfuso) */
   .tile-mat { transition: transform .5s cubic-bezier(.2,.7,.2,1); }
-  .tile:hover .tile-mat { transform: scale(1.07); }
 
   @media (prefers-reduced-motion: reduce) {
     .faq-a, .faq-ico, .tile-mat { transition: none; }
@@ -100,9 +113,16 @@
 
   /* search result row */
   .sr-item { display:flex; align-items:center; gap:.75rem; padding:.7rem .8rem; border-radius:.75rem; cursor:pointer; transition:background .15s; }
-  .sr-item:hover, .sr-item.active { background:#ECE8E1; }
+  .sr-item.active { background:#ECE8E1; }
   .sr-ico { width:2.25rem; height:2.25rem; border-radius:.6rem; display:grid; place-items:center; flex-shrink:0; }
 
   @media (prefers-reduced-motion: reduce) {
     .drawer-panel, .mnav-acc-body, #megaMenu { transition: none; }
+  }
+
+  /* mobile: link di footer più comodi da toccare (area tap più alta, design invariato su desktop) */
+  @media (max-width: 1023px) {
+    footer a[data-view], footer a[href^="tel"], footer a[href^="mailto"], footer li > a {
+      display: inline-block; padding-top: .3rem; padding-bottom: .3rem;
+    }
   }

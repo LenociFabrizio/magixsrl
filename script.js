@@ -838,5 +838,30 @@
     });
   })();
 
+  // ── mappa contatti: niente apertura automatica su touch ──
+  // Su desktop (puntatore fine) l'iframe si carica subito come prima.
+  // Su dispositivi touch resta un placeholder: l'iframe viene iniettato solo
+  // al tap, così la pagina Google Maps non può deep-linkare l'app al caricamento.
+  (function () {
+    const frame = document.getElementById("mapFrame");
+    if (!frame) return;
+    const ph = document.getElementById("mapPlaceholder");
+    const src = frame.getAttribute("data-src");
+    const coarse = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+    function loadMap() {
+      if (frame.src || !src) return;
+      frame.src = src;
+      if (ph) ph.classList.add("hidden");
+    }
+
+    if (coarse && ph) {
+      ph.classList.remove("hidden");
+      ph.addEventListener("click", loadMap);
+    } else {
+      loadMap();
+    }
+  })();
+
   // ── init ──
   setView("home");

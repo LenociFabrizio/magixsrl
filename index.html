@@ -10,6 +10,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
+    future: { hoverOnlyWhenSupported: true },
     theme: {
       extend: {
         colors: {
@@ -1982,13 +1983,20 @@
 
     <!-- info column -->
     <div class="mt-10 lg:mt-0 space-y-4">
-      <!-- map -->
-      <div class="reveal relative rounded-3xl overflow-hidden border border-line shadow-soft h-72">
-        <iframe
+      <!-- map (iframe caricato automaticamente su desktop; su touch solo al tap, così non apre l'app Maps al caricamento) -->
+      <div id="mapWrap" class="reveal relative rounded-3xl overflow-hidden border border-line shadow-soft h-72 bg-bg2">
+        <iframe id="mapFrame"
           title="Sede Magix S.r.l. — Gravina in Puglia"
-          src="https://www.google.com/maps?q=Zona%20PIP%20Via%20Sette%20SNC%2C%2070024%20Gravina%20in%20Puglia%20BA&z=15&output=embed"
+          data-src="https://www.google.com/maps?q=Zona%20PIP%20Via%20Sette%20SNC%2C%2070024%20Gravina%20in%20Puglia%20BA&z=15&output=embed"
           class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-        <a href="https://www.google.com/maps/search/?api=1&query=Magix+Srl+Gravina+in+Puglia" target="_blank" rel="noopener" class="absolute bottom-3 right-3 h-9 px-3.5 rounded-lg glass border border-line text-sm font-medium flex items-center gap-2 hover:border-ink/30 transition shadow-soft">Apri in Maps →</a>
+        <button id="mapPlaceholder" type="button" class="hidden absolute inset-0 w-full h-full grid place-items-center text-center bg-bg2 text-ink" aria-label="Mostra la mappa">
+          <span class="flex flex-col items-center gap-3 px-6">
+            <span class="w-12 h-12 rounded-full bg-red/10 text-red grid place-items-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+            <span class="font-semibold">Mostra la mappa</span>
+            <span class="text-muted text-[13px] leading-relaxed max-w-[15rem]">Zona PIP Via Sette SNC, 70024 Gravina in Puglia (BA)</span>
+          </span>
+        </button>
+        <a href="https://www.google.com/maps/search/?api=1&query=Magix+Srl+Gravina+in+Puglia" target="_blank" rel="noopener" class="absolute bottom-3 right-3 h-9 px-3.5 rounded-lg glass border border-line text-sm font-medium flex items-center gap-2 hover:border-ink/30 transition shadow-soft z-10">Apri in Maps →</a>
       </div>
 
       <!-- contact card -->
