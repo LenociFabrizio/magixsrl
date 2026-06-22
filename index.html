@@ -255,66 +255,32 @@
   <section class="bg-bg2 border-y border-line">
     <div class="max-w-7xl mx-auto px-5 py-20">
       <div class="reveal kicker text-red flex items-center gap-2"><span>◢</span> 03 — IN EVIDENZA</div>
-      <div class="flex items-end justify-between reveal mt-3">
-        <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight">I più richiesti<br>dai cantieri.</h2>
-        <div class="hidden md:flex gap-2 text-sm">
-          <button class="px-4 py-2 rounded-full bg-graphite text-white font-medium">Tutti</button>
-          <button class="px-4 py-2 rounded-full border border-line bg-surface hover:border-ink/30 transition">Malte</button>
-          <button class="px-4 py-2 rounded-full border border-line bg-surface hover:border-ink/30 transition">Rivestimenti</button>
-        </div>
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between reveal mt-3 gap-4">
+        <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight">Magix<br>nei cantieri.</h2>
+        <p class="text-muted text-sm max-w-xs md:text-right">Silos, forniture e malte a prestazione garantita: i nostri prodotti al lavoro nei cantieri reali.</p>
       </div>
 
-      <!-- popolata dinamicamente con prodotti casuali (renderFeatured in script.js).
-           Le card statiche qui sotto restano come fallback se il catalogo non è disponibile. -->
-      <div id="featuredGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
-        <!-- product card -->
-        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
-          <div class="mat mat-grey h-44 relative">
-            <span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">CE · EN 998-1</span>
-          </div>
-          <div class="p-5">
-            <div class="kicker text-faint">MALTE DA RASATURA</div>
-            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Rasante MGX Fine</h3>
-            <div class="flex gap-1.5 mt-3">
-              <span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">1,4 kg/m²</span>
-              <span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span>
-            </div>
-            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft">
-              <div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 14,90</div></div>
-              <a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a>
-            </div>
-          </div>
-        </div>
+      <!-- foto reali dei cantieri MAGIX (animazione "ken burns" leggera, vedi .feat-shot in styles.css) -->
+      <div class="grid sm:grid-cols-2 gap-5 mt-10">
+        <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft aspect-[4/5]">
+          <img src="img/magix_foto_1.png" alt="Silo MAGIX malte — bio edilizia in cantiere" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-graphite/80 via-graphite/15 to-transparent"></div>
+          <figcaption class="absolute bottom-0 inset-x-0 p-6">
+            <div class="kicker text-white/70">◢ IN OPERA</div>
+            <div class="display font-bold text-white text-xl mt-1.5 leading-snug">Silo MAGIX in cantiere</div>
+            <p class="text-white/70 text-sm mt-1">Fornitura in silo, malta pronta pompata sui piani.</p>
+          </figcaption>
+        </figure>
 
-        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
-          <div class="mat mat-ochre h-44 relative"><span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">CE · C2TE</span></div>
-          <div class="p-5">
-            <div class="kicker text-faint">ADESIVI CEMENTIZI</div>
-            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Adesivo MGX Flex</h3>
-            <div class="flex gap-1.5 mt-3"><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">C2TE</span><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span></div>
-            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft"><div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 11,50</div></div><a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a></div>
-          </div>
-        </div>
-
-        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
-          <div class="mat mat-bio h-44 relative"><span class="absolute top-3 left-3 text-[10px] font-semibold bg-biosoft text-bio border border-bio/20 px-2 py-1 rounded-md">LINEA BIO</span></div>
-          <div class="p-5">
-            <div class="kicker text-faint">INTONACI · CALCE</div>
-            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Bio Intonaco Calce</h3>
-            <div class="flex gap-1.5 mt-3"><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">traspirante</span><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span></div>
-            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft"><div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 18,20</div></div><a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a></div>
-          </div>
-        </div>
-
-        <div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20">
-          <div class="mat mat-white h-44 relative"><span class="absolute top-3 left-3 mono text-[10px] bg-white/90 backdrop-blur px-2 py-1 rounded-md text-ink">ETICS</span></div>
-          <div class="p-5">
-            <div class="kicker text-faint">SISTEMA A CAPPOTTO</div>
-            <h3 class="display font-bold text-lg mt-1.5 leading-snug">Collante MGX Cappotto</h3>
-            <div class="flex gap-1.5 mt-3"><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">EPS/lana</span><span class="mono text-[11px] bg-bg2 border border-line rounded px-2 py-1">25 kg</span></div>
-            <div class="flex items-end justify-between mt-4 pt-4 border-t border-linesoft"><div><div class="mono text-[10px] text-faint">DA</div><div class="display font-bold text-lg">€ 13,40</div></div><a href="#" data-view="contatti" class="h-9 px-3.5 grid place-items-center rounded-lg bg-redcta text-white text-[13px] font-semibold hover:bg-reddeep transition">Richiedi</a></div>
-          </div>
-        </div>
+        <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft aspect-[4/5]" style="transition-delay:90ms">
+          <img src="img/magix_foto_3.png" alt="Cantiere con ponteggio e silo MAGIX bio edilizia" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-graphite/80 via-graphite/15 to-transparent"></div>
+          <figcaption class="absolute bottom-0 inset-x-0 p-6">
+            <div class="kicker text-white/70">◢ BIO EDILIZIA</div>
+            <div class="display font-bold text-white text-xl mt-1.5 leading-snug">Costruire con Magix</div>
+            <p class="text-white/70 text-sm mt-1">Soluzioni complete dal grezzo alla finitura.</p>
+          </figcaption>
+        </figure>
       </div>
     </div>
   </section>
