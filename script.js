@@ -139,8 +139,11 @@
           : (p.availability === "order"
             ? '<span class="text-[10px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">su ordinazione</span>'
             : '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">disponibile</span>');
+        const media = p.img
+          ? '<div class="h-32 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img src="' + encodeURI(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-2"></div>'
+          : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>';
         return '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">'
-          + '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>'
+          + media
           + '<div class="p-5 flex-1 flex flex-col">'
           + '<div class="flex items-center justify-between gap-2"><span class="mono text-[12px] text-faint">' + esc(p.code) + '</span>' + badge + '</div>'
           + '<h3 class="display font-bold text-lg leading-snug mt-1.5">' + esc(p.name) + '</h3>'
@@ -189,9 +192,28 @@
     const crumbCat = document.getElementById("pCrumbCat");
     if (crumbCat) { crumbCat.textContent = cat ? cat.label : ""; crumbCat.dataset.name = entry.catKey; }
 
-    // swatch colore coerente col prodotto
+    // hero: foto reale del prodotto se disponibile, altrimenti swatch materico
     const swatch = document.getElementById("mainSwatch");
-    if (swatch) swatch.className = "mat " + (p.mat || "mat-grey") + " rounded-3xl aspect-[4/3] shadow-soft border border-line relative";
+    if (swatch) {
+      let heroImg = document.getElementById("pHeroImg");
+      if (p.img) {
+        swatch.className = "rounded-3xl aspect-[4/3] shadow-soft border border-line relative bg-white flex items-center justify-center overflow-hidden";
+        if (!heroImg) {
+          heroImg = document.createElement("img");
+          heroImg.id = "pHeroImg";
+          heroImg.className = "max-h-full max-w-full object-contain p-6";
+          swatch.insertBefore(heroImg, swatch.firstChild);
+        }
+        heroImg.src = encodeURI(p.img);
+        heroImg.alt = "Magix " + p.name;
+      } else {
+        swatch.className = "mat " + (p.mat || "mat-grey") + " rounded-3xl aspect-[4/3] shadow-soft border border-line relative";
+        if (heroImg) heroImg.remove();
+      }
+    }
+    // miniature materiche: nascoste quando c'è una foto reale (galleria a immagine singola)
+    const thumbs = document.getElementById("pThumbs");
+    if (thumbs) thumbs.classList.toggle("hidden", !!p.img);
 
     // badge disponibilità + CAM
     const avail = document.getElementById("pAvail");

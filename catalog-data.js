@@ -2955,10 +2955,86 @@
 },
   });
 
+  // mappa codice prodotto → foto reale del prodotto (file in img/img_prd/)
+  // I nomi file possono contenere spazi: lo script applica encodeURI al percorso.
+  const IMG_BASE = "img/img_prd/";
+  const PRODUCT_IMAGES = {
+    // malte da intonaco / rasatura / finitura
+    "MT01": "MT01.png",
+    "MT06": "INTONACO.png",
+    "MT07": "MT07.png",
+    "MT08": "MT08.png",
+    "MT11": "MT11.png",
+    "INTOPLASTER": "INTOPLASTER.png",
+    "INTOFIBRA": "INTOFIBRA_nuovo.png",
+    "RTC01": "RTC01.png",
+    "RTG13": "RTG13.png",
+    // rinzaffi
+    "RZ16": "RZ16.png",
+    "RZ19": "RZ19.png",
+    // malte da ripristino
+    "MM40": "MM40.png",
+    "MM40-FAST": "MM40.png",
+    "TISSOTROPIC-MIX": "TISSOTROPIC - MIX.png",
+    "TISSOTROPIC FAST": "TISSOTROPIC-FAST.png",
+    "TISSOTROPIC STRAIN": "TISSOTROPIC---strain.png",
+    // malte premiscelate da muratura
+    "MM105": "MM105.png",
+    "MM110": "MM110.png",
+    "MM20": "MM20.png",
+    "MM20 B": "MM20B.png",
+    // sistema a cappotto
+    "SK80": "SK80.png",
+    "SK50": "SK50 2.png",
+    "THERMOINTONACO EPS": "TERMOMASSETTO-EPS.png",
+    // rivestimenti in pasta (secchi)
+    "RIV-SIL": "Secchio Magix_ Blu.jpg",
+    "RIV-ACRSIL": "Secchio Magix_ Rosso.jpg",
+    "RIV-ACR": "Secchio Magix_ Giallo.jpg",
+    // rivestimenti / pitture per esterni
+    "QX01": "QUARZO.jpg",
+    "PA01": "PITTURA ACRILICA.jpg",
+    "PS15": "PITTURA SILOSSANICA.jpg",
+    // idropitture
+    "TR01": "TRASPIRANTE.jpg",
+    "LV01": "LAVABILE.jpg",
+    "MX30": "MX30.jpg",
+    // leganti / rapidi
+    "BOND": "BOND BIANCO.png",
+    "BOND RAPIDO": "BOND RAPIDO.png",
+    // malta antincendio
+    "RF510": "INTONACO.png",
+    // adesivi cementizi
+    "KL01": "KL01.png",
+    "BINDER": "BINDER.png",
+    "BINDFLEX": "BINDFLEX.png",
+    "FLEX-S1": "FLEX S1.png",
+    "BINDFLEX PLUS": "BINDFLEX PLUS.png",
+    // massetti
+    "MS250": "MS250.png",
+    "SABBIONE": "SABBIONE.png",
+    "AUTOLEVEL": "AUTOLEVEL.png",
+    "LEVEL 200": "LEVEL-200.png",
+    "LEVEL 600": "LEVEL 600.png",
+    // linea bio (sacco unico con varianti)
+    "NATURAL BIO RINZAFFO": "NATURAL BIO_NUOVO copia.png",
+    "NATURAL BIO INTONACO": "NATURAL BIO_NUOVO copia.png",
+    "NATURAL BIO FINITURA": "NATURAL BIO_NUOVO copia.png",
+    "NATURAL BIO RASANTE": "NATURAL BIO_NUOVO copia.png",
+    "NATURAL BIO MALTA MURATURA": "NATURAL BIO_NUOVO copia.png",
+    "MALTA STRUTTURALE NATURAL BIO": "NATURAL BIO_NUOVO copia.png",
+    "BIO RESTORE RINZAFFO": "BIO RESTORE.png",
+    "BIO RESTORE INTONACO": "BIO RESTORE.png",
+    // impermeabilizzanti
+    "ELASTIC MIX": "ELASTIC MIX.png",
+    "MONOELASTIC": "MONOELASTIC.png"
+  };
+
   // indice piatto codice → { catKey, product } per lookup rapido nelle schede
   const INDEX = {};
   Object.keys(CATALOG).forEach((catKey) => {
     (CATALOG[catKey].products || []).forEach((p) => {
+      if (!p.img && PRODUCT_IMAGES[p.code]) p.img = IMG_BASE + PRODUCT_IMAGES[p.code];
       INDEX[p.code] = { catKey, product: p };
     });
   });
