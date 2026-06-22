@@ -3,3 +3,7 @@ node_modules/
 .DS_Store
 *.log
 npm-debug.log*
+
+# archivi immagini sorgente (non versionati)
+img/img_prd.zip
+*.zip
