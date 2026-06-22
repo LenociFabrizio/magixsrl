@@ -327,9 +327,15 @@
         <button data-view="catalog" data-name="linea bio" class="mt-6 h-11 px-5 rounded-xl bg-bio text-white font-semibold text-sm hover:brightness-95 transition">Scopri la Linea Bio →</button>
       </div>
       <div class="relative grid grid-cols-3 gap-3">
-        <div class="mat mat-bio rounded-2xl h-28"></div>
-        <div class="mat mat-bio rounded-2xl h-28 translate-y-5"></div>
-        <div class="mat mat-bio rounded-2xl h-28"></div>
+        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
+          <img src="img/img_prd/NATURAL%20BIO_NUOVO%20copia.png" alt="Magix Natural Bio — leganti a base calce" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
+        </a>
+        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden translate-y-5" title="Bio Restore">
+          <img src="img/img_prd/BIO%20RESTORE.png" alt="Magix Bio Restore — intonaco da risanamento" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
+        </a>
+        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
+          <img src="img/img_prd/NATURAL%20BIO_NUOVO%20copia.png" alt="Magix Natural Bio — alta traspirabilità" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
+        </a>
       </div>
     </div>
   </section>
@@ -434,8 +440,8 @@
     <!-- family jump bar (sticky) -->
     <div class="sticky top-[68px] z-20 -mx-5 px-5 py-3 bg-bg/85 backdrop-blur border-b border-line flex flex-wrap items-center gap-2">
       <span class="kicker text-faint mr-1 hidden sm:inline">FAMIGLIE:</span>
-      <a href="#fam-malte" class="flex items-center gap-2 px-4 py-2 rounded-full bg-graphite text-white text-sm font-medium hover:brightness-110 transition">Malte <span class="text-[10px] font-semibold bg-white/20 rounded-full px-1.5 py-0.5">18</span></a>
-      <a href="#fam-rivestimenti" class="flex items-center gap-2 px-4 py-2 rounded-full border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Rivestimenti e idropitture <span class="text-[10px] font-semibold bg-bg2 border border-line rounded-full px-1.5 py-0.5">3</span></a>
+      <a href="#fam-malte" data-fam="fam-malte" class="fam-link flex items-center gap-2 px-4 py-2 rounded-full bg-graphite text-white text-sm font-medium hover:brightness-110 transition">Malte <span class="fam-badge text-[10px] font-semibold bg-white/20 rounded-full px-1.5 py-0.5">18</span></a>
+      <a href="#fam-rivestimenti" data-fam="fam-rivestimenti" class="fam-link flex items-center gap-2 px-4 py-2 rounded-full border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Rivestimenti e idropitture <span class="fam-badge text-[10px] font-semibold bg-bg2 border border-line rounded-full px-1.5 py-0.5">3</span></a>
     </div>
 
     <!-- family: malte -->
@@ -690,7 +696,7 @@
             Richiedi disponibilità
           </a>
           <a href="#" data-view="contatti" class="h-12 px-5 grid place-items-center rounded-xl border border-line bg-surface font-semibold hover:border-ink/30 transition">Preventivo</a>
-          <button class="h-12 w-12 grid place-items-center rounded-xl border border-line bg-surface hover:border-ink/30 transition" title="Preferiti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+          <button id="favBtn" type="button" aria-pressed="false" class="h-12 w-12 grid place-items-center rounded-xl border border-line bg-surface hover:border-ink/30 transition" title="Aggiungi ai preferiti"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         </div>
         <div class="flex items-center gap-5 mt-4 pt-4 border-t border-linesoft text-[12.5px] text-muted">
           <span class="flex items-center gap-1.5"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E7D5B" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Spedizione su pallet</span>
@@ -1992,6 +1998,22 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- instagram -->
+  <section class="max-w-7xl mx-auto px-5 pb-16">
+    <div class="reveal flex items-end justify-between gap-4 flex-wrap">
+      <div>
+        <div class="kicker text-red flex items-center gap-2"><span>◢</span> SOCIAL</div>
+        <h2 class="display font-bold text-2xl mt-2">Seguici su Instagram</h2>
+        <p class="text-muted text-sm mt-1.5">@magix.srl — cantieri, prodotti e novità dal mondo Magix.</p>
+      </div>
+      <a href="https://www.instagram.com/magix.srl/" target="_blank" rel="noopener" class="h-11 px-5 rounded-xl text-white font-semibold text-sm hover:brightness-95 transition flex items-center gap-2 shadow-soft" style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Apri profilo
+      </a>
+    </div>
+    <div id="igFeed" class="reveal grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-7"></div>
   </section>
 
   <!-- footer -->

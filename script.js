@@ -4,6 +4,7 @@
   const CATALOG = window.MAGIX_CATALOG || {};
   const CINDEX = window.MAGIX_CATALOG_INDEX || {};
   let currentCatKey = null; // categoria attualmente mostrata (per breadcrumb "indietro")
+  let currentProductCode = null; // prodotto attualmente in scheda (per il pulsante preferiti)
 
   function setView(name) {
     const targetId = views[name] || views.home;
@@ -180,6 +181,9 @@
     const p = entry.product;
     const cat = CATALOG[entry.catKey];
     currentCatKey = entry.catKey;
+    currentProductCode = p.code;
+    // sincronizza il cuore preferiti con lo stato salvato per questo prodotto
+    paintFav(document.getElementById("favBtn"), isFav(p.code));
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     set("pName", "Magix " + p.name);
@@ -392,6 +396,87 @@
       img.style.transform = "scale(1)";
       img.style.transformOrigin = "center center";
     });
+  })();
+
+  // ── preferiti (localStorage, nessun login richiesto) ──
+  const FAV_KEY = "magix_favorites";
+  function getFavs() { try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) { return []; } }
+  function setFavs(a) { try { localStorage.setItem(FAV_KEY, JSON.stringify(a)); } catch (e) {} }
+  function isFav(code) { return getFavs().indexOf(code) !== -1; }
+  function toggleFav(code) {
+    const a = getFavs(); const i = a.indexOf(code);
+    if (i === -1) a.push(code); else a.splice(i, 1);
+    setFavs(a); return i === -1; // true = aggiunto
+  }
+  // aggiorna l'aspetto del cuore (riempito/rosso quando attivo)
+  function paintFav(btn, active) {
+    if (!btn) return;
+    btn.classList.toggle("border-red", active);
+    btn.classList.toggle("text-red", active);
+    btn.classList.toggle("bg-red/5", active);
+    btn.setAttribute("aria-pressed", active ? "true" : "false");
+    btn.title = active ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti";
+    const svg = btn.querySelector("svg");
+    if (svg) svg.setAttribute("fill", active ? "currentColor" : "none");
+  }
+  const favBtn = document.getElementById("favBtn");
+  if (favBtn) favBtn.addEventListener("click", () => {
+    if (!currentProductCode) return;
+    paintFav(favBtn, toggleFav(currentProductCode));
+  });
+
+  // ── prodotti: barra famiglie con stato attivo (click + scrollspy) ──
+  (function () {
+    const links = [...document.querySelectorAll(".fam-link")];
+    if (!links.length) return;
+    function setActive(id) {
+      links.forEach(l => {
+        const on = l.dataset.fam === id;
+        l.classList.toggle("bg-graphite", on);
+        l.classList.toggle("text-white", on);
+        l.classList.toggle("border", !on);
+        l.classList.toggle("border-line", !on);
+        l.classList.toggle("bg-surface", !on);
+        const badge = l.querySelector(".fam-badge");
+        if (badge) {
+          badge.classList.toggle("bg-white/20", on);
+          badge.classList.toggle("bg-bg2", !on);
+          badge.classList.toggle("border", !on);
+          badge.classList.toggle("border-line", !on);
+        }
+      });
+    }
+    links.forEach(l => l.addEventListener("click", () => setActive(l.dataset.fam)));
+    // scrollspy: evidenzia la famiglia visibile mentre si scorre la pagina
+    const targets = links.map(l => document.getElementById(l.dataset.fam)).filter(Boolean);
+    if ("IntersectionObserver" in window && targets.length) {
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+      }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+      targets.forEach(t => spy.observe(t));
+    }
+  })();
+
+  // ── contatti: teaser Instagram ──
+  // Senza API ufficiale (Instagram Basic Display / Graph richiedono app + token lato
+  // server), si riusano le foto prodotto già presenti a catalogo come tessere che
+  // rimandano al profilo. Soluzione leggera, senza script esterni né tracciamento.
+  (function () {
+    const feed = document.getElementById("igFeed");
+    if (!feed) return;
+    const PROFILE = "https://www.instagram.com/magix.srl/";
+    const seen = new Set(), tiles = [];
+    Object.keys(CINDEX).forEach(code => {
+      const p = CINDEX[code].product;
+      if (p && p.img && !seen.has(p.img)) { seen.add(p.img); tiles.push({ img: p.img, name: p.name }); }
+    });
+    const ig = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
+    feed.innerHTML = tiles.slice(0, 6).map(t =>
+      '<a href="' + PROFILE + '" target="_blank" rel="noopener" class="group relative block aspect-square rounded-xl overflow-hidden border border-line bg-white" title="Seguici su Instagram">'
+      + '<img src="' + encodeURI(t.img) + '" alt="' + esc(t.name) + ' — Magix su Instagram" loading="lazy" class="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105">'
+      + '<span class="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition" style="background:linear-gradient(45deg,rgba(245,133,41,.85),rgba(221,42,123,.85),rgba(129,52,175,.85))">' + ig + '</span>'
+      + '</a>'
+    ).join("");
   })();
 
   // ── admin: bulk select ──
