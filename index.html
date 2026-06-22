@@ -820,7 +820,23 @@
 
 <!-- ═══════════════════════ VIEW: ADMIN ═══════════════════════ -->
 <section id="view-admin" class="view bg-bg2 min-h-screen">
-  <div class="flex">
+  <!-- gate passphrase: coperto finché /api/auth?action=me non conferma la sessione -->
+  <div id="adminLogin" class="hidden fixed inset-0 z-[60] bg-graphite/95 backdrop-blur grid place-items-center px-5">
+    <form id="adminLoginForm" class="w-full max-w-sm bg-surface rounded-3xl border border-line shadow-soft p-7" novalidate>
+      <div class="flex items-center gap-2.5">
+        <img src="img/logo.png" alt="Magix" class="h-9 w-auto bg-white rounded-lg px-1.5 py-1" />
+        <span class="display font-bold text-ink/60 text-sm">/ area riservata</span>
+      </div>
+      <h2 class="display font-extrabold text-2xl mt-5">Accedi</h2>
+      <p class="text-muted text-sm mt-1.5">Inserisci la passphrase per gestire i contenuti del sito.</p>
+      <label class="adm-label mt-5" for="adminPass">Passphrase</label>
+      <input id="adminPass" type="password" autocomplete="current-password" class="adm-in" required placeholder="••••••••" />
+      <p id="adminLoginMsg" class="hidden text-red text-sm font-medium mt-2"></p>
+      <button type="submit" class="mt-5 w-full h-11 rounded-xl bg-redcta text-white font-semibold hover:bg-reddeep transition shadow-soft">Entra</button>
+      <a href="#" data-view="home" class="block text-center text-muted text-sm mt-4 hover:text-ink transition">← Torna al sito</a>
+    </form>
+  </div>
+  <div id="adminShell" class="flex">
     <!-- sidebar -->
     <aside class="hidden lg:flex flex-col w-60 bg-graphite text-white/70 min-h-screen sticky top-0 p-4">
       <div class="flex items-center gap-2.5 px-2 py-2">
@@ -829,11 +845,13 @@
       </div>
       <nav class="mt-6 space-y-1 text-sm">
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/10 text-white font-medium" href="#" data-panel="dashboard"><span class="dot w-1.5 h-1.5 rounded-full bg-red"></span> Dashboard</a>
+        <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="categorie"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Categorie</a>
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="prodotti"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Prodotti (PIM)</a>
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="news"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> News</a>
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="download"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Cataloghi &amp; download</a>
+        <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="lavora"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Lavora con noi</a>
         <div class="pt-4 mt-4 border-t border-white/10"></div>
-        <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Impostazioni · RBAC</a>
+        <a id="adminLogout" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition cursor-pointer" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Esci (logout)</a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-view="home"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> ← Torna al sito</a>
       </nav>
       <div class="mt-auto bg-white/5 rounded-xl p-3 text-[12px]">
@@ -861,22 +879,22 @@
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
             <div class="flex items-center justify-between"><span class="kicker text-faint">PRODOTTI A CATALOGO</span><span class="w-9 h-9 rounded-lg bg-red/10 text-red grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m21 16-9 5-9-5V8l9-5 9 5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span></div>
-            <div class="display font-extrabold text-3xl mt-3">120</div>
-            <div class="mono text-[12px] text-muted mt-2">referenze pubblicate</div>
+            <div id="kpiProducts" class="display font-extrabold text-3xl mt-3">—</div>
+            <div class="mono text-[12px] text-muted mt-2">referenze a catalogo</div>
           </div>
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
             <div class="flex items-center justify-between"><span class="kicker text-faint">NEWS</span><span class="w-9 h-9 rounded-lg bg-graphite/5 text-graphite grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg></span></div>
-            <div class="display font-extrabold text-3xl mt-3">6</div>
-            <div class="mono text-[12px] text-muted mt-2">articoli pubblicati</div>
+            <div id="kpiNews" class="display font-extrabold text-3xl mt-3">—</div>
+            <div class="mono text-[12px] text-muted mt-2">articoli</div>
           </div>
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
             <div class="flex items-center justify-between"><span class="kicker text-faint">DOWNLOAD</span><span class="w-9 h-9 rounded-lg bg-bio/10 text-bio grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg></span></div>
-            <div class="display font-extrabold text-3xl mt-3">4</div>
+            <div id="kpiDownloads" class="display font-extrabold text-3xl mt-3">—</div>
             <div class="mono text-[12px] text-muted mt-2">documenti disponibili</div>
           </div>
           <div class="bg-surface rounded-2xl border border-line shadow-soft p-5">
             <div class="flex items-center justify-between"><span class="kicker text-faint">CATEGORIE</span><span class="w-9 h-9 rounded-lg bg-bg2 text-ink border border-line grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg></span></div>
-            <div class="display font-extrabold text-3xl mt-3">8</div>
+            <div id="kpiCategories" class="display font-extrabold text-3xl mt-3">—</div>
             <div class="mono text-[12px] text-muted mt-2">categorie prodotto</div>
           </div>
         </div>
@@ -885,7 +903,7 @@
         <div class="bg-surface rounded-2xl border border-line shadow-soft mt-6 overflow-hidden">
           <div class="px-5 py-4 flex items-center gap-3 border-b border-line">
             <div class="display font-bold">Prodotti</div>
-            <span class="mono text-[12px] text-faint">120 referenze</span>
+            <span id="prodCount" class="mono text-[12px] text-faint">—</span>
             <div class="ml-auto flex items-center gap-2">
               <button class="h-9 px-3 rounded-lg border border-line text-sm font-medium hover:border-ink/30 transition flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg> Filtri</button>
               <button class="h-9 px-3 rounded-lg border border-line text-sm font-medium hover:border-ink/30 transition flex items-center gap-2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg> Export CSV</button>
@@ -912,56 +930,50 @@
                 <th class="px-3 py-3 text-left font-normal">SKU</th>
                 <th class="px-3 py-3 text-left font-normal">CATEGORIA</th>
                 <th class="px-3 py-3 text-left font-normal">STATO</th>
+                <th class="px-3 py-3 text-right font-normal">AZIONI</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-linesoft">
-              <tr class="hover:bg-bg/40 transition">
-                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
-                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-grey w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Rasante MGX Fine</span></div></td>
-                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-RAS-0125</td>
-                <td class="px-3 py-3 text-muted">Malte da rasatura</td>
-                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
-              </tr>
-              <tr class="hover:bg-bg/40 transition">
-                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
-                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-ochre w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Adesivo MGX Flex</span></div></td>
-                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-ADE-0220</td>
-                <td class="px-3 py-3 text-muted">Adesivi cementizi</td>
-                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
-              </tr>
-              <tr class="hover:bg-bg/40 transition">
-                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
-                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-bio w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Bio Intonaco Calce</span></div></td>
-                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-BIO-0301</td>
-                <td class="px-3 py-3 text-muted">Linea bio</td>
-                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
-              </tr>
-              <tr class="hover:bg-bg/40 transition">
-                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
-                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-white w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Collante MGX Cappotto</span></div></td>
-                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-CAP-0140</td>
-                <td class="px-3 py-3 text-muted">Sistema a cappotto</td>
-                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2.5 py-1">Bozza</span></td>
-              </tr>
-              <tr class="hover:bg-bg/40 transition">
-                <td class="px-5 py-3"><input type="checkbox" class="rowChk accent-red w-4 h-4" /></td>
-                <td class="px-3 py-3"><div class="flex items-center gap-3"><span class="mat mat-anthr w-9 h-9 rounded-lg shrink-0"></span><span class="font-semibold">Cemento sfuso R32,5</span></div></td>
-                <td class="px-3 py-3 mono text-[12px] text-muted">MGX-CEM-SILO</td>
-                <td class="px-3 py-3 text-muted">Cemento sfuso</td>
-                <td class="px-3 py-3"><span class="text-[11px] font-semibold text-bio bg-biosoft rounded-full px-2.5 py-1">Pubblicato</span></td>
-              </tr>
+            <tbody id="prodTableBody" class="divide-y divide-linesoft">
+              <tr><td colspan="6" class="px-5 py-10 text-center text-muted">Caricamento…</td></tr>
             </tbody>
           </table>
           </div>
-          <div class="px-5 py-3.5 flex items-center justify-between border-t border-line text-sm">
-            <span class="mono text-[12px] text-faint">1–5 di 120</span>
-            <div class="flex gap-1.5">
-              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">‹</button>
-              <button class="h-8 w-8 rounded-lg bg-graphite text-white">1</button>
-              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">2</button>
-              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">3</button>
-              <button class="h-8 w-8 rounded-lg border border-line hover:border-ink/30 transition">›</button>
+        </div>
+      </div>
+
+      <!-- panel: categorie -->
+      <div class="admin-panel hidden p-6" data-panel="categorie">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="display font-bold text-xl">Categorie prodotto</div>
+            <div class="mono text-[11px] text-faint mt-1">Crea, modifica o elimina le categorie del catalogo</div>
+          </div>
+        </div>
+        <p id="catMsg" class="hidden mt-4 text-bio text-sm font-medium"></p>
+        <div class="mt-6 grid lg:grid-cols-3 gap-6">
+          <form id="catForm" class="lg:col-span-1 bg-surface rounded-2xl border border-line shadow-soft p-6 grid gap-4 self-start" novalidate>
+            <input type="hidden" id="cat-oldkey" />
+            <div><label class="adm-label" for="cat-label">Nome categoria</label><input id="cat-label" class="adm-in" required placeholder="Es. Malte da intonaco" /></div>
+            <div>
+              <label class="adm-label" for="cat-mat">Sfondo materico</label>
+              <select id="cat-mat" class="adm-in">
+                <option value="mat-grey">Grigio</option>
+                <option value="mat-white">Bianco</option>
+                <option value="mat-ochre">Ocra</option>
+                <option value="mat-red">Rosso</option>
+                <option value="mat-bio">Bio</option>
+                <option value="mat-anthr">Antracite</option>
+              </select>
             </div>
+            <div><label class="adm-label" for="cat-intro">Introduzione</label><textarea id="cat-intro" class="adm-in" rows="3" placeholder="Breve descrizione della categoria…"></textarea></div>
+            <div class="flex gap-2">
+              <button type="submit" class="flex-1 h-10 rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Salva categoria</button>
+              <button type="button" id="catReset" class="h-10 px-4 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Nuova</button>
+            </div>
+          </form>
+          <div class="lg:col-span-2 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden self-start">
+            <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Categorie</div><span id="catCount" class="mono text-[12px] text-faint">—</span></div>
+            <div id="catList" class="divide-y divide-linesoft"></div>
           </div>
         </div>
       </div>
@@ -981,6 +993,8 @@
         <p id="productMsg" class="hidden mt-4 text-bio text-sm font-medium"></p>
 
         <form id="productForm" class="mt-6 grid lg:grid-cols-3 gap-6" novalidate>
+          <input type="hidden" id="p-editcode" />
+          <input type="hidden" id="p-img-url" />
           <div class="lg:col-span-2 space-y-6">
             <!-- info generali -->
             <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
@@ -1114,6 +1128,8 @@
         <p id="newsMsg" class="hidden mt-4 text-bio text-sm font-medium"></p>
 
         <form id="newsForm" class="mt-6 grid lg:grid-cols-3 gap-6" novalidate>
+          <input type="hidden" id="n-editid" />
+          <input type="hidden" id="n-img-url" />
           <div class="lg:col-span-2 space-y-6">
             <div class="bg-surface rounded-2xl border border-line shadow-soft p-6 grid sm:grid-cols-2 gap-4">
               <div class="sm:col-span-2"><label class="adm-label" for="n-titolo">Titolo</label><input id="n-titolo" class="adm-in" required placeholder="Es. Linea KREATIV by Rofix" /></div>
@@ -1140,8 +1156,15 @@
               <div class="kicker text-red">STATO</div>
               <select id="n-stato" class="adm-in mt-4"><option>Pubblicato</option><option>Bozza</option></select>
             </div>
+            <button type="button" id="newsReset" class="w-full h-10 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Nuovo articolo</button>
           </div>
         </form>
+
+        <!-- elenco news -->
+        <div class="mt-8 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden">
+          <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Articoli pubblicati</div><span id="newsCount" class="mono text-[12px] text-faint">—</span></div>
+          <div id="newsList" class="divide-y divide-linesoft"></div>
+        </div>
       </div>
 
       <!-- panel: download -->
@@ -1157,6 +1180,8 @@
 
         <div class="mt-6 grid lg:grid-cols-3 gap-6">
           <form id="fileForm" class="lg:col-span-1 bg-surface rounded-2xl border border-line shadow-soft p-6 grid gap-4 self-start" novalidate>
+            <input type="hidden" id="f-url" />
+            <input type="hidden" id="f-editid" />
             <div><label class="adm-label" for="f-nome">Nome documento</label><input id="f-nome" class="adm-in" required placeholder="Es. Catalogo Magix 2025" /></div>
             <div>
               <label class="adm-label" for="f-cat">Categoria</label>
@@ -1175,13 +1200,39 @@
 
           <!-- existing files -->
           <div class="lg:col-span-2 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden self-start">
-            <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Documenti pubblicati</div><span class="mono text-[12px] text-faint">4 file</span></div>
-            <div class="divide-y divide-linesoft">
-              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-red text-white">PDF</span><span class="font-medium text-sm flex-1">Catalogo Magix 2019</span><span class="mono text-[11px] text-faint">Company</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
-              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-bio text-white">XLSX</span><span class="font-medium text-sm flex-1">Voci di capitolato</span><span class="mono text-[11px] text-faint">Company</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
-              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-red text-white">PDF</span><span class="font-medium text-sm flex-1">Certificato di conformità FPC</span><span class="mono text-[11px] text-faint">Certificazioni</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
-              <div class="flex items-center gap-3 px-5 py-3.5"><span class="px-2 py-1 rounded-md text-[10px] font-bold mono bg-red text-white">PDF</span><span class="font-medium text-sm flex-1">Certificazione CAM</span><span class="mono text-[11px] text-faint">Certificazioni</span><button class="text-faint hover:text-red transition" aria-label="Elimina"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></div>
+            <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Documenti pubblicati</div><span id="docCount" class="mono text-[12px] text-faint">—</span></div>
+            <div id="docList" class="divide-y divide-linesoft"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- panel: lavora con noi (posizioni) -->
+      <div class="admin-panel hidden p-6" data-panel="lavora">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="display font-bold text-xl">Posizioni aperte</div>
+            <div class="mono text-[11px] text-faint mt-1">Gestisci le posizioni mostrate in "Lavora con noi"</div>
+          </div>
+        </div>
+        <p id="posMsg" class="hidden mt-4 text-bio text-sm font-medium"></p>
+        <div class="mt-6 grid lg:grid-cols-3 gap-6">
+          <form id="posForm" class="lg:col-span-1 bg-surface rounded-2xl border border-line shadow-soft p-6 grid gap-4 self-start" novalidate>
+            <input type="hidden" id="pos-editid" />
+            <div><label class="adm-label" for="pos-titolo">Titolo posizione</label><input id="pos-titolo" class="adm-in" required placeholder="Es. Tecnico di cantiere" /></div>
+            <div class="grid grid-cols-2 gap-3">
+              <div><label class="adm-label" for="pos-luogo">Luogo</label><input id="pos-luogo" class="adm-in" placeholder="Gravina in Puglia" /></div>
+              <div><label class="adm-label" for="pos-tipo">Tipo</label><input id="pos-tipo" class="adm-in" placeholder="Full-time" /></div>
             </div>
+            <div><label class="adm-label" for="pos-desc">Descrizione</label><textarea id="pos-desc" class="adm-in" rows="4" placeholder="Mansioni, requisiti…"></textarea></div>
+            <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="pos-aperta" class="accent-red w-4 h-4" checked /> Posizione aperta (visibile sul sito)</label>
+            <div class="flex gap-2">
+              <button type="submit" class="flex-1 h-10 rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Salva posizione</button>
+              <button type="button" id="posReset" class="h-10 px-4 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Nuova</button>
+            </div>
+          </form>
+          <div class="lg:col-span-2 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden self-start">
+            <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Posizioni</div><span id="posCount" class="mono text-[12px] text-faint">—</span></div>
+            <div id="posList" class="divide-y divide-linesoft"></div>
           </div>
         </div>
       </div>
@@ -1703,7 +1754,7 @@
 
   <!-- featured article -->
   <section class="max-w-7xl mx-auto px-5 py-14">
-    <article class="reveal lift bg-surface rounded-3xl border border-line shadow-soft overflow-hidden lg:grid lg:grid-cols-2 hover:shadow-lift hover:border-ink/20">
+    <article id="newsFeatured" class="reveal lift bg-surface rounded-3xl border border-line shadow-soft overflow-hidden lg:grid lg:grid-cols-2 hover:shadow-lift hover:border-ink/20">
       <div class="min-h-[240px] lg:min-h-full relative overflow-hidden">
         <img src="img/news/rofix.webp" alt="Linea KREATIV by Rofix" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
         <span class="absolute top-4 left-4 text-[11px] font-semibold bg-white/90 backdrop-blur text-ink rounded-full px-3 py-1">IN EVIDENZA</span>
@@ -1727,7 +1778,7 @@
       <h2 class="display font-extrabold text-2xl">Tutti gli articoli</h2>
       <span class="mono text-[12px] text-faint">archivio</span>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+    <div id="newsGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
       <a href="#" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">
         <div class="h-40 overflow-hidden relative shrink-0">
           <img src="img/news/incontro.webp" alt="Incontro tecnico" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -2207,7 +2258,9 @@
   <section class="max-w-7xl mx-auto px-5 py-20">
     <div class="reveal kicker text-red flex items-center gap-2"><span>◢</span> POSIZIONI APERTE</div>
     <h2 class="reveal display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">Posizioni aperte.</h2>
-    <div class="reveal mt-8 bg-surface rounded-3xl border border-line shadow-soft p-8 lg:p-12 text-center max-w-3xl mx-auto">
+    <!-- posizioni dinamiche (popolate da JS da /api/positions; vuoto = mostra empty state) -->
+    <div id="posizioniList" class="hidden grid sm:grid-cols-2 gap-5 mt-8"></div>
+    <div id="posizioniEmpty" class="reveal mt-8 bg-surface rounded-3xl border border-line shadow-soft p-8 lg:p-12 text-center max-w-3xl mx-auto">
       <span class="w-14 h-14 rounded-2xl bg-bg2 border border-line text-muted grid place-items-center mx-auto"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
       <h3 class="display font-bold text-2xl mt-5">Nessuna posizione aperta al momento.</h3>
       <p class="text-muted mt-2 max-w-lg mx-auto leading-relaxed">Ma siamo sempre alla ricerca di talento: inviaci una candidatura spontanea e ti terremo in considerazione per le aree di nostro interesse.</p>

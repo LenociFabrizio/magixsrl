@@ -1,0 +1,34 @@
+[
+  {
+    "id": "catalogo-magix-2019",
+    "nome": "Catalogo Magix 2019",
+    "cat": "company",
+    "tipo": "PDF",
+    "url": "/documents/Catalogo%20Magix%20srl_.pdf",
+    "badge": ""
+  },
+  {
+    "id": "voci-di-capitolato",
+    "nome": "Voci di capitolato",
+    "cat": "company",
+    "tipo": "XLSX",
+    "url": "",
+    "badge": ""
+  },
+  {
+    "id": "certificato-fpc",
+    "nome": "Certificato di conformità FPC",
+    "cat": "certificazioni",
+    "tipo": "PDF",
+    "url": "",
+    "badge": ""
+  },
+  {
+    "id": "certificazione-cam",
+    "nome": "Certificazione CAM",
+    "cat": "certificazioni",
+    "tipo": "PDF",
+    "url": "",
+    "badge": "CAM"
+  }
+]

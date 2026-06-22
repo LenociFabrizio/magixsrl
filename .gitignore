@@ -4,6 +4,11 @@ node_modules/
 *.log
 npm-debug.log*
 
+# variabili d'ambiente locali (segreti)
+.env
+.env.local
+.env*.local
+
 # archivi immagini sorgente (non versionati)
 img/img_prd.zip
 *.zip

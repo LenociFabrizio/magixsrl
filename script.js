@@ -535,21 +535,24 @@
   // ── download center: search + category filter ──
   const dlGrid = document.getElementById("downloadGrid");
   if (dlGrid) {
-    const cards = [...dlGrid.querySelectorAll(".doc-card")];
     const pills = [...document.querySelectorAll(".dl-pill")];
     const search = document.getElementById("dlSearch");
     const empty = document.getElementById("dlEmpty");
     let cat = "all";
+    // ri-interroga le card ad ogni filtro: così funziona anche dopo che
+    // l'Area download viene rigenerata dai dati API (vedi renderDocs).
     function apply() {
+      const cards = [...dlGrid.querySelectorAll(".doc-card")];
       const q = (search && search.value || "").trim().toLowerCase();
       let shown = 0;
       cards.forEach(c => {
-        const ok = (cat === "all" || c.dataset.cat === cat) && (!q || c.dataset.title.includes(q));
+        const ok = (cat === "all" || c.dataset.cat === cat) && (!q || (c.dataset.title || "").includes(q));
         c.classList.toggle("hidden", !ok);
         if (ok) shown++;
       });
       if (empty) empty.classList.toggle("hidden", shown !== 0);
     }
+    window.__magixReapplyDocFilter = apply;
     pills.forEach(p => p.addEventListener("click", () => {
       cat = p.dataset.filter;
       pills.forEach(x => {
@@ -566,7 +569,7 @@
   }
 
   // ── admin: panel switching ──
-  const adminTitles = { dashboard: "Dashboard", prodotti: "Prodotti", news: "News", download: "Cataloghi & download" };
+  const adminTitles = { dashboard: "Dashboard", categorie: "Categorie", prodotti: "Prodotti", news: "News", download: "Cataloghi & download", lavora: "Posizioni" };
   const adminPanels = [...document.querySelectorAll(".admin-panel")];
   const apanelLinks = [...document.querySelectorAll(".apanel-link")];
   function showAdminPanel(name) {
@@ -626,21 +629,8 @@
     fName.textContent = fFile.files[0] ? fFile.files[0].name : "Nessun file selezionato";
   });
 
-  // ── admin: fake submits (prototype) ──
-  function bindFakeSubmit(formId, msgId, text) {
-    const form = document.getElementById(formId), msg = document.getElementById(msgId);
-    if (!form) return;
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (!form.checkValidity()) { form.reportValidity(); return; }
-      form.reset();
-      if (fName && formId === "fileForm") fName.textContent = "Nessun file selezionato";
-      if (msg) { msg.textContent = text; msg.classList.remove("hidden"); }
-    });
-  }
-  bindFakeSubmit("productForm", "productMsg", "✓ Prodotto salvato — la scheda è pronta per la pubblicazione.");
-  bindFakeSubmit("newsForm", "newsMsg", "✓ News pubblicata nella sezione News.");
-  bindFakeSubmit("fileForm", "fileMsg", "✓ Documento caricato nell'Area download.");
+  // ── admin: i submit reali (CRUD via API) sono gestiti nel controller admin
+  //    in fondo al file. Qui niente più "fake submit" prototipo. ──
 
   // ── prodotti: category tabs + malte search ──
   const catTabs = [...document.querySelectorAll(".cat-tab")];
@@ -809,8 +799,35 @@
       ] },
     };
 
-    function open(title, a) {
-      elCat.textContent = a.cat; elDate.textContent = a.date; elTitle.textContent = title;
+    // normalizza sia la forma statica {cat,date,img,body} sia quella API {cat,data,img,corpo,titolo}
+    function norm(a, titolo) {
+      return {
+        titolo: a.titolo || titolo || "",
+        cat: a.cat || "NEWS",
+        data: a.data || a.date || "",
+        img: a.img || "",
+        mat: a.mat || "mat-ochre",
+        corpo: Array.isArray(a.corpo) ? a.corpo : (Array.isArray(a.body) ? a.body : []),
+      };
+    }
+
+    // registro per id: parte dal fallback statico (slug del titolo), poi sovrascritto da __magixSetNews
+    function slug(s) { return String(s || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+    const FALLBACK = {};
+    Object.keys(articles).forEach(t => { FALLBACK[slug(t)] = norm(articles[t], t); });
+    let REG = Object.assign({}, FALLBACK);
+    // i titoli statici puntano allo stesso id-slug (per i link non rigenerati)
+    const TITLE2ID = {}; Object.keys(articles).forEach(t => { TITLE2ID[t] = slug(t); });
+
+    window.__magixSetNews = function (list) {
+      const next = {};
+      (list || []).forEach(n => { if (n && n.id) next[n.id] = norm(n, n.titolo); });
+      REG = Object.keys(next).length ? next : Object.assign({}, FALLBACK);
+    };
+
+    function open(a) {
+      if (!a) return;
+      elCat.textContent = String(a.cat || "").toUpperCase(); elDate.textContent = a.data; elTitle.textContent = a.titolo;
       if (a.img) {
         elCover.className = "h-44 relative shrink-0 overflow-hidden bg-bg2";
         elCover.style.backgroundImage = "url('" + encodeURI(a.img) + "')";
@@ -820,7 +837,7 @@
         elCover.className = "mat " + (a.mat || "mat-ochre") + " h-44 relative shrink-0";
         elCover.style.backgroundImage = "";
       }
-      elBody.innerHTML = a.body.map(p => '<p>' + p + '</p>').join("");
+      elBody.innerHTML = a.corpo.map(p => '<p>' + esc(p) + '</p>').join("");
       overlay.classList.remove("hidden"); document.body.classList.add("ov-lock");
       overlay.scrollTop = 0;
     }
@@ -829,12 +846,18 @@
     overlay.querySelectorAll("[data-article-close]").forEach(x => x.addEventListener("click", close));
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !overlay.classList.contains("hidden")) close(); });
 
-    document.querySelectorAll("#view-news a").forEach(a => {
-      const h = a.querySelector("h2, h3");
-      if (!h) return;
-      const art = articles[h.textContent.trim()];
-      if (!art) return;
-      a.addEventListener("click", (e) => { e.preventDefault(); open(h.textContent.trim(), art); });
+    // apre per id (usato dai link rigenerati con data-news-id)
+    window.openArticle = function (id) { open(REG[id]); };
+
+    // delega: copre sia le card rigenerate (data-news-id) sia quelle statiche (match per titolo)
+    const newsView = document.getElementById("view-news");
+    if (newsView) newsView.addEventListener("click", (e) => {
+      const byId = e.target.closest("[data-news-id]");
+      if (byId) { e.preventDefault(); open(REG[byId.getAttribute("data-news-id")]); return; }
+      const link = e.target.closest("a");
+      if (!link) return;
+      const h = link.querySelector("h2, h3");
+      if (h && TITLE2ID[h.textContent.trim()]) { e.preventDefault(); open(REG[TITLE2ID[h.textContent.trim()]]); }
     });
   })();
 
@@ -861,6 +884,743 @@
     } else {
       loadMap();
     }
+  })();
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  BACKEND LIVE — client API, bootstrap dati pubblici, controller admin
+  //  GET pubblici (catalogo/news/documenti/posizioni); mutazioni protette via
+  //  cookie di sessione (vedi /api/*). Se il backend è irraggiungibile il sito
+  //  pubblico continua a mostrare i dati statici bundle (fallback morbido).
+  // ══════════════════════════════════════════════════════════════════════
+  (function () {
+    const API = {
+      async get(path) {
+        const r = await fetch(path, { headers: { Accept: "application/json" }, cache: "no-store" });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      },
+      async send(path, method, body) {
+        const r = await fetch(path, {
+          method,
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: body != null ? JSON.stringify(body) : undefined,
+        });
+        let data = null;
+        try { data = await r.json(); } catch (_) { /* no body */ }
+        if (!r.ok) { const e = new Error((data && data.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
+        return data;
+      },
+    };
+
+    // stato live
+    let NEWS = [];
+    let DOCS = [];
+    let POSITIONS = [];
+
+    // ── helper data: "2019-11-23" → "23 NOV 2019" ──
+    const MESI = ["GEN", "FEB", "MAR", "APR", "MAG", "GIU", "LUG", "AGO", "SET", "OTT", "NOV", "DIC"];
+    function fmtDate(iso) {
+      if (!iso) return "";
+      const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+      if (!m) return iso; // già in formato display
+      return String(+m[3]) + " " + MESI[+m[2] - 1] + " " + m[1];
+    }
+    // "23 NOV 2019" → "2019-11-23" (per ripopolare <input type=date> in modifica)
+    function toISO(s) {
+      if (!s) return "";
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+      const m = /^(\d{1,2})\s+([A-Za-zÀ-ÿ]{3})\w*\s+(\d{4})$/.exec(String(s).trim());
+      if (!m) return "";
+      const i = MESI.indexOf(m[2].toUpperCase().slice(0, 3));
+      if (i < 0) return "";
+      return m[3] + "-" + String(i + 1).padStart(2, "0") + "-" + m[1].padStart(2, "0");
+    }
+    const cap = (s) => String(s || "").replace(/\b\w/g, (c) => c.toUpperCase());
+
+    // ── catalogo: applica i dati live mutando CATALOG/CINDEX in-place ──
+    function applyCatalog(obj) {
+      if (!obj || typeof obj !== "object") return;
+      Object.keys(CATALOG).forEach((k) => { delete CATALOG[k]; });
+      Object.keys(obj).forEach((k) => { CATALOG[k] = obj[k]; });
+      Object.keys(CINDEX).forEach((k) => { delete CINDEX[k]; });
+      Object.keys(CATALOG).forEach((catKey) => {
+        (CATALOG[catKey].products || []).forEach((p) => {
+          if (p && p.code) CINDEX[p.code] = { catKey, product: p };
+        });
+      });
+      window.MAGIX_CATALOG = CATALOG;
+      window.MAGIX_CATALOG_INDEX = CINDEX;
+    }
+
+    // ── catalogo: aggiunge nel grid "malte" le card delle categorie create da admin
+    //    (le categorie statiche restano; appendiamo solo le chiavi non già presenti) ──
+    const MATS = ["mat-grey", "mat-white", "mat-ochre", "mat-red", "mat-bio", "mat-anthr"];
+    function injectNewCategoryCards() {
+      const anchor = document.querySelector("#fam-malte .subcat-card");
+      if (!anchor) return;
+      const grid = anchor.parentElement;
+      const existing = new Set(
+        [...grid.querySelectorAll(".subcat-card[data-name]")].map((c) => (c.dataset.name || "").trim().toLowerCase())
+      );
+      let i = 0;
+      Object.keys(CATALOG).forEach((key) => {
+        if (existing.has(key)) return;
+        const cat = CATALOG[key];
+        const mat = cat.mat && MATS.indexOf(cat.mat) > -1 ? cat.mat : MATS[i++ % MATS.length];
+        const a = document.createElement("a");
+        a.href = "#";
+        a.dataset.view = "catalog";
+        a.dataset.name = key;
+        a.className = "subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20";
+        a.innerHTML = '<div class="mat ' + esc(mat) + ' h-28"></div>'
+          + '<div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">'
+          + esc(cat.label || cap(key)) + '</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div>';
+        grid.appendChild(a);
+        existing.add(key);
+      });
+      runReveal();
+    }
+
+    // ── NEWS pubbliche (view-news) ──
+    function newsCardBadge(catRaw) {
+      const c = String(catRaw || "NEWS").toUpperCase();
+      const cls = c === "EVENTO"
+        ? "text-red bg-red/10 border border-red/20"
+        : (c === "NEWS" ? "text-white bg-graphite" : "text-bio bg-biosoft border border-bio/20");
+      return '<span class="text-[10px] font-semibold ' + cls + ' rounded-full px-2.5 py-0.5">' + esc(c) + "</span>";
+    }
+    function renderNews() {
+      const pub = NEWS.filter((n) => (n.stato || "pubblicato") !== "bozza");
+      const featured = document.getElementById("newsFeatured");
+      const grid = document.getElementById("newsGrid");
+      if (!pub.length) { window.__magixSetNews(NEWS); return; }
+      const list = pub.slice();
+      const f = list.shift();
+      if (featured && f) {
+        const media = f.img
+          ? '<img src="' + encodeURI(f.img) + '" alt="' + esc(f.titolo) + '" loading="lazy" class="absolute inset-0 w-full h-full object-cover">'
+          : '<div class="mat mat-ochre absolute inset-0"></div>';
+        featured.innerHTML =
+          '<div class="min-h-[240px] lg:min-h-full relative overflow-hidden">' + media
+          + '<span class="absolute top-4 left-4 text-[11px] font-semibold bg-white/90 backdrop-blur text-ink rounded-full px-3 py-1">IN EVIDENZA</span></div>'
+          + '<div class="p-8 lg:p-12 flex flex-col justify-center">'
+          + '<div class="flex items-center gap-3 mono text-[12px] text-faint"><span class="text-red font-semibold">' + esc(String(f.cat || "NEWS").toUpperCase()) + '</span><span>·</span><span>' + esc(f.data) + '</span></div>'
+          + '<h2 class="display font-extrabold text-[clamp(1.7rem,3vw,2.5rem)] leading-tight mt-3">' + esc(f.titolo) + '</h2>'
+          + '<p class="text-muted mt-4 leading-relaxed max-w-lg">' + esc(f.estratto || "") + '</p>'
+          + '<a href="#" data-news-id="' + esc(f.id) + '" class="mt-7 inline-flex items-center gap-2 font-semibold text-red underline-grow w-fit">Leggi l\'articolo <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14m0 0-6-6m6 6-6 6"/></svg></a></div>';
+        featured.setAttribute("data-news-id", f.id);
+      }
+      if (grid) {
+        grid.innerHTML = list.map((n) => {
+          const media = n.img
+            ? '<div class="h-40 overflow-hidden relative shrink-0"><img src="' + encodeURI(n.img) + '" alt="' + esc(n.titolo) + '" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>'
+            : '<div class="mat mat-ochre h-40 shrink-0"></div>';
+          return '<a href="#" data-news-id="' + esc(n.id) + '" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">'
+            + media
+            + '<div class="p-6 flex flex-col flex-1"><div class="flex items-center gap-2">' + newsCardBadge(n.cat)
+            + '<span class="mono text-[11px] text-faint">' + esc(n.data) + '</span></div>'
+            + '<h3 class="display font-bold text-xl mt-4 leading-snug">' + esc(n.titolo) + '</h3>'
+            + '<p class="text-muted text-sm mt-2 leading-relaxed flex-1">' + esc(n.estratto || "") + '</p>'
+            + '<span class="mt-5 text-red font-semibold text-sm group-hover:translate-x-1 transition inline-block">Leggi →</span></div></a>';
+        }).join("");
+      }
+      window.__magixSetNews(NEWS);
+      runReveal();
+    }
+
+    // ── DOCUMENTI pubblici (view-download) ──
+    function docTypeBadge(tipo) {
+      const t = String(tipo || "PDF").toUpperCase();
+      const cls = t.indexOf("XLS") > -1 ? "bg-bio text-white" : (t.indexOf("DOC") > -1 ? "bg-graphite text-white" : "bg-red text-white");
+      return '<span class="px-2.5 py-1 rounded-md text-[11px] font-bold mono ' + cls + '">' + esc(t) + "</span>";
+    }
+    function renderDocs() {
+      const grid = document.getElementById("downloadGrid");
+      if (!grid || !DOCS.length) return;
+      grid.innerHTML = DOCS.map((d) => {
+        const href = d.url ? encodeURI(d.url) : "#";
+        const corner = d.badge
+          ? '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">' + esc(d.badge) + "</span>"
+          : '<svg class="text-faint group-hover:text-red transition" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>';
+        return '<a href="' + href + '"' + (d.url ? " download" : "") + ' class="doc-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col" data-cat="' + esc(d.cat || "company") + '" data-title="' + esc(String(d.nome || "").toLowerCase()) + '">'
+          + '<div class="flex items-start justify-between">' + docTypeBadge(d.tipo) + corner + "</div>"
+          + '<h3 class="display font-bold text-lg mt-5 leading-snug flex-1">' + esc(d.nome) + "</h3>"
+          + '<div class="mono text-[11px] text-faint mt-2">' + esc(String(d.cat || "").toUpperCase()) + " · " + esc(String(d.tipo || "PDF").toUpperCase()) + "</div></a>";
+      }).join("");
+      if (window.__magixReapplyDocFilter) window.__magixReapplyDocFilter();
+      runReveal();
+    }
+
+    // ── POSIZIONI pubbliche (view-lavora) ──
+    function renderPositions() {
+      const list = document.getElementById("posizioniList");
+      const empty = document.getElementById("posizioniEmpty");
+      const sel = document.getElementById("j-pos");
+      const open = POSITIONS.filter((p) => p.aperta !== false);
+      if (list) {
+        if (open.length) {
+          list.innerHTML = open.map((p) =>
+            '<div class="reveal lift bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">'
+            + '<div class="flex items-center gap-2 flex-wrap">'
+            + (p.tipo ? '<span class="text-[11px] font-semibold text-red bg-red/10 border border-red/20 rounded-full px-2.5 py-0.5">' + esc(p.tipo) + "</span>" : "")
+            + (p.luogo ? '<span class="mono text-[11px] text-faint">📍 ' + esc(p.luogo) + "</span>" : "")
+            + "</div>"
+            + '<h3 class="display font-bold text-xl mt-4 leading-snug">' + esc(p.titolo) + "</h3>"
+            + (p.descrizione ? '<p class="text-muted text-sm mt-2 leading-relaxed">' + esc(p.descrizione) + "</p>" : "")
+            + '<a href="#lavora-form" class="mt-5 inline-flex items-center gap-2 font-semibold text-red text-sm underline-grow w-fit">Candidati per questa posizione →</a></div>'
+          ).join("");
+          list.classList.remove("hidden");
+          if (empty) empty.classList.add("hidden");
+        } else {
+          list.innerHTML = "";
+          list.classList.add("hidden");
+          if (empty) empty.classList.remove("hidden");
+        }
+      }
+      if (sel) {
+        const cur = sel.value;
+        sel.innerHTML = '<option value="">Seleziona un\'area…</option>'
+          + (open.length
+            ? open.map((p) => '<option>' + esc(p.titolo) + "</option>").join("")
+            : ["Produzione", "Logistica", "Commerciale", "Amministrazione", "Tecnico di cantiere"].map((x) => "<option>" + x + "</option>").join(""));
+        if (cur) sel.value = cur;
+      }
+      runReveal();
+    }
+
+    // ── select categoria nel form prodotto: chiavi live (value=key, testo=label) ──
+    function populateProductCatSelect() {
+      const sel = document.getElementById("p-cat");
+      if (!sel) return;
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">Seleziona…</option>'
+        + Object.keys(CATALOG).map((k) => '<option value="' + esc(k) + '">' + esc(CATALOG[k].label || cap(k)) + "</option>").join("");
+      if (cur) sel.value = cur;
+    }
+
+    // ── upload diretto browser→Blob (supera il limite body delle functions) ──
+    async function uploadFile(file) {
+      const mod = await import("https://esm.sh/@vercel/blob@0.27.3/client");
+      const res = await mod.upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+        contentType: file.type || undefined,
+      });
+      return res.url;
+    }
+
+    // ══════════════════════ CONTROLLER ADMIN ══════════════════════
+    const loginOverlay = document.getElementById("adminLogin");
+    const loginForm = document.getElementById("adminLoginForm");
+    const loginMsg = document.getElementById("adminLoginMsg");
+    const passInput = document.getElementById("adminPass");
+    let authed = false;
+    let adminLoaded = false;
+
+    function showMsg(id, text, ok) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.classList.remove("hidden", "text-bio", "text-red");
+      el.classList.add(ok === false ? "text-red" : "text-bio");
+      if (ok !== false) setTimeout(() => el.classList.add("hidden"), 4000);
+    }
+    async function checkAuth() {
+      try {
+        const me = await API.get("/api/auth?action=me");
+        authed = !!(me && me.authed);
+      } catch (_) { authed = false; }
+      if (loginOverlay) loginOverlay.classList.toggle("hidden", authed);
+      if (authed && !adminLoaded) { adminLoaded = true; loadAdmin(); }
+      return authed;
+    }
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (loginMsg) loginMsg.classList.add("hidden");
+        try {
+          await API.send("/api/auth?action=login", "POST", { password: passInput ? passInput.value : "" });
+          authed = true;
+          if (passInput) passInput.value = "";
+          if (loginOverlay) loginOverlay.classList.add("hidden");
+          adminLoaded = true;
+          loadAdmin();
+        } catch (err) {
+          if (loginMsg) { loginMsg.textContent = err.status === 401 ? "Passphrase errata." : "Backend non disponibile."; loginMsg.classList.remove("hidden"); }
+        }
+      });
+    }
+    const logoutBtn = document.getElementById("adminLogout");
+    if (logoutBtn) logoutBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try { await API.send("/api/auth?action=logout", "POST", {}); } catch (_) {}
+      authed = false; adminLoaded = false;
+      if (loginOverlay) loginOverlay.classList.remove("hidden");
+    });
+
+    // gate all'apertura dell'area admin
+    document.querySelectorAll('[data-view="admin"]').forEach((a) =>
+      a.addEventListener("click", () => { setTimeout(checkAuth, 0); })
+    );
+
+    // ── caricamento dati admin + render liste ──
+    function loadAdmin() {
+      renderProdTable();
+      renderCatList();
+      renderNewsList();
+      renderDocList();
+      renderPosList();
+      updateKpis();
+    }
+    function updateKpis() {
+      const nProd = Object.values(CATALOG).reduce((s, c) => s + ((c.products || []).length), 0);
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set("kpiProducts", nProd);
+      set("kpiNews", NEWS.length);
+      set("kpiDownloads", DOCS.length);
+      set("kpiCategories", Object.keys(CATALOG).length);
+    }
+
+    function actionBtns(editAttrs, delAttrs) {
+      return '<button type="button" ' + editAttrs + ' class="js-edit text-[13px] font-semibold text-ink hover:text-red transition">Modifica</button>'
+        + '<button type="button" ' + delAttrs + ' class="js-del text-[13px] font-semibold text-faint hover:text-red transition ml-3">Elimina</button>';
+    }
+
+    // ── PRODOTTI: tabella dashboard ──
+    function renderProdTable() {
+      const tb = document.getElementById("prodTableBody");
+      const count = document.getElementById("prodCount");
+      if (!tb) return;
+      const rows = [];
+      Object.keys(CATALOG).forEach((catKey) => {
+        (CATALOG[catKey].products || []).forEach((p) => rows.push({ catKey, p }));
+      });
+      if (count) count.textContent = rows.length + " referenze";
+      tb.innerHTML = rows.length ? rows.map(({ catKey, p }) => {
+        const stato = (p.stato || "pubblicato").toLowerCase() === "bozza"
+          ? '<span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">Bozza</span>'
+          : '<span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">Pubblicato</span>';
+        return '<tr><td class="px-5 py-3"><input type="checkbox" class="accent-red w-4 h-4 rowChk" /></td>'
+          + '<td class="px-3 py-3 font-medium">' + esc(p.name) + "</td>"
+          + '<td class="px-3 py-3 mono text-faint">' + esc(p.code) + "</td>"
+          + '<td class="px-3 py-3 text-muted">' + esc(CATALOG[catKey].label || catKey) + "</td>"
+          + '<td class="px-3 py-3">' + stato + "</td>"
+          + '<td class="px-3 py-3 text-right whitespace-nowrap">' + actionBtns('data-edit-prod="' + esc(p.code) + '" data-cat="' + esc(catKey) + '"', 'data-del-prod="' + esc(p.code) + '" data-cat="' + esc(catKey) + '"') + "</td></tr>";
+      }).join("") : '<tr><td colspan="6" class="px-5 py-10 text-center text-muted">Nessun prodotto.</td></tr>';
+    }
+
+    // ── CATEGORIE: lista ──
+    function renderCatList() {
+      const box = document.getElementById("catList");
+      const count = document.getElementById("catCount");
+      if (!box) return;
+      const keys = Object.keys(CATALOG);
+      if (count) count.textContent = keys.length + " categorie";
+      box.innerHTML = keys.length ? keys.map((k) => {
+        const c = CATALOG[k];
+        return '<div class="px-5 py-3.5 flex items-center gap-3">'
+          + '<span class="mat ' + esc(c.mat || "mat-grey") + ' w-8 h-8 rounded-lg border border-line shrink-0"></span>'
+          + '<div class="min-w-0"><div class="font-medium truncate">' + esc(c.label || k) + '</div><div class="mono text-[11px] text-faint">' + ((c.products || []).length) + " prodotti</div></div>"
+          + '<div class="ml-auto whitespace-nowrap">' + actionBtns('data-edit-cat="' + esc(k) + '"', 'data-del-cat="' + esc(k) + '"') + "</div></div>";
+      }).join("") : '<div class="px-5 py-10 text-center text-muted">Nessuna categoria.</div>';
+    }
+
+    // ── NEWS: lista admin ──
+    function renderNewsList() {
+      const box = document.getElementById("newsList");
+      const count = document.getElementById("newsCount");
+      if (!box) return;
+      if (count) count.textContent = NEWS.length + " articoli";
+      box.innerHTML = NEWS.length ? NEWS.map((n) => {
+        const stato = (n.stato || "pubblicato") === "bozza"
+          ? '<span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">Bozza</span>'
+          : '<span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">Pubblicato</span>';
+        return '<div class="px-5 py-3.5 flex items-center gap-3"><div class="min-w-0">'
+          + '<div class="font-medium truncate">' + esc(n.titolo) + "</div>"
+          + '<div class="mono text-[11px] text-faint">' + esc(String(n.cat || "").toUpperCase()) + " · " + esc(n.data) + "</div></div>"
+          + '<div class="ml-auto flex items-center gap-3 whitespace-nowrap">' + stato + actionBtns('data-edit-news="' + esc(n.id) + '"', 'data-del-news="' + esc(n.id) + '"') + "</div></div>";
+      }).join("") : '<div class="px-5 py-10 text-center text-muted">Nessun articolo.</div>';
+    }
+
+    // ── DOCUMENTI: lista admin ──
+    function renderDocList() {
+      const box = document.getElementById("docList");
+      const count = document.getElementById("docCount");
+      if (!box) return;
+      if (count) count.textContent = DOCS.length + " documenti";
+      box.innerHTML = DOCS.length ? DOCS.map((d) =>
+        '<div class="px-5 py-3.5 flex items-center gap-3">' + docTypeBadge(d.tipo)
+        + '<div class="min-w-0"><div class="font-medium truncate">' + esc(d.nome) + "</div>"
+        + '<div class="mono text-[11px] text-faint">' + esc(String(d.cat || "").toUpperCase()) + (d.url ? "" : " · nessun file") + "</div></div>"
+        + '<div class="ml-auto whitespace-nowrap">' + actionBtns('data-edit-doc="' + esc(d.id) + '"', 'data-del-doc="' + esc(d.id) + '"') + "</div></div>"
+      ).join("") : '<div class="px-5 py-10 text-center text-muted">Nessun documento.</div>';
+    }
+
+    // ── POSIZIONI: lista admin ──
+    function renderPosList() {
+      const box = document.getElementById("posList");
+      const count = document.getElementById("posCount");
+      if (!box) return;
+      if (count) count.textContent = POSITIONS.length + " posizioni";
+      box.innerHTML = POSITIONS.length ? POSITIONS.map((p) => {
+        const stato = p.aperta !== false
+          ? '<span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">Aperta</span>'
+          : '<span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">Chiusa</span>';
+        return '<div class="px-5 py-3.5 flex items-center gap-3"><div class="min-w-0">'
+          + '<div class="font-medium truncate">' + esc(p.titolo) + "</div>"
+          + '<div class="mono text-[11px] text-faint">' + esc([p.luogo, p.tipo].filter(Boolean).join(" · ")) + "</div></div>"
+          + '<div class="ml-auto flex items-center gap-3 whitespace-nowrap">' + stato + actionBtns('data-edit-pos="' + esc(p.id) + '"', 'data-del-pos="' + esc(p.id) + '"') + "</div></div>";
+      }).join("") : '<div class="px-5 py-10 text-center text-muted">Nessuna posizione.</div>';
+    }
+
+    // ── refresh completo dopo una mutazione ──
+    function refreshPublicCatalog() {
+      injectNewCategoryCards();
+      populateProductCatSelect();
+      if (currentCatKey && CATALOG[currentCatKey]) renderCatalog(currentCatKey);
+    }
+
+    // ═════════════ FORM: PRODOTTO ═════════════
+    let prodEditCat = null; // categoria d'origine quando si modifica
+    const productForm = document.getElementById("productForm");
+    if (productForm) {
+      productForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+        const name = val("p-nome");
+        const catKey = val("p-cat");
+        if (!name || !catKey) { showMsg("productMsg", "Nome e categoria sono obbligatori.", false); return; }
+        let code = val("p-sku") || val("p-editcode");
+        if (!code) code = (name.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "")) || ("P" + name.length);
+        // spec dalle righe dinamiche
+        const spec = {};
+        document.querySelectorAll("#specRows .spec-row").forEach((row) => {
+          const ins = row.querySelectorAll("input");
+          const k = ins[0] && ins[0].value.trim(), v = ins[1] && ins[1].value.trim();
+          if (k && v) spec[k] = v;
+        });
+        // upload immagine se selezionata
+        let img = val("p-img-url");
+        const imgInput = document.getElementById("p-img");
+        try {
+          if (imgInput && imgInput.files && imgInput.files[0]) { showMsg("productMsg", "Caricamento immagine…", true); img = await uploadFile(imgInput.files[0]); }
+        } catch (err) { showMsg("productMsg", "Upload immagine fallito: " + err.message, false); return; }
+
+        const tags = val("p-tag") ? val("p-tag").split(",").map((s) => s.trim()).filter(Boolean) : undefined;
+        const product = {
+          code, name,
+          subtitle: val("p-sintesi"),
+          norma: val("p-norma"),
+          mat: (CATALOG[catKey] && CATALOG[catKey].mat) || "mat-grey",
+          availability: val("p-disp").toLowerCase().indexOf("richiesta") > -1 ? "order" : "stock",
+          stato: val("p-stato").toLowerCase() === "bozza" ? "bozza" : "pubblicato",
+          composizione: val("p-comp"),
+          impiego: val("p-impiego"),
+          applicazione: val("p-appl"),
+          conservazione_note: val("p-conserv"),
+          spec: Object.keys(spec).length ? spec : undefined,
+          formato: val("p-formato") || undefined,
+          tags,
+          img: img || undefined,
+        };
+        const editing = !!val("p-editcode");
+        try {
+          if (editing) {
+            await API.send("/api/catalog", "PUT", { kind: "product", catKey, oldCatKey: prodEditCat || catKey, code: val("p-editcode"), product });
+          } else {
+            await API.send("/api/catalog", "POST", { kind: "product", catKey, product });
+          }
+          await reloadCatalog();
+          productForm.reset();
+          document.getElementById("p-editcode").value = "";
+          document.getElementById("p-img-url").value = "";
+          prodEditCat = null;
+          showMsg("productMsg", editing ? "Prodotto aggiornato." : "Prodotto creato.");
+        } catch (err) { showMsg("productMsg", "Errore: " + err.message, false); }
+      });
+      productForm.addEventListener("reset", () => {
+        const h = document.getElementById("p-editcode"); if (h) h.value = "";
+        const u = document.getElementById("p-img-url"); if (u) u.value = "";
+        prodEditCat = null;
+      });
+    }
+
+    // ═════════════ FORM: CATEGORIA ═════════════
+    const catForm = document.getElementById("catForm");
+    if (catForm) {
+      catForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const label = (document.getElementById("cat-label") || {}).value || "";
+        const oldKey = (document.getElementById("cat-oldkey") || {}).value || "";
+        if (!label.trim()) { showMsg("catMsg", "Il nome categoria è obbligatorio.", false); return; }
+        const key = label.trim().toLowerCase();
+        const payload = {
+          kind: "category", key, oldKey: oldKey || undefined,
+          label: label.trim(),
+          mat: (document.getElementById("cat-mat") || {}).value || "mat-grey",
+          intro: (document.getElementById("cat-intro") || {}).value || "",
+        };
+        try {
+          await API.send("/api/catalog", oldKey ? "PUT" : "POST", payload);
+          await reloadCatalog();
+          catForm.reset();
+          document.getElementById("cat-oldkey").value = "";
+          showMsg("catMsg", oldKey ? "Categoria aggiornata." : "Categoria creata.");
+        } catch (err) { showMsg("catMsg", "Errore: " + err.message, false); }
+      });
+      const catReset = document.getElementById("catReset");
+      if (catReset) catReset.addEventListener("click", () => { catForm.reset(); document.getElementById("cat-oldkey").value = ""; });
+    }
+
+    // ═════════════ FORM: NEWS ═════════════
+    const newsForm = document.getElementById("newsForm");
+    if (newsForm) {
+      newsForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+        const titolo = val("n-titolo");
+        if (!titolo) { showMsg("newsMsg", "Il titolo è obbligatorio.", false); return; }
+        let img = val("n-img-url");
+        const imgInput = document.getElementById("n-img");
+        try {
+          if (imgInput && imgInput.files && imgInput.files[0]) { showMsg("newsMsg", "Caricamento immagine…", true); img = await uploadFile(imgInput.files[0]); }
+        } catch (err) { showMsg("newsMsg", "Upload immagine fallito: " + err.message, false); return; }
+        const id = val("n-editid");
+        const corpo = val("n-corpo").split(/\n{1,}/).map((s) => s.trim()).filter(Boolean);
+        const payload = {
+          titolo,
+          cat: val("n-cat") || "News",
+          data: fmtDate(val("n-data")),
+          dataISO: val("n-data") || undefined,
+          estratto: val("n-estratto"),
+          corpo,
+          img: img || undefined,
+          stato: val("n-stato").toLowerCase() === "bozza" ? "bozza" : "pubblicato",
+        };
+        try {
+          if (id) await API.send("/api/news", "PUT", Object.assign({ id }, payload));
+          else await API.send("/api/news", "POST", payload);
+          await reloadNews();
+          newsForm.reset();
+          document.getElementById("n-editid").value = "";
+          document.getElementById("n-img-url").value = "";
+          showMsg("newsMsg", id ? "Articolo aggiornato." : "Articolo pubblicato.");
+        } catch (err) { showMsg("newsMsg", "Errore: " + err.message, false); }
+      });
+      const newsReset = document.getElementById("newsReset");
+      if (newsReset) newsReset.addEventListener("click", () => { newsForm.reset(); document.getElementById("n-editid").value = ""; document.getElementById("n-img-url").value = ""; });
+    }
+
+    // ═════════════ FORM: DOCUMENTO ═════════════
+    const fileForm = document.getElementById("fileForm");
+    if (fileForm) {
+      fileForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+        const nome = val("f-nome");
+        if (!nome) { showMsg("fileMsg", "Il nome documento è obbligatorio.", false); return; }
+        let url = val("f-url");
+        let tipo = "PDF";
+        const fileInput = document.getElementById("f-file");
+        try {
+          if (fileInput && fileInput.files && fileInput.files[0]) {
+            const f = fileInput.files[0];
+            tipo = (f.name.split(".").pop() || "pdf").toUpperCase();
+            showMsg("fileMsg", "Caricamento file…", true);
+            url = await uploadFile(f);
+          } else if (url) {
+            tipo = (url.split(".").pop() || "pdf").toUpperCase().slice(0, 4);
+          }
+        } catch (err) { showMsg("fileMsg", "Upload file fallito: " + err.message, false); return; }
+        const id = val("f-editid");
+        const payload = { nome, cat: (document.getElementById("f-cat") || {}).value || "company", tipo, url: url || "", badge: "" };
+        // normalizza la categoria a slug minuscolo per il filtro pubblico
+        payload.cat = String(payload.cat).toLowerCase();
+        try {
+          if (id) await API.send("/api/documents", "PUT", Object.assign({ id }, payload));
+          else await API.send("/api/documents", "POST", payload);
+          await reloadDocs();
+          fileForm.reset();
+          document.getElementById("f-editid").value = "";
+          document.getElementById("f-url").value = "";
+          const fn = document.getElementById("f-name"); if (fn) fn.textContent = "Nessun file selezionato";
+          showMsg("fileMsg", id ? "Documento aggiornato." : "Documento caricato.");
+        } catch (err) { showMsg("fileMsg", "Errore: " + err.message, false); }
+      });
+    }
+
+    // ═════════════ FORM: POSIZIONE ═════════════
+    const posForm = document.getElementById("posForm");
+    if (posForm) {
+      posForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+        const titolo = val("pos-titolo");
+        if (!titolo) { showMsg("posMsg", "Il titolo è obbligatorio.", false); return; }
+        const id = val("pos-editid");
+        const aperta = !!(document.getElementById("pos-aperta") && document.getElementById("pos-aperta").checked);
+        const payload = { titolo, luogo: val("pos-luogo"), tipo: val("pos-tipo"), descrizione: val("pos-desc"), aperta };
+        try {
+          if (id) await API.send("/api/positions", "PUT", Object.assign({ id }, payload));
+          else await API.send("/api/positions", "POST", payload);
+          await reloadPositions();
+          posForm.reset();
+          document.getElementById("pos-editid").value = "";
+          showMsg("posMsg", id ? "Posizione aggiornata." : "Posizione creata.");
+        } catch (err) { showMsg("posMsg", "Errore: " + err.message, false); }
+      });
+      const posReset = document.getElementById("posReset");
+      if (posReset) posReset.addEventListener("click", () => { posForm.reset(); document.getElementById("pos-editid").value = ""; });
+    }
+
+    // ── edit/delete delegati su tutte le liste admin ──
+    document.addEventListener("click", async (e) => {
+      const t = e.target.closest("button");
+      if (!t) return;
+
+      // PRODOTTO
+      if (t.dataset.editProd) {
+        const code = t.dataset.editProd, catKey = t.dataset.cat;
+        const p = CATALOG[catKey] && (CATALOG[catKey].products || []).find((x) => x.code === code);
+        if (!p) return;
+        prodEditCat = catKey;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? "" : v; };
+        populateProductCatSelect();
+        set("p-editcode", p.code); set("p-nome", p.name); set("p-cat", catKey); set("p-sku", p.code);
+        set("p-norma", p.norma); set("p-sintesi", p.subtitle); set("p-comp", p.composizione);
+        set("p-impiego", p.impiego); set("p-appl", p.applicazione); set("p-conserv", p.conservazione_note);
+        set("p-formato", p.formato); set("p-img-url", p.img);
+        set("p-disp", p.availability === "order" ? "Su richiesta" : "Disponibile · pronta consegna");
+        set("p-stato", (p.stato || "pubblicato") === "bozza" ? "Bozza" : "Pubblicato");
+        set("p-tag", (p.tags || []).join(", "));
+        // ricostruisci righe spec
+        const rowsBox = document.getElementById("specRows");
+        if (rowsBox) {
+          const entries = Object.entries(p.spec || {});
+          rowsBox.innerHTML = (entries.length ? entries : [["", ""]]).map(([k, v]) =>
+            '<div class="spec-row flex gap-2"><input class="adm-in flex-1" placeholder="Caratteristica" value="' + esc(k) + '" /><input class="adm-in flex-1" placeholder="Valore" value="' + esc(v) + '" /><button type="button" class="spec-del h-11 w-11 grid place-items-center rounded-xl border border-line text-faint hover:text-red hover:border-red/40 transition shrink-0" aria-label="Rimuovi riga">✕</button></div>'
+          ).join("");
+        }
+        showAdminPanel("prodotti");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (t.dataset.delProd) {
+        if (!confirm("Eliminare il prodotto " + t.dataset.delProd + "?")) return;
+        try { await API.send("/api/catalog", "DELETE", { kind: "product", catKey: t.dataset.cat, code: t.dataset.delProd }); await reloadCatalog(); } catch (err) { alert("Errore: " + err.message); }
+        return;
+      }
+
+      // CATEGORIA
+      if (t.dataset.editCat) {
+        const k = t.dataset.editCat, c = CATALOG[k];
+        if (!c) return;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? "" : v; };
+        set("cat-oldkey", k); set("cat-label", c.label || k); set("cat-mat", c.mat || "mat-grey"); set("cat-intro", c.intro);
+        showAdminPanel("categorie");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (t.dataset.delCat) {
+        const k = t.dataset.delCat;
+        const n = (CATALOG[k] && (CATALOG[k].products || []).length) || 0;
+        if (!confirm("Eliminare la categoria \"" + ((CATALOG[k] && CATALOG[k].label) || k) + "\"" + (n ? " e i suoi " + n + " prodotti" : "") + "?")) return;
+        try { await API.send("/api/catalog", "DELETE", { kind: "category", key: k }); await reloadCatalog(); } catch (err) { alert("Errore: " + err.message); }
+        return;
+      }
+
+      // NEWS
+      if (t.dataset.editNews) {
+        const n = NEWS.find((x) => x.id === t.dataset.editNews);
+        if (!n) return;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? "" : v; };
+        set("n-editid", n.id); set("n-titolo", n.titolo); set("n-cat", n.cat); set("n-data", n.dataISO || toISO(n.data));
+        set("n-estratto", n.estratto); set("n-corpo", (n.corpo || []).join("\n\n")); set("n-img-url", n.img);
+        set("n-stato", (n.stato || "pubblicato") === "bozza" ? "Bozza" : "Pubblicato");
+        showAdminPanel("news");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (t.dataset.delNews) {
+        if (!confirm("Eliminare questo articolo?")) return;
+        try { await API.send("/api/news", "DELETE", { id: t.dataset.delNews }); await reloadNews(); } catch (err) { alert("Errore: " + err.message); }
+        return;
+      }
+
+      // DOCUMENTO
+      if (t.dataset.editDoc) {
+        const d = DOCS.find((x) => x.id === t.dataset.editDoc);
+        if (!d) return;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? "" : v; };
+        set("f-editid", d.id); set("f-nome", d.nome); set("f-cat", cap(d.cat)); set("f-url", d.url);
+        const fn = document.getElementById("f-name"); if (fn) fn.textContent = d.url ? "File attuale mantenuto" : "Nessun file selezionato";
+        showAdminPanel("download");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (t.dataset.delDoc) {
+        if (!confirm("Eliminare questo documento?")) return;
+        try { await API.send("/api/documents", "DELETE", { id: t.dataset.delDoc }); await reloadDocs(); } catch (err) { alert("Errore: " + err.message); }
+        return;
+      }
+
+      // POSIZIONE
+      if (t.dataset.editPos) {
+        const p = POSITIONS.find((x) => x.id === t.dataset.editPos);
+        if (!p) return;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? "" : v; };
+        set("pos-editid", p.id); set("pos-titolo", p.titolo); set("pos-luogo", p.luogo); set("pos-tipo", p.tipo); set("pos-desc", p.descrizione);
+        const chk = document.getElementById("pos-aperta"); if (chk) chk.checked = p.aperta !== false;
+        showAdminPanel("lavora");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (t.dataset.delPos) {
+        if (!confirm("Eliminare questa posizione?")) return;
+        try { await API.send("/api/positions", "DELETE", { id: t.dataset.delPos }); await reloadPositions(); } catch (err) { alert("Errore: " + err.message); }
+        return;
+      }
+    });
+
+    // ── reload per dominio (riflette subito su pubblico + admin) ──
+    async function reloadCatalog() {
+      try { applyCatalog(await API.get("/api/catalog")); } catch (_) {}
+      refreshPublicCatalog();
+      renderProdTable(); renderCatList(); updateKpis();
+    }
+    async function reloadNews() {
+      try { NEWS = await API.get("/api/news"); } catch (_) {}
+      renderNews(); renderNewsList(); updateKpis();
+    }
+    async function reloadDocs() {
+      try { DOCS = await API.get("/api/documents"); } catch (_) {}
+      renderDocs(); renderDocList(); updateKpis();
+    }
+    async function reloadPositions() {
+      try { POSITIONS = await API.get("/api/positions"); } catch (_) {}
+      renderPositions(); renderPosList(); updateKpis();
+    }
+
+    // ── BOOT: carica i dati pubblici; su errore mantiene i bundle statici ──
+    (async function boot() {
+      const results = await Promise.allSettled([
+        API.get("/api/catalog"),
+        API.get("/api/news"),
+        API.get("/api/documents"),
+        API.get("/api/positions"),
+      ]);
+      const [cat, news, docs, pos] = results;
+      if (cat.status === "fulfilled" && cat.value && typeof cat.value === "object") {
+        applyCatalog(cat.value);
+        injectNewCategoryCards();
+        populateProductCatSelect();
+        if (currentCatKey && CATALOG[currentCatKey]) renderCatalog(currentCatKey);
+      }
+      if (news.status === "fulfilled" && Array.isArray(news.value)) { NEWS = news.value; renderNews(); }
+      if (docs.status === "fulfilled" && Array.isArray(docs.value)) { DOCS = docs.value; renderDocs(); }
+      if (pos.status === "fulfilled" && Array.isArray(pos.value)) { POSITIONS = pos.value; renderPositions(); }
+    })();
   })();
 
   // ── init ──
