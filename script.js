@@ -197,13 +197,15 @@
     if (swatch) {
       let heroImg = document.getElementById("pHeroImg");
       if (p.img) {
-        swatch.className = "rounded-3xl aspect-[4/3] shadow-soft border border-line relative bg-white flex items-center justify-center overflow-hidden";
+        swatch.className = "rounded-3xl aspect-[4/3] shadow-soft border border-line relative bg-white flex items-center justify-center overflow-hidden cursor-zoom-in";
         if (!heroImg) {
           heroImg = document.createElement("img");
           heroImg.id = "pHeroImg";
-          heroImg.className = "max-h-full max-w-full object-contain p-6";
+          heroImg.className = "max-h-full max-w-full object-contain p-6 transition-transform duration-200 ease-out will-change-transform";
           swatch.insertBefore(heroImg, swatch.firstChild);
         }
+        heroImg.style.transform = "scale(1)";
+        heroImg.style.transformOrigin = "center center";
         heroImg.src = encodeURI(p.img);
         heroImg.alt = "Magix " + p.name;
       } else {
@@ -365,6 +367,32 @@
       t.classList.forEach(c => { if (matClasses.includes(c)) main.classList.add(c); });
     }
   }));
+
+  // ── product hero: zoom fluido al passaggio del mouse (solo sull'area immagine) ──
+  // Usa transform:scale con transform-origin che segue il cursore (GPU, performante).
+  // Lo scale è animato (transition-transform); l'origin si aggiorna istantaneo così
+  // lo zoom resta agganciato al punto sotto al puntatore. Layout/aspect-ratio invariati
+  // (il contenitore è overflow-hidden). Funziona con foto orizzontali e verticali.
+  (function () {
+    const box = document.getElementById("mainSwatch");
+    if (!box) return;
+    const ZOOM = 2.2;
+    box.addEventListener("mousemove", (e) => {
+      const img = document.getElementById("pHeroImg");
+      if (!img) return; // attivo solo quando c'è una foto reale, non sullo swatch materico
+      const r = box.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      img.style.transformOrigin = x + "% " + y + "%";
+      img.style.transform = "scale(" + ZOOM + ")";
+    });
+    box.addEventListener("mouseleave", () => {
+      const img = document.getElementById("pHeroImg");
+      if (!img) return;
+      img.style.transform = "scale(1)";
+      img.style.transformOrigin = "center center";
+    });
+  })();
 
   // ── admin: bulk select ──
   const rowChks = document.querySelectorAll(".rowChk");
