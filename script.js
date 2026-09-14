@@ -652,7 +652,11 @@
     const t = document.getElementById("adminTitle");
     if (t && adminTitles[name]) t.textContent = adminTitles[name];
   }
-  document.querySelectorAll("[data-panel]").forEach(el =>
+  // Solo i "trigger" (link sidebar, bottoni dashboard) cambiano pannello: si escludono
+  // i <div> contenitori .admin-panel, che pure hanno data-panel. Senza :not(.admin-panel)
+  // il preventDefault su ogni click dentro un pannello impedirebbe il toggle di
+  // checkbox/select interni (es. "km a mano", "andata e ritorno", "posizione aperta").
+  document.querySelectorAll("[data-panel]:not(.admin-panel)").forEach(el =>
     el.addEventListener("click", (e) => { e.preventDefault(); showAdminPanel(el.dataset.panel); })
   );
 
