@@ -18,6 +18,7 @@ const SEEDS = {
   news: require("../_seed/news.json"),
   documents: require("../_seed/documents.json"),
   positions: require("../_seed/positions.json"),
+  trips: require("../_seed/trips.json"), // storico trasferte (area riservata)
 };
 
 const PREFIX = "magix-data/";

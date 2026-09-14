@@ -635,7 +635,7 @@
   }
 
   // ── admin: panel switching ──
-  const adminTitles = { dashboard: "Dashboard", categorie: "Categorie", prodotti: "Prodotti", news: "News", download: "Cataloghi & download", lavora: "Posizioni" };
+  const adminTitles = { dashboard: "Dashboard", categorie: "Categorie", prodotti: "Prodotti", news: "News", download: "Cataloghi & download", lavora: "Posizioni", trasferte: "Trasferte & trasporti" };
   const adminPanels = [...document.querySelectorAll(".admin-panel")];
   const apanelLinks = [...document.querySelectorAll(".apanel-link")];
   function showAdminPanel(name) {
@@ -982,6 +982,7 @@
     let NEWS = [];
     let DOCS = [];
     let POSITIONS = [];
+    let TRIPS = []; // storico trasferte (caricato solo dopo login: GET protetta)
 
     // ── helper data: "2019-11-23" → "23 NOV 2019" ──
     const MESI = ["GEN", "FEB", "MAR", "APR", "MAG", "GIU", "LUG", "AGO", "SET", "OTT", "NOV", "DIC"];
@@ -1257,6 +1258,7 @@
       renderNewsList();
       renderDocList();
       renderPosList();
+      reloadTrips();
       updateKpis();
     }
     function updateKpis() {
@@ -1687,6 +1689,263 @@
       try { POSITIONS = await API.get("/api/positions"); } catch (_) {}
       renderPositions(); renderPosList(); updateKpis();
     }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  TOOL TRASFERTE & TRASPORTI (area riservata · BETA)
+    //  Distanza via proxy ORS (/api/geo) o km manuali → consumo → costo totale.
+    //  Storico su /api/trips (GET protetta). Fallback morbido ai km manuali.
+    // ══════════════════════════════════════════════════════════════════
+    const CARB_LABEL = { diesel: "Diesel", benzina: "Benzina", gpl: "GPL", elettrico: "Elettrico" };
+    const trEur = (n) => "€ " + (Number(n) || 0).toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const trFmtKm = (n) => (Math.round((Number(n) || 0) * 10) / 10).toLocaleString("it-IT") + " km";
+    const trFmtNum = (n) => (Math.round((Number(n) || 0) * 10) / 10).toLocaleString("it-IT");
+    const trFmtDur = (min) => { const h = Math.floor(min / 60), m = Math.round(min % 60); return h ? (h + " h " + m + " min") : (m + " min"); };
+    const trRound2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
+
+    function renderTrips() {
+      const tb = document.getElementById("tr-list"), count = document.getElementById("tr-count");
+      if (!tb) return;
+      if (count) count.textContent = TRIPS.length ? (TRIPS.length + (TRIPS.length === 1 ? " trasferta" : " trasferte")) : "—";
+      if (!TRIPS.length) {
+        tb.innerHTML = '<tr><td colspan="5" class="px-5 py-10 text-center text-muted">Nessuna trasferta salvata.</td></tr>';
+        return;
+      }
+      tb.innerHTML = TRIPS.map((t) =>
+        '<tr>' +
+        '<td class="px-5 py-3 mono text-[13px] whitespace-nowrap">' + esc(t.data || "—") + '</td>' +
+        '<td class="px-3 py-3">' + esc(t.partenza || "—") + ' <span class="text-faint">→</span> ' + esc(t.arrivo || "—") + (t.andataRitorno ? ' <span class="mono text-[10px] text-faint">A/R</span>' : '') + '</td>' +
+        '<td class="px-3 py-3 mono text-right whitespace-nowrap">' + trFmtKm(t.km) + '</td>' +
+        '<td class="px-3 py-3 mono text-right font-semibold whitespace-nowrap">' + trEur(t.totale) + '</td>' +
+        '<td class="px-3 py-3 text-right whitespace-nowrap">' +
+          '<button type="button" data-tr-csv="' + esc(t.id) + '" class="text-[13px] font-semibold text-ink hover:text-red transition">CSV</button>' +
+          '<button type="button" data-tr-del="' + esc(t.id) + '" class="text-[13px] font-semibold text-faint hover:text-red transition ml-3">Elimina</button>' +
+        '</td></tr>'
+      ).join("");
+    }
+    function reloadTrips() {
+      if (!document.getElementById("tr-list")) return Promise.resolve();
+      return API.get("/api/trips")
+        .then((d) => { TRIPS = Array.isArray(d) ? d : []; renderTrips(); })
+        .catch(() => { renderTrips(); });
+    }
+
+    (function initTrasferte() {
+      const tripForm = document.getElementById("tripForm");
+      if (!tripForm) return;
+      const el = (id) => document.getElementById(id);
+      // consumo/prezzo indicativi per carburante (placeholder editabili)
+      const FUEL = {
+        diesel:    { unit: "l",   per: "l/100km",   price: 1.75, cons: 9 },
+        benzina:   { unit: "l",   per: "l/100km",   price: 1.85, cons: 8 },
+        gpl:       { unit: "l",   per: "l/100km",   price: 0.72, cons: 11 },
+        elettrico: { unit: "kWh", per: "kWh/100km", price: 0.35, cons: 18 },
+      };
+      const num = (id) => { const n = parseFloat(String((el(id) || {}).value || "").replace(",", ".")); return isFinite(n) ? n : 0; };
+      let lastResult = null;
+
+      function showMsg(text, ok) {
+        const m = el("tr-msg");
+        if (!text) { m.classList.add("hidden"); return; }
+        m.textContent = text;
+        m.classList.remove("hidden");
+        m.classList.toggle("text-bio", !!ok);
+        m.classList.toggle("text-red", !ok);
+      }
+      function setLoading(on) {
+        const b = el("tr-calc");
+        b.disabled = on;
+        b.classList.toggle("opacity-60", on);
+        b.classList.toggle("pointer-events-none", on);
+      }
+      function applyFuelDefaults(force) {
+        const f = FUEL[el("tr-carb").value] || FUEL.diesel;
+        el("tr-consumoUnit").textContent = "(" + f.per + ")";
+        el("tr-prezzoUnit").textContent = "(€/" + f.unit + ")";
+        if (force || !el("tr-prezzo").value) el("tr-prezzo").value = f.price;
+        if (force || !el("tr-consumo").value) el("tr-consumo").value = f.cons;
+      }
+      el("tr-carb").addEventListener("change", () => applyFuelDefaults(true));
+      applyFuelDefaults(false);
+
+      el("tr-manual").addEventListener("change", () => {
+        el("tr-kmWrap").classList.toggle("hidden", !el("tr-manual").checked);
+      });
+
+      // ── autocomplete indirizzi (proxy /api/geo) ──
+      function bindAutocomplete(inputId, sugId, latId, lngId) {
+        const input = el(inputId), box = el(sugId);
+        let timer, items = [], active = -1;
+        const close = () => { box.classList.add("hidden"); box.innerHTML = ""; active = -1; };
+        const choose = (s) => { input.value = s.label; el(latId).value = s.lat; el(lngId).value = s.lng; close(); };
+        function render() {
+          box.innerHTML = items.map((s, i) =>
+            '<button type="button" data-i="' + i + '"' + (i === active ? ' class="active"' : '') + '>' + esc(s.label) + '</button>'
+          ).join("");
+          box.classList.toggle("hidden", items.length === 0);
+        }
+        input.addEventListener("input", () => {
+          el(latId).value = ""; el(lngId).value = ""; // invalida coord finché non si sceglie
+          const q = input.value.trim();
+          clearTimeout(timer);
+          if (q.length < 3 || el("tr-manual").checked) { close(); return; }
+          timer = setTimeout(async () => {
+            try {
+              const r = await API.get("/api/geo?action=autocomplete&q=" + encodeURIComponent(q));
+              items = (r && r.suggestions) || []; active = -1; render();
+            } catch (_) { close(); }
+          }, 300);
+        });
+        input.addEventListener("keydown", (e) => {
+          if (box.classList.contains("hidden")) return;
+          if (e.key === "ArrowDown") { e.preventDefault(); active = Math.min(active + 1, items.length - 1); render(); }
+          else if (e.key === "ArrowUp") { e.preventDefault(); active = Math.max(active - 1, 0); render(); }
+          else if (e.key === "Enter" && active > -1) { e.preventDefault(); choose(items[active]); }
+          else if (e.key === "Escape") { close(); }
+        });
+        box.addEventListener("mousedown", (e) => { // mousedown precede il blur dell'input
+          const b = e.target.closest("button[data-i]");
+          if (b) { e.preventDefault(); choose(items[+b.dataset.i]); }
+        });
+        input.addEventListener("blur", () => setTimeout(close, 150));
+      }
+      bindAutocomplete("tr-partenza", "tr-partSug", "tr-partLat", "tr-partLng");
+      bindAutocomplete("tr-arrivo", "tr-arrSug", "tr-arrLat", "tr-arrLng");
+
+      // ── calcolo ──
+      async function calcola() {
+        const consumo = num("tr-consumo"), prezzo = num("tr-prezzo");
+        if (!consumo || !prezzo) { showMsg("Inserisci consumo e prezzo carburante.", false); return; }
+
+        let km, durMin = null;
+        if (el("tr-manual").checked) {
+          km = num("tr-km");
+          if (!km) { showMsg("Inserisci i chilometri.", false); return; }
+        } else {
+          const from = el("tr-partLat").value && (el("tr-partLat").value + "," + el("tr-partLng").value);
+          const to = el("tr-arrLat").value && (el("tr-arrLat").value + "," + el("tr-arrLng").value);
+          if (!from || !to) { showMsg("Seleziona partenza e arrivo dai suggerimenti, oppure spunta «Inserisci km a mano».", false); return; }
+          setLoading(true);
+          try {
+            const r = await API.get("/api/geo?action=route&from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to));
+            km = r.distance_km; durMin = r.duration_min;
+          } catch (e) {
+            setLoading(false);
+            showMsg("Routing non disponibile" + (e.status === 503 ? " (ORS_API_KEY non configurata)" : "") + ": inserisci i km a mano.", false);
+            el("tr-manual").checked = true; el("tr-kmWrap").classList.remove("hidden");
+            return;
+          }
+          setLoading(false);
+        }
+
+        const ar = el("tr-ar").checked ? 2 : 1;
+        const kmTot = km * ar;
+        const consumoTot = consumo / 100 * kmTot;
+        const costoCarb = consumoTot * prezzo;
+        const costoUsura = kmTot * num("tr-usura");
+        const pedaggi = num("tr-pedaggi") * ar;
+        const extra = num("tr-extra") * ar;
+        const totale = costoCarb + costoUsura + pedaggi + extra;
+        const f = FUEL[el("tr-carb").value] || FUEL.diesel;
+
+        lastResult = {
+          data: new Date().toISOString().slice(0, 10),
+          partenza: el("tr-partenza").value.trim(),
+          arrivo: el("tr-arrivo").value.trim(),
+          km: trRound2(kmTot),
+          andataRitorno: ar === 2,
+          veicolo: el("tr-veicolo").value.trim(),
+          carburante: el("tr-carb").value,
+          consumo: consumo, prezzoUnita: prezzo, caricoKg: num("tr-carico"),
+          costoCarburante: trRound2(costoCarb), costoUsura: trRound2(costoUsura),
+          pedaggi: trRound2(pedaggi), extra: trRound2(extra), totale: trRound2(totale),
+          note: el("tr-note").value.trim(),
+        };
+
+        el("tr-oKm").textContent = trFmtKm(kmTot) + (ar === 2 ? " (A/R)" : "");
+        el("tr-oDur").textContent = durMin != null ? trFmtDur(durMin * ar) : "—";
+        el("tr-oConsumo").textContent = trFmtNum(consumoTot) + " " + f.unit;
+        el("tr-oCarb").textContent = trEur(costoCarb);
+        el("tr-oUsura").textContent = trEur(costoUsura);
+        el("tr-oExtra").textContent = trEur(pedaggi + extra);
+        el("tr-oTot").textContent = trEur(totale);
+        ["tr-save", "tr-csv", "tr-print"].forEach((id) => { el(id).disabled = false; });
+        showMsg("");
+      }
+
+      // ── export CSV + stampa ──
+      const csvCell = (v) => { const s = String(v == null ? "" : v); return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+      function downloadCsv(rows) {
+        const head = ["Data", "Partenza", "Arrivo", "Km", "A/R", "Veicolo", "Carburante", "Consumo", "Prezzo", "Carburante EUR", "Usura EUR", "Pedaggi EUR", "Extra EUR", "Totale EUR", "Note"];
+        const lines = [head.join(";")].concat(rows.map((t) => [
+          t.data, t.partenza, t.arrivo, t.km, t.andataRitorno ? "Sì" : "No", t.veicolo,
+          CARB_LABEL[t.carburante] || t.carburante, t.consumo, t.prezzoUnita,
+          t.costoCarburante, t.costoUsura, t.pedaggi, t.extra, t.totale, t.note,
+        ].map(csvCell).join(";")));
+        const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "trasferte-magix" + (rows.length === 1 && rows[0].data ? "-" + rows[0].data : "") + ".csv";
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 100);
+      }
+      function printTrip(t) {
+        let area = document.getElementById("tr-print-area");
+        if (!area) { area = document.createElement("div"); area.id = "tr-print-area"; document.body.appendChild(area); }
+        const row = (k, v) => '<div style="display:flex;justify-content:space-between;gap:2rem;padding:.4rem 0;border-bottom:1px solid #eee"><span style="color:#666">' + esc(k) + '</span><strong>' + esc(v) + '</strong></div>';
+        area.innerHTML =
+          '<h1 style="font-family:sans-serif;margin:0 0 .25rem">Riepilogo trasferta — Magix</h1>' +
+          '<div style="color:#666;font-family:sans-serif;margin-bottom:1rem">' + esc(t.data) + '</div>' +
+          row("Partenza", t.partenza || "—") + row("Arrivo", t.arrivo || "—") +
+          row("Distanza", trFmtKm(t.km) + (t.andataRitorno ? " (andata e ritorno)" : "")) +
+          row("Veicolo", (t.veicolo || "—") + " · " + (CARB_LABEL[t.carburante] || t.carburante)) +
+          row("Costo carburante", trEur(t.costoCarburante)) + row("Usura", trEur(t.costoUsura)) +
+          row("Pedaggi", trEur(t.pedaggi)) + row("Altri costi", trEur(t.extra)) +
+          (t.note ? row("Note", t.note) : "") +
+          '<div style="display:flex;justify-content:space-between;gap:2rem;margin-top:1rem;font-size:1.3rem;font-family:sans-serif"><strong>Totale</strong><strong>' + trEur(t.totale) + '</strong></div>';
+        document.body.classList.add("tr-printing");
+        const done = () => { document.body.classList.remove("tr-printing"); window.removeEventListener("afterprint", done); };
+        window.addEventListener("afterprint", done);
+        window.print();
+      }
+
+      // ── salva / esporta / stampa / reset ──
+      el("tr-save").addEventListener("click", async () => {
+        if (!lastResult) return;
+        const editid = el("tr-editid").value;
+        try {
+          if (editid) await API.send("/api/trips", "PUT", Object.assign({ id: editid }, lastResult));
+          else await API.send("/api/trips", "POST", lastResult);
+          el("tr-editid").value = "";
+          showMsg("Trasferta salvata nello storico.", true);
+          await reloadTrips();
+        } catch (e) { showMsg("Errore nel salvataggio: " + e.message, false); }
+      });
+      el("tr-csv").addEventListener("click", () => { if (lastResult) downloadCsv([lastResult]); });
+      el("tr-print").addEventListener("click", () => { if (lastResult) printTrip(lastResult); });
+      el("tr-calc").addEventListener("click", calcola);
+      el("tr-reset").addEventListener("click", () => {
+        tripForm.reset();
+        ["tr-partLat", "tr-partLng", "tr-arrLat", "tr-arrLng", "tr-editid"].forEach((id) => { el(id).value = ""; });
+        el("tr-kmWrap").classList.add("hidden");
+        el("tr-usura").value = "0.20";
+        applyFuelDefaults(true);
+        ["tr-oKm", "tr-oDur", "tr-oConsumo", "tr-oCarb", "tr-oUsura", "tr-oExtra", "tr-oTot"].forEach((id) => { el(id).textContent = "—"; });
+        ["tr-save", "tr-csv", "tr-print"].forEach((id) => { el(id).disabled = true; });
+        lastResult = null; showMsg("");
+      });
+
+      // ── azioni sullo storico (delegate) ──
+      el("tr-list").addEventListener("click", async (e) => {
+        const csvB = e.target.closest("[data-tr-csv]");
+        const delB = e.target.closest("[data-tr-del]");
+        if (csvB) { const t = TRIPS.find((x) => x.id === csvB.dataset.trCsv); if (t) downloadCsv([t]); return; }
+        if (delB) {
+          if (!confirm("Eliminare questa trasferta dallo storico?")) return;
+          try { await API.send("/api/trips", "DELETE", { id: delB.dataset.trDel }); await reloadTrips(); }
+          catch (err) { showMsg("Errore: " + err.message, false); }
+        }
+      });
+    })();
 
     // ── BOOT: carica i dati pubblici; su errore mantiene i bundle statici ──
     (async function boot() {

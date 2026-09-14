@@ -34,6 +34,20 @@ Le GET sono pubbliche (il sito legge i contenuti); ogni operazione di scrittura 
 richiede l'autenticazione tramite cookie di sessione firmato. Se il backend non è configurato o non
 risponde, il sito pubblico **ricade automaticamente sui dati statici** e resta perfettamente funzionante.
 
+### Tool "Trasferte & trasporti" (BETA, dentro l'area riservata)
+
+Nel pannello admin (sidebar → sezione **Strumenti → Trasferte & trasporti**) c'è un calcolatore dei
+costi di trasferta accessibile **solo dopo il login**. Calcola distanza, consumo carburante e costo
+totale del viaggio, con storico salvato sul backend.
+
+- **Distanza/percorso**: proxy server-side verso **OpenRouteService** (`api/geo.js`) — autocomplete
+  indirizzi + routing su strada. La chiave `ORS_API_KEY` resta solo lato server e la route è protetta
+  da autenticazione. In alternativa si possono inserire i **km a mano** (nessuna dipendenza esterna).
+- **Storico**: collezione privata `trips` su Vercel Blob (`api/trips.js`), con **GET protetta** oltre
+  alle scritture (a differenza di catalogo/news/documenti/posizioni, che hanno GET pubblica).
+- **Export**: ogni riepilogo è esportabile in **CSV** o via **stampa/PDF**.
+- **Fallback morbido**: se `ORS_API_KEY` manca o ORS non risponde, il tool avvisa e passa ai km manuali.
+
 ### Setup (una tantum)
 
 1. **Crea il Blob store**: Vercel → progetto → **Storage → Create → Blob** → connetti al progetto
@@ -41,6 +55,7 @@ risponde, il sito pubblico **ricade automaticamente sui dati statici** e resta p
 2. **Imposta le variabili d'ambiente** (Settings → Environment Variables), vedi `.env.example`:
    - `ADMIN_PASSWORD` — la passphrase d'accesso all'area riservata.
    - `AUTH_SECRET` — segreto per firmare il cookie (`openssl rand -hex 32`).
+   - `ORS_API_KEY` — (opzionale) chiave OpenRouteService per il tool "Trasferte & trasporti".
 3. Redeploy.
 
 ### Sviluppo locale dell'area riservata

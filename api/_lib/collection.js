@@ -13,11 +13,15 @@ function parseBody(req) {
   return body || {};
 }
 
-function arrayCrud(name, sanitize) {
+// opts.protectGet: se true, anche la GET richiede autenticazione (dati privati,
+// es. storico trasferte). Default: GET pubblica (catalogo/news/documenti/posizioni).
+function arrayCrud(name, sanitize, opts) {
   sanitize = sanitize || ((x) => x);
+  const protectGet = !!(opts && opts.protectGet);
   return async function handler(req, res) {
     try {
       if (req.method === "GET") {
+        if (protectGet && !requireAuth(req, res)) return;
         return res.status(200).json(await readCollection(name));
       }
       if (!requireAuth(req, res)) return;

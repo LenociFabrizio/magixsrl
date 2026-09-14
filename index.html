@@ -882,6 +882,9 @@
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="news"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> News</a>
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="download"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Cataloghi &amp; download</a>
         <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="lavora"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Lavora con noi</a>
+        <div class="pt-3 mt-3 border-t border-white/10"></div>
+        <div class="px-3 pt-1 pb-1.5 flex items-center gap-2"><span class="mono text-[10px] tracking-[.18em] text-white/30">STRUMENTI</span><span class="mono text-[9px] px-1.5 py-0.5 rounded bg-red/25 text-red">BETA</span></div>
+        <a class="apanel-link flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-panel="trasferte"><span class="dot w-1.5 h-1.5 rounded-full bg-white/20"></span> Trasferte &amp; trasporti</a>
         <div class="pt-4 mt-4 border-t border-white/10"></div>
         <a id="adminLogout" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition cursor-pointer" href="#"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> Esci (logout)</a>
         <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition" href="#" data-view="home"><span class="w-1.5 h-1.5 rounded-full bg-white/20"></span> ← Torna al sito</a>
@@ -1265,6 +1268,128 @@
           <div class="lg:col-span-2 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden self-start">
             <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Posizioni</div><span id="posCount" class="mono text-[12px] text-faint">—</span></div>
             <div id="posList" class="divide-y divide-linesoft"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- panel: trasferte & trasporti (tool area riservata · BETA) -->
+      <div class="admin-panel hidden p-6" data-panel="trasferte">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div class="display font-bold text-xl flex items-center gap-2">Calcolo costi trasferta <span class="mono text-[10px] px-1.5 py-0.5 rounded bg-red/10 text-red">BETA</span></div>
+            <div class="mono text-[11px] text-faint mt-1">Stima distanza, consumo carburante e costo totale del viaggio</div>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" id="tr-reset" class="h-10 px-4 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition">Nuova trasferta</button>
+            <button type="button" id="tr-calc" class="h-10 px-4 rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft flex items-center gap-1.5"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M18 7v4a4 4 0 0 1-4 4H8a4 4 0 0 0-2 3"/></svg> Calcola percorso</button>
+          </div>
+        </div>
+        <p id="tr-msg" class="hidden mt-4 text-sm font-medium"></p>
+
+        <div class="mt-6 grid lg:grid-cols-3 gap-6">
+          <!-- form (2 colonne) -->
+          <form id="tripForm" class="lg:col-span-2 space-y-6" novalidate>
+            <input type="hidden" id="tr-editid" />
+
+            <!-- percorso -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">PERCORSO</div>
+              <div class="grid gap-4 mt-4">
+                <div class="relative">
+                  <label class="adm-label" for="tr-partenza">Indirizzo di partenza</label>
+                  <input id="tr-partenza" class="adm-in" autocomplete="off" placeholder="Via, città…" />
+                  <input type="hidden" id="tr-partLat" /><input type="hidden" id="tr-partLng" />
+                  <div id="tr-partSug" class="tr-sug hidden"></div>
+                </div>
+                <div class="relative">
+                  <label class="adm-label" for="tr-arrivo">Indirizzo di arrivo</label>
+                  <input id="tr-arrivo" class="adm-in" autocomplete="off" placeholder="Via, città…" />
+                  <input type="hidden" id="tr-arrLat" /><input type="hidden" id="tr-arrLng" />
+                  <div id="tr-arrSug" class="tr-sug hidden"></div>
+                </div>
+                <div class="grid sm:grid-cols-2 gap-4 items-end">
+                  <label class="flex items-center gap-2 text-sm h-11"><input type="checkbox" id="tr-manual" class="accent-red w-4 h-4" /> Inserisci km a mano</label>
+                  <div id="tr-kmWrap" class="hidden"><label class="adm-label" for="tr-km">Chilometri (sola andata)</label><input id="tr-km" type="number" min="0" step="0.1" class="adm-in mono" placeholder="0" /></div>
+                </div>
+                <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="tr-ar" class="accent-red w-4 h-4" /> Andata e ritorno (raddoppia distanza e costi)</label>
+              </div>
+            </div>
+
+            <!-- veicolo -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">VEICOLO &amp; CARBURANTE</div>
+              <div class="grid sm:grid-cols-2 gap-4 mt-4">
+                <div><label class="adm-label" for="tr-veicolo">Modello veicolo</label><input id="tr-veicolo" class="adm-in" placeholder="Es. Fiat Ducato" /></div>
+                <div>
+                  <label class="adm-label" for="tr-carb">Tipo carburante</label>
+                  <select id="tr-carb" class="adm-in">
+                    <option value="diesel">Diesel</option>
+                    <option value="benzina">Benzina</option>
+                    <option value="gpl">GPL</option>
+                    <option value="elettrico">Elettrico</option>
+                  </select>
+                </div>
+                <div><label class="adm-label" for="tr-consumo">Consumo medio <span id="tr-consumoUnit" class="text-faint normal-case tracking-normal">(l/100km)</span></label><input id="tr-consumo" type="number" min="0" step="0.1" class="adm-in mono" placeholder="9" /></div>
+                <div><label class="adm-label" for="tr-prezzo">Prezzo <span id="tr-prezzoUnit" class="text-faint normal-case tracking-normal">(€/l)</span></label><input id="tr-prezzo" type="number" min="0" step="0.001" class="adm-in mono" /></div>
+                <div class="sm:col-span-2"><label class="adm-label" for="tr-carico">Peso/volume carico <span class="text-faint normal-case tracking-normal">(opzionale, kg)</span></label><input id="tr-carico" type="number" min="0" step="1" class="adm-in mono" placeholder="0" /></div>
+              </div>
+            </div>
+
+            <!-- costi -->
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6">
+              <div class="kicker text-red">COSTI AGGIUNTIVI</div>
+              <div class="grid sm:grid-cols-3 gap-4 mt-4">
+                <div><label class="adm-label" for="tr-usura">Costo km <span class="text-faint normal-case tracking-normal">(usura, €/km)</span></label><input id="tr-usura" type="number" min="0" step="0.01" class="adm-in mono" value="0.20" /></div>
+                <div><label class="adm-label" for="tr-pedaggi">Pedaggi (€)</label><input id="tr-pedaggi" type="number" min="0" step="0.5" class="adm-in mono" placeholder="0" /></div>
+                <div><label class="adm-label" for="tr-extra">Altri costi (€)</label><input id="tr-extra" type="number" min="0" step="0.5" class="adm-in mono" placeholder="0" /></div>
+                <div class="sm:col-span-3"><label class="adm-label" for="tr-note">Note</label><input id="tr-note" class="adm-in" placeholder="Cliente, commessa, riferimento…" /></div>
+              </div>
+            </div>
+          </form>
+
+          <!-- riepilogo (1 colonna, sticky) -->
+          <div class="space-y-6">
+            <div class="bg-surface rounded-2xl border border-line shadow-soft p-6 lg:sticky lg:top-20">
+              <div class="kicker text-red">RIEPILOGO</div>
+              <dl class="mt-4 space-y-2.5 text-sm">
+                <div class="flex justify-between gap-3"><dt class="text-muted">Distanza</dt><dd id="tr-oKm" class="mono font-medium">—</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-muted">Durata stimata</dt><dd id="tr-oDur" class="mono font-medium">—</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-muted">Consumo</dt><dd id="tr-oConsumo" class="mono font-medium">—</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-muted">Carburante</dt><dd id="tr-oCarb" class="mono font-medium">—</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-muted">Usura</dt><dd id="tr-oUsura" class="mono font-medium">—</dd></div>
+                <div class="flex justify-between gap-3"><dt class="text-muted">Pedaggi + extra</dt><dd id="tr-oExtra" class="mono font-medium">—</dd></div>
+                <div class="flex justify-between gap-3 pt-3 mt-1 border-t border-line text-base"><dt class="display font-bold">Totale</dt><dd id="tr-oTot" class="display font-extrabold text-red">—</dd></div>
+              </dl>
+              <div class="grid gap-2 mt-5">
+                <button type="button" id="tr-save" class="h-10 rounded-xl bg-graphite text-white text-sm font-semibold hover:bg-black transition disabled:opacity-40 disabled:cursor-not-allowed" disabled>Salva nello storico</button>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" id="tr-csv" class="h-10 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition disabled:opacity-40 disabled:cursor-not-allowed" disabled>Esporta CSV</button>
+                  <button type="button" id="tr-print" class="h-10 rounded-xl border border-line bg-surface text-sm font-medium hover:border-ink/30 transition disabled:opacity-40 disabled:cursor-not-allowed" disabled>Stampa</button>
+                </div>
+              </div>
+              <p class="mono text-[10px] text-faint mt-4 leading-relaxed">Distanze e percorsi © OpenStreetMap contributors · routing OpenRouteService. Le stime possono variare dalle condizioni reali di guida e traffico.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- storico -->
+        <div class="mt-8 bg-surface rounded-2xl border border-line shadow-soft overflow-hidden">
+          <div class="px-5 py-4 border-b border-line flex items-center gap-3"><div class="display font-bold">Storico trasferte</div><span id="tr-count" class="mono text-[12px] text-faint">—</span></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm min-w-[720px]">
+              <thead class="bg-bg/50 text-faint">
+                <tr class="kicker">
+                  <th class="px-5 py-3 text-left font-normal">DATA</th>
+                  <th class="px-3 py-3 text-left font-normal">TRAGITTO</th>
+                  <th class="px-3 py-3 text-right font-normal">KM</th>
+                  <th class="px-3 py-3 text-right font-normal">TOTALE</th>
+                  <th class="px-3 py-3 text-right font-normal">AZIONI</th>
+                </tr>
+              </thead>
+              <tbody id="tr-list" class="divide-y divide-linesoft">
+                <tr><td colspan="5" class="px-5 py-10 text-center text-muted">Nessuna trasferta salvata.</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
