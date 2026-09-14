@@ -40,9 +40,13 @@ Nel pannello admin (sidebar → sezione **Strumenti → Trasferte & trasporti**)
 costi di trasferta accessibile **solo dopo il login**. Calcola distanza, consumo carburante e costo
 totale del viaggio, con storico salvato sul backend.
 
-- **Distanza/percorso**: proxy server-side verso **OpenRouteService** (`api/geo.js`) — autocomplete
-  indirizzi + routing su strada. La chiave `ORS_API_KEY` resta solo lato server e la route è protetta
-  da autenticazione. In alternativa si possono inserire i **km a mano** (nessuna dipendenza esterna).
+- **Distanza/percorso** (`api/geo.js`, proxy server-side, protetto da auth): funziona **senza alcuna
+  chiave** usando OpenStreetMap **Nominatim** (indirizzi) + **OSRM** (percorso). Se imposti
+  `ORS_API_KEY` (opzionale) usa invece **OpenRouteService**, con la chiave che resta solo lato server.
+  In ogni caso si possono sempre inserire i **km a mano**.
+  > ⚠️ Le funzioni serverless servono solo online (Vercel) o in locale con `vercel dev`: con `npm start`
+  > (server statico) le `/api/*` non girano, quindi autocomplete/routing e storico non sono disponibili
+  > (il calcolo con km manuali resta comunque utilizzabile).
 - **Storico**: collezione privata `trips` su Vercel Blob (`api/trips.js`), con **GET protetta** oltre
   alle scritture (a differenza di catalogo/news/documenti/posizioni, che hanno GET pubblica).
 - **Export**: ogni riepilogo è esportabile in **CSV** o via **stampa/PDF**.

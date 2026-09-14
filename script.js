@@ -1742,6 +1742,7 @@
       };
       const num = (id) => { const n = parseFloat(String((el(id) || {}).value || "").replace(",", ".")); return isFinite(n) ? n : 0; };
       let lastResult = null;
+      let geoWarned = false; // evita di ripetere l'avviso "ricerca indirizzi non disponibile"
 
       function showMsg(text, ok) {
         const m = el("tr-msg");
@@ -1792,7 +1793,14 @@
             try {
               const r = await API.get("/api/geo?action=autocomplete&q=" + encodeURIComponent(q));
               items = (r && r.suggestions) || []; active = -1; render();
-            } catch (_) { close(); }
+              if (!items.length && !geoWarned) { geoWarned = true; showMsg("Nessun indirizzo trovato: prova a essere più specifico, oppure spunta «Inserisci km a mano».", false); }
+            } catch (err) {
+              close();
+              if (!geoWarned) {
+                geoWarned = true;
+                showMsg("Ricerca indirizzi non disponibile" + (err && err.status === 401 ? " (sessione scaduta, rifai il login)" : "") + ": usa «Inserisci km a mano». Le API richiedono il sito online o `vercel dev`.", false);
+              }
+            }
           }, 300);
         });
         input.addEventListener("keydown", (e) => {
