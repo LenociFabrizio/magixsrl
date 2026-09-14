@@ -660,6 +660,38 @@
     el.addEventListener("click", (e) => { e.preventDefault(); showAdminPanel(el.dataset.panel); })
   );
 
+  // ── admin: sidebar come drawer su mobile (hamburger + backdrop) ──
+  (function adminSidebarDrawer() {
+    const sidebar = document.getElementById("adminSidebar");
+    const backdrop = document.getElementById("adminBackdrop");
+    const openBtn = document.getElementById("adminMenuBtn");
+    const closeBtn = document.getElementById("adminSidebarClose");
+    if (!sidebar || !openBtn) return;
+    const isMobile = () => window.matchMedia("(max-width: 1023px)").matches;
+    const openDrawer = () => {
+      sidebar.classList.remove("-translate-x-full");
+      sidebar.classList.add("translate-x-0");
+      if (backdrop) backdrop.classList.remove("hidden");
+      openBtn.setAttribute("aria-expanded", "true");
+    };
+    const closeDrawer = () => {
+      sidebar.classList.add("-translate-x-full");
+      sidebar.classList.remove("translate-x-0");
+      if (backdrop) backdrop.classList.add("hidden");
+      openBtn.setAttribute("aria-expanded", "false");
+    };
+    openBtn.addEventListener("click", openDrawer);
+    if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+    if (backdrop) backdrop.addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+    // scelto un pannello/azione dalla sidebar → chiudi il drawer (solo su mobile)
+    sidebar.querySelectorAll("a").forEach((a) =>
+      a.addEventListener("click", () => { if (isMobile()) closeDrawer(); })
+    );
+    // tornando su desktop assicura lo stato pulito (nessun translate residuo)
+    window.addEventListener("resize", () => { if (!isMobile()) closeDrawer(); });
+  })();
+
   // ── admin: dynamic technical-data rows ──
   const specRows = document.getElementById("specRows");
   const addSpec = document.getElementById("addSpec");
