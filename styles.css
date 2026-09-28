@@ -131,6 +131,19 @@
   #articleOverlay:not(.hidden) > div:last-child { animation: rise .35s cubic-bezier(.2,.7,.2,1) both; }
   body.ov-lock { overflow: hidden; }
 
+  /* pannello preferiti: "pop" dal cuore flottante in basso a destra */
+  .fav-panel { transform-origin: bottom right; }
+  .fav-panel:not(.hidden) { animation: favPop .22s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes favPop { from { opacity:0; transform: translateY(10px) scale(.96); } to { opacity:1; transform:none; } }
+  /* cuore ↔ chiudi a pannello aperto; tooltip nascosto mentre è aperto */
+  #favFab .fav-ico-close { display:none; }
+  #favFab[aria-expanded="true"] .fav-ico-heart, #favFab[aria-expanded="true"] .fav-tip { display:none; }
+  #favFab[aria-expanded="true"] .fav-ico-close { display:block; }
+  /* feedback quando si aggiunge un preferito */
+  @keyframes favBump { 0%,100% { transform: scale(1); } 40% { transform: scale(1.2); } }
+  .fav-bump { animation: favBump .45s cubic-bezier(.2,.7,.2,1); }
+  @media (prefers-reduced-motion: reduce) { .fav-panel:not(.hidden), .fav-bump { animation: none; } }
+
   /* search result row */
   .sr-item { display:flex; align-items:center; gap:.75rem; padding:.7rem .8rem; border-radius:.75rem; cursor:pointer; transition:background .15s; }
   .sr-item.active { background:#ECE8E1; }

@@ -19,6 +19,7 @@ const SEEDS = {
   documents: require("../_seed/documents.json"),
   positions: require("../_seed/positions.json"),
   trips: require("../_seed/trips.json"), // storico trasferte (area riservata)
+  settings: require("../_seed/settings.json"), // impostazioni sito (oggetto, non array)
 };
 
 const PREFIX = "magix-data/";

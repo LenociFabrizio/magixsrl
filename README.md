@@ -22,7 +22,7 @@ Apri http://localhost:3000
 | `styles.css` | Utility custom (animazioni, swatch materici, accordion, ecc.) |
 | `script.js` | Router delle viste, reveal on scroll, accordion FAQ, form, **bootstrap dati da API** |
 | `catalog-data.js` | Catalogo prodotti statico (usato come fallback se l'API non risponde) |
-| `api/` | **Serverless Functions** (area riservata: auth + CRUD catalogo/news/documenti/posizioni) |
+| `api/` | **Serverless Functions** (area riservata: auth + CRUD catalogo/news/documenti/posizioni + impostazioni sito) |
 | `vercel.json` | Configurazione deploy |
 
 ## Area riservata (admin) — backend
@@ -33,6 +33,12 @@ con storage su **Vercel Blob** e una **passphrase unica** per l'accesso.
 Le GET sono pubbliche (il sito legge i contenuti); ogni operazione di scrittura (create/update/delete)
 richiede l'autenticazione tramite cookie di sessione firmato. Se il backend non è configurato o non
 risponde, il sito pubblico **ricade automaticamente sui dati statici** e resta perfettamente funzionante.
+
+- **Prodotto in evidenza in home** (Dashboard → "Prodotto in evidenza in home"): l'admin sceglie il
+  prodotto mostrato nella card in alto della home, oppure "Casuale" (cambia a ogni visita). Salvato in
+  `api/settings.js` (collezione `settings`, GET pubblica / PUT protetta).
+- **Tag / parole chiave** dei prodotti: usati dalla ricerca del sito insieme a nome, codice, sintesi,
+  norma e categoria. I prodotti in **bozza** non compaiono sul sito pubblico.
 
 ### Tool "Trasferte & trasporti" (BETA, dentro l'area riservata)
 

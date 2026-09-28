@@ -15,6 +15,7 @@
     if (fab) fab.classList.toggle("hidden", targetId === "view-admin");
     const favFab = document.getElementById("favFab");
     if (favFab) favFab.classList.toggle("hidden", targetId === "view-admin" || targetId === "view-preferiti");
+    setFavPanel(false); // cambio pagina: il pannello preferiti si chiude
     highlightNav(name);
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     runReveal();
@@ -92,6 +93,8 @@
   // ── product: applica la categoria scelta (mega menu / catalogo) ──
   function setProductCategory(name) {
     if (!name) return;
+    currentProductCode = null; // scheda segnaposto: nessun prodotto reale (preferiti/preventivo)
+    renderRelated(null);
     const label = name.replace(/\b\w/g, c => c.toUpperCase());
     const crumb = document.getElementById("pCrumbCat");
     if (crumb) crumb.textContent = label;
@@ -99,7 +102,14 @@
 
   // ── helpers catalogo ──
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const skuOf = (code) => "MGX-" + String(code).toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "");
+  // prodotti in "bozza" (admin) non compaiono in ricerca né in evidenza
+  const isPublished = (p) => !!p && (p.stato || "pubblicato") !== "bozza";
+  // testo normalizzato per la ricerca: minuscolo e senza accenti ("Disponibilità" → "disponibilita")
+  const normTxt = (s) => String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const searchTokens = (q) => normTxt(q).split(/\s+/).filter(Boolean);
+  // testo indicizzato di un prodotto: nome, codice, sintesi, norma, categoria e tag inseriti dall'admin
+  const productHay = (p, catLabel) => normTxt([p.name, p.code, p.subtitle, p.norma, catLabel].concat(p.tags || []).join(" "));
+  const matchesAll = (hay, toks) => toks.every(t => hay.indexOf(t) !== -1);
 
   function setSeo(title, description) {
     if (title) document.title = title;
@@ -115,7 +125,7 @@
     if (!s) { s = document.createElement("script"); s.type = "application/ld+json"; s.id = "pJsonLd"; document.head.appendChild(s); }
     s.textContent = JSON.stringify({
       "@context": "https://schema.org", "@type": "Product",
-      name: "Magix " + p.name, sku: skuOf(p.code), brand: { "@type": "Brand", name: "Magix" },
+      name: "Magix " + p.name, brand: { "@type": "Brand", name: "Magix" },
       category: (CINDEX[p.code] && CINDEX[p.code].catKey) || undefined,
       description: (p.seo && p.seo.description) || p.subtitle || ""
     });
@@ -137,7 +147,8 @@
     setSeo((cat.seo && cat.seo.title) || (cat.label + " | Magix"), cat.seo && cat.seo.description);
 
     if (grid) {
-      grid.innerHTML = (cat.products || []).map(p => {
+      const prods = (cat.products || []).filter(isPublished); // le bozze dell'admin non sono pubbliche
+      grid.innerHTML = prods.length ? prods.map(p => {
         const badge = p.cam
           ? '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">CAM</span>'
           : (p.availability === "order"
@@ -155,7 +166,7 @@
           + '<div class="flex items-center justify-between mt-4"><span class="mono text-[10px] bg-bg2 border border-line rounded px-2 py-1">' + esc(p.norma || "") + '</span>'
           + '<span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div>'
           + '</div></a>';
-      }).join("");
+      }).join("") : '<p class="sm:col-span-2 lg:col-span-3 text-center text-muted py-10">Nessun prodotto disponibile al momento in questa categoria. <a href="#" data-view="contatti" class="text-red font-semibold">Contattaci</a> per informazioni.</p>';
     }
 
     // blocco extra di categoria (es. tabella consumi muratura)
@@ -192,7 +203,6 @@
     set("pName", "Magix " + p.name);
     set("pCrumbName", p.name);
     set("pDesc", p.subtitle || "");
-    set("pSku", "SKU · " + skuOf(p.code));
     set("pNormaChip", p.norma ? ("CE · " + p.norma) : "CE");
 
     // breadcrumb categoria → torna all'elenco categoria
@@ -267,15 +277,117 @@
       sections.innerHTML = html;
     }
 
+    renderRelated(entry);
     setSeo((p.seo && p.seo.title) || ("Magix " + p.name), p.seo && p.seo.description);
     setProductJsonLd(p);
     runReveal();
     return true;
   }
 
+  // correlati: fino a 4 altri prodotti pubblicati della stessa categoria, a partire
+  // da quelli che seguono il prodotto corrente (così la selezione varia tra le schede).
+  // Senza altri prodotti (o su una scheda segnaposto: entry null) la sezione è nascosta.
+  function renderRelated(entry) {
+    const box = document.getElementById("pRelated");
+    const grid = document.getElementById("pRelatedGrid");
+    const title = document.getElementById("pRelatedTitle");
+    if (!box || !grid) return;
+    const cat = entry && CATALOG[entry.catKey];
+    const list = cat ? (cat.products || []).filter(isPublished) : [];
+    const i = entry ? list.findIndex(x => x.code === entry.product.code) : -1;
+    const others = list.slice(i + 1).concat(list.slice(0, Math.max(i, 0))).slice(0, 4);
+    box.classList.toggle("hidden", !others.length);
+    if (!others.length) { grid.innerHTML = ""; return; }
+    if (title) title.textContent = "Altri prodotti · " + (cat.label || entry.catKey);
+    grid.innerHTML = others.map(p => {
+      const media = p.img
+        ? '<div class="h-32 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img src="' + encodeURI(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-2"></div>'
+        : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>';
+      return '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">'
+        + media
+        + '<div class="p-4 flex-1 flex flex-col">'
+        + '<div class="display font-bold leading-snug">' + esc(p.name) + '</div>'
+        + '<p class="text-muted text-[13px] mt-1 leading-snug line-clamp-2 flex-1">' + esc(p.subtitle || "") + '</p>'
+        + '<span class="text-red font-semibold text-sm mt-3 group-hover:translate-x-1 transition inline-block">Vedi scheda →</span>'
+        + '</div></a>';
+    }).join("");
+  }
+
   // espongo per debug/uso esterno
   window.renderCatalog = renderCatalog;
   window.renderProduct = renderProduct;
+
+  // ── home: prodotto in evidenza (card nella hero) ──
+  // Scelto dall'admin (Dashboard → "Prodotto in evidenza in home", salvato su
+  // /api/settings) oppure casuale a ogni visita. Solo prodotti pubblicati: se il
+  // prodotto scelto non esiste più o è in bozza si ricade sul casuale.
+  let HOME_FEAT = { mode: "random", code: "" };
+  let homeFeatRandom = null; // estrazione casuale stabile per tutta la visita
+  // dati tecnici mostrati nella card (i primi 3 presenti, nell'ordine) → etichetta breve
+  const FEAT_SPECS = [
+    [/^resa/i, "RESA"],
+    [/^granulometria/i, "GRANULOMETRIA"],
+    [/^spessore/i, "SPESSORE"],
+    [/^acqua d.impasto/i, "ACQUA"],
+    [/^resistenza a compressione/i, "COMPRESSIONE"],
+    [/^tempo di presa/i, "PRESA"],
+    [/^confezion/i, "CONFEZIONE"],
+  ];
+  function pickHomeFeatured() {
+    const chosen = HOME_FEAT.mode === "manual" && CINDEX[HOME_FEAT.code];
+    if (chosen && isPublished(chosen.product)) return chosen;
+    const prev = homeFeatRandom && CINDEX[homeFeatRandom];
+    if (prev && isPublished(prev.product)) return prev;
+    const all = Object.keys(CINDEX).filter(c => isPublished(CINDEX[c].product));
+    const withImg = all.filter(c => CINDEX[c].product.img);
+    const pool = withImg.length ? withImg : all;
+    if (!pool.length) return null;
+    homeFeatRandom = pool[Math.floor(Math.random() * pool.length)];
+    return CINDEX[homeFeatRandom];
+  }
+  function renderHomeFeatured() {
+    const box = document.getElementById("homeFeatured");
+    if (!box) return;
+    const entry = pickHomeFeatured();
+    if (!entry) { box.innerHTML = ""; delete box.dataset.code; return; }
+    const p = entry.product, cat = CATALOG[entry.catKey] || {};
+    const first = !box.dataset.code; // anima solo la prima comparsa, non i cambi successivi
+    const media = p.img
+      ? '<div class="h-44 bg-white border-b border-line flex items-center justify-center overflow-hidden relative"><img src="' + encodeURI(p.img) + '" alt="Magix ' + esc(p.name) + '" class="max-h-full max-w-full object-contain p-3">'
+      : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-40 relative">';
+    const badge = p.availability === "order"
+      ? '<span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5 shrink-0">SU ORDINAZIONE</span>'
+      : '<span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5 shrink-0">DISPONIBILE</span>';
+    const specKeys = Object.keys(p.spec || {});
+    const cells = [];
+    FEAT_SPECS.forEach(([re, label]) => {
+      const k = cells.length < 3 && specKeys.find(x => re.test(x));
+      if (k) cells.push([label, p.spec[k]]);
+    });
+    const cols = ["", "grid-cols-1", "grid-cols-2", "grid-cols-3"][cells.length];
+    const specGrid = cells.length
+      ? '<div class="grid ' + cols + ' gap-px bg-line rounded-xl overflow-hidden mt-5 text-center">' + cells.map(([l, v]) =>
+          '<div class="bg-surface py-3 px-2 min-w-0"><div class="mono text-[11px] text-faint">' + l + '</div><div class="font-semibold text-sm mt-0.5 truncate" title="' + esc(v) + '">' + esc(v) + '</div></div>'
+        ).join("") + '</div>'
+      : "";
+    box.innerHTML = '<div class="' + (first ? "rise " : "") + 'relative">'
+      + '<div class="absolute -inset-3 rounded-[28px] bg-gradient-to-br from-red/10 to-transparent blur-xl"></div>'
+      + '<div class="relative bg-surface rounded-3xl shadow-lift border border-line overflow-hidden">'
+      + media + '<span class="absolute top-3 left-3 mono text-[10px] font-semibold tracking-[.18em] bg-graphite text-white rounded-full px-2.5 py-1">IN EVIDENZA</span></div>'
+      + '<div class="p-6">'
+      + '<div class="flex items-center justify-between gap-3"><span class="kicker text-muted truncate">' + esc(cat.label || entry.catKey) + '</span>' + badge + '</div>'
+      + '<h3 class="display font-bold text-2xl mt-1.5">' + esc(p.name) + '</h3>'
+      + (p.subtitle ? '<p class="text-muted text-sm mt-1 leading-snug line-clamp-2">' + esc(p.subtitle) + '</p>' : "")
+      + specGrid
+      + '<div class="flex items-center justify-between gap-3 mt-5">'
+      + (p.norma ? '<span class="mono text-[10px] bg-bg2 border border-line rounded px-2 py-1 truncate min-w-0">' + esc(p.norma) + '</span>' : '<span></span>')
+      + '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="h-10 px-4 grid place-items-center rounded-xl bg-graphite text-white text-sm font-semibold hover:bg-ink transition shrink-0">Scopri il prodotto →</a>'
+      + '</div></div></div></div>';
+    box.dataset.code = p.code;
+  }
+  // il render vero parte dal boot (dopo /api/settings); se il backend è lento o
+  // assente si mostra comunque un prodotto casuale dai dati statici
+  const homeFeatTimer = setTimeout(renderHomeFeatured, 2500);
 
   // desktop: chevron su "Prodotti" + mega menu su hover/focus
   document.querySelectorAll('.view header nav a[data-view="prodotti"]').forEach(link => {
@@ -294,8 +406,30 @@
   }
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeMega(true); closeMobile(); } });
 
+  // ricerca globale in ogni header pubblico: barra su desktop (se non già presente
+  // nel markup, es. home/cemento) + icona compatta su mobile. Il click è delegato
+  // (vedi "global search overlay"), quindi basta l'attributo data-search.
+  const SEARCH_ICO = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>';
+  // solo il contenitore azioni dell'header (figlio diretto), non il <kbd class="ml-auto"> del pulsante ricerca
+  const HEADER_ACTIONS = ".view header > div > .ml-auto";
+  document.querySelectorAll(HEADER_ACTIONS).forEach(c => {
+    if (!c.querySelector("[data-search]")) {
+      c.insertAdjacentHTML("afterbegin",
+        '<button type="button" data-search class="hidden md:flex items-center gap-2 h-10 px-3.5 rounded-xl border border-line bg-surface/70 text-muted text-sm hover:border-ink/30 transition w-64">'
+        + SEARCH_ICO + '<span class="truncate">Cerca prodotti, tag…</span>'
+        + '<kbd class="mono ml-auto text-[10px] text-faint border border-line rounded px-1.5 py-0.5">⌘K</kbd></button>');
+    }
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.search = "";
+    b.className = "md:hidden h-10 w-10 grid place-items-center rounded-xl border border-line bg-surface/70 text-ink hover:border-ink/30 transition";
+    b.setAttribute("aria-label", "Cerca nel sito");
+    b.innerHTML = SEARCH_ICO;
+    c.appendChild(b);
+  });
+
   // mobile: inietta hamburger in ogni header pubblico
-  document.querySelectorAll(".view header .ml-auto").forEach(c => {
+  document.querySelectorAll(HEADER_ACTIONS).forEach(c => {
     if (c.querySelector(".burger")) return;
     const b = document.createElement("button");
     b.className = "burger lg:hidden h-10 w-10 grid place-items-center rounded-xl border border-line bg-surface/70 text-ink hover:border-ink/30 transition";
@@ -348,19 +482,11 @@
     q.setAttribute("aria-expanded", open ? "true" : "false");
   }));
 
-  // ── product: variant + price ──
-  const fmt = { "14,90": ["€ 14,90", "sacco 25 kg", '↳ Listino "Impresa": <span class="font-bold">€ 13,40</span> (accedi)'],
-                "690,00": ["€ 690,00", "bancale 1.200 kg", '↳ Listino "Impresa": <span class="font-bold">€ 624,00</span> (accedi)'],
-                "preventivo": ["Su preventivo", "silo / sfuso", "↳ Quotazione su misura per cantiere"] };
-  document.querySelectorAll(".variant").forEach(v => {
-    v.addEventListener("click", () => {
-      document.querySelectorAll(".variant").forEach(x => x.classList.remove("active"));
-      v.classList.add("active");
-      const [price, unit, tier] = fmt[v.dataset.price];
-      document.getElementById("pPrice").textContent = price;
-      document.getElementById("pUnit").textContent = "· " + unit;
-      document.getElementById("pTier").innerHTML = tier;
-    });
+  // ── product: "Richiedi disponibilità / preventivo" → precompila il modulo contatti ──
+  const quoteBtn = document.getElementById("pQuoteBtn");
+  if (quoteBtn) quoteBtn.addEventListener("click", () => {
+    const entry = currentProductCode && CINDEX[currentProductCode];
+    if (entry) prefillQuote(["Magix " + entry.product.name]);
   });
 
   // ── gallery thumbs ──
@@ -422,22 +548,106 @@
     const svg = btn.querySelector("svg");
     if (svg) svg.setAttribute("fill", active ? "currentColor" : "none");
   }
+  // preferiti mostrabili: esistenti a catalogo e pubblicati (non le bozze dell'admin)
+  function favItems() { return getFavs().map(code => CINDEX[code]).filter(e => e && isPublished(e.product)); }
+  // aggiorna tutto ciò che mostra i preferiti (badge, pannello, pagina)
+  function refreshFavs() { updateFavCount(); renderFavPanel(); renderFavorites(); }
+
   const favBtn = document.getElementById("favBtn");
   if (favBtn) favBtn.addEventListener("click", () => {
     if (!currentProductCode) return;
-    paintFav(favBtn, toggleFav(currentProductCode));
-    updateFavCount();
-    renderFavorites();
+    const added = toggleFav(currentProductCode);
+    paintFav(favBtn, added);
+    refreshFavs();
+    if (added) bumpFavFab();
   });
 
   // contatore sul pulsante flottante (badge rosso)
   function updateFavCount() {
-    const n = getFavs().length;
+    const n = favItems().length;
     const badge = document.getElementById("favFabCount");
     if (!badge) return;
     badge.textContent = n;
     badge.classList.toggle("hidden", n === 0);
   }
+
+  // ── pannello preferiti compatto (popover sopra i pulsanti flottanti) ──
+  // Si apre dal cuore in basso a destra, sopra il pulsante WhatsApp (nessuna
+  // sovrapposizione): elenco rapido con rimozione, link alla pagina completa e
+  // richiesta di preventivo precompilata con tutti i preferiti.
+  const favFab = document.getElementById("favFab");
+  const favPanel = document.getElementById("favPanel");
+  function isFavPanelOpen() { return !!favPanel && !favPanel.classList.contains("hidden"); }
+  function setFavPanel(open) {
+    if (!favPanel || !favFab) return;
+    if (open) renderFavPanel();
+    favPanel.classList.toggle("hidden", !open);
+    favFab.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  function bumpFavFab() {
+    const dot = favFab && favFab.querySelector(".fav-fab-btn");
+    if (!dot) return;
+    dot.classList.remove("fav-bump"); void dot.offsetWidth; dot.classList.add("fav-bump");
+  }
+  function renderFavPanel() {
+    const list = document.getElementById("favPanelList");
+    if (!list) return;
+    const items = favItems();
+    const count = document.getElementById("favPanelCount");
+    if (count) count.textContent = items.length ? "(" + items.length + ")" : "";
+    const foot = document.getElementById("favPanelFoot");
+    if (foot) foot.classList.toggle("hidden", !items.length);
+    if (!items.length) {
+      list.innerHTML = '<div class="px-4 py-8 text-center">'
+        + '<div class="mx-auto w-11 h-11 rounded-full bg-bg2 border border-line grid place-items-center text-faint mb-3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></div>'
+        + '<div class="font-semibold text-sm">Nessun preferito ancora</div>'
+        + '<p class="text-muted text-[13px] mt-1 leading-snug">Tocca il cuore nella scheda di un prodotto per salvarlo qui.</p>'
+        + '<a href="#" data-view="prodotti" class="inline-block mt-3 text-sm font-semibold text-red">Sfoglia i prodotti →</a></div>';
+      return;
+    }
+    list.innerHTML = items.map(({ catKey, product: p }) => {
+      const cat = CATALOG[catKey] || {};
+      const thumb = p.img
+        ? '<span class="w-11 h-11 rounded-lg bg-white border border-line overflow-hidden grid place-items-center shrink-0"><img src="' + encodeURI(p.img) + '" alt="" class="max-w-full max-h-full object-contain p-0.5"></span>'
+        : '<span class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' w-11 h-11 rounded-lg border border-line shrink-0"></span>';
+      return '<div class="flex items-center gap-1 rounded-xl hover:bg-bg2 transition">'
+        + '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="flex items-center gap-3 min-w-0 flex-1 p-2">' + thumb
+        + '<span class="min-w-0"><span class="block font-semibold text-sm truncate">' + esc(p.name) + '</span>'
+        + '<span class="block text-[12px] text-muted truncate">' + esc(cat.label || catKey) + '</span></span></a>'
+        + '<button type="button" data-fav-remove="' + esc(p.code) + '" title="Rimuovi dai preferiti" aria-label="Rimuovi ' + esc(p.name) + ' dai preferiti" class="h-8 w-8 mr-1.5 grid place-items-center rounded-lg text-faint hover:text-red hover:bg-red/5 transition shrink-0"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>'
+        + '</div>';
+    }).join("");
+  }
+  if (favFab && favPanel) {
+    favFab.addEventListener("click", () => setFavPanel(!isFavPanelOpen()));
+    favPanel.querySelectorAll("[data-fav-close]").forEach(x => x.addEventListener("click", () => setFavPanel(false)));
+    // navigando da un link del pannello (prodotto, pagina preferiti, contatti) il pannello si chiude
+    favPanel.addEventListener("click", (e) => { if (e.target.closest("[data-view]")) setFavPanel(false); });
+    // click fuori: composedPath resta valido anche se la riga cliccata viene ri-renderizzata
+    document.addEventListener("click", (e) => {
+      if (!isFavPanelOpen()) return;
+      const path = e.composedPath();
+      if (path.indexOf(favPanel) === -1 && path.indexOf(favFab) === -1) setFavPanel(false);
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && isFavPanelOpen()) setFavPanel(false); });
+  }
+
+  // precompila il modulo contatti con una richiesta di disponibilità/preventivo.
+  // Non sovrascrive un messaggio scritto dall'utente: aggiorna solo il testo auto-generato.
+  function prefillQuote(names) {
+    if (!names.length) return;
+    const msg = document.getElementById("c-msg");
+    const need = document.getElementById("c-need");
+    if (need) need.value = "Disponibilità / preventivo prodotti";
+    if (msg && (!msg.value.trim() || msg.dataset.auto === msg.value)) {
+      msg.value = "Richiesta di disponibilità / preventivo per " + (names.length === 1 ? "il prodotto: " : "i prodotti: ") + names.join(", ") + ".";
+      msg.dataset.auto = msg.value;
+    }
+  }
+  // "Richiedi preventivo" dal pannello / dalla pagina preferiti → tutti i preferiti nel messaggio
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("[data-fav-quote]")) prefillQuote(favItems().map(({ product: p }) => "Magix " + p.name));
+  });
 
   // pagina "I tuoi preferiti": card prodotto + pulsante rimuovi
   function renderFavorites() {
@@ -445,7 +655,7 @@
     const empty = document.getElementById("favEmpty");
     const pageCount = document.getElementById("favPageCount");
     if (!grid) return;
-    const items = getFavs().map(code => CINDEX[code]).filter(Boolean);
+    const items = favItems();
     if (empty) empty.classList.toggle("hidden", items.length > 0);
     grid.classList.toggle("hidden", items.length === 0);
     if (pageCount) pageCount.textContent = items.length ? ("(" + items.length + (items.length === 1 ? " prodotto)" : " prodotti)")) : "";
@@ -485,8 +695,7 @@
     const a = getFavs(); const i = a.indexOf(code);
     if (i !== -1) { a.splice(i, 1); setFavs(a); }
     if (currentProductCode === code) paintFav(document.getElementById("favBtn"), false);
-    updateFavCount();
-    renderFavorites();
+    refreshFavs();
   });
 
   updateFavCount();
@@ -534,7 +743,7 @@
     const seen = new Set(), tiles = [];
     Object.keys(CINDEX).forEach(code => {
       const p = CINDEX[code].product;
-      if (p && p.img && !seen.has(p.img)) { seen.add(p.img); tiles.push({ img: p.img, name: p.name }); }
+      if (isPublished(p) && p.img && !seen.has(p.img)) { seen.add(p.img); tiles.push({ img: p.img, name: p.name }); }
     });
     const ig = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
     feed.innerHTML = tiles.slice(0, 6).map(t =>
@@ -749,14 +958,24 @@
       runReveal();
     }));
   }
+  // la card categoria resta visibile se il nome categoria corrisponde oppure se
+  // contiene almeno un prodotto che corrisponde (nome, codice, sintesi, norma, tag)
   const malteSearch = document.getElementById("malteSearch");
   if (malteSearch) {
-    const cards = [...document.querySelectorAll(".subcat-card")];
     const empty = document.getElementById("malteEmpty");
     malteSearch.addEventListener("input", () => {
-      const q = malteSearch.value.trim().toLowerCase();
+      const toks = searchTokens(malteSearch.value);
       let shown = 0;
-      cards.forEach(c => { const ok = !q || c.dataset.name.includes(q); c.classList.toggle("hidden", !ok); if (ok) shown++; });
+      // ri-interroga le card: include quelle delle categorie create dall'admin
+      document.querySelectorAll("#view-prodotti .subcat-card[data-name]").forEach(c => {
+        const key = (c.dataset.name || "").trim().toLowerCase();
+        const cat = CATALOG[key];
+        const ok = !toks.length
+          || matchesAll(normTxt(key + " " + ((cat && cat.label) || "")), toks)
+          || !!(cat && (cat.products || []).some(p => isPublished(p) && matchesAll(productHay(p, cat.label), toks)));
+        c.classList.toggle("hidden", !ok);
+        if (ok) shown++;
+      });
       if (empty) empty.classList.toggle("hidden", shown !== 0);
     });
   }
@@ -806,39 +1025,90 @@
       { label: "Lavora con noi", sub: "Posizioni e candidature spontanee", view: "lavora" },
       { label: "Chi siamo", sub: "L'azienda dal 1990", view: "home" },
     ];
-    // categorie prodotto lette direttamente dal catalogo (si auto-aggiornano)
-    const cats = [...document.querySelectorAll(".subcat-card")].map(c => {
-      const name = (c.dataset.name || "").trim();
-      const fam = c.closest("#fam-rivestimenti") ? "Rivestimenti e idropitture" : "Malte";
-      return { label: name.replace(/\b\w/g, x => x.toUpperCase()), sub: fam, view: "product", cat: name };
-    });
-    const seen = new Set();
-    const items = [...cats, ...pages].filter(it => {
-      const k = it.view + "|" + (it.cat || it.label);
-      if (seen.has(k)) return false; seen.add(k); return true;
-    });
+    const capWords = (s) => String(s || "").replace(/\b\w/g, x => x.toUpperCase());
+
+    // indice ricostruito a ogni apertura: riflette il catalogo live (anche prodotti,
+    // categorie e tag creati dall'admin dopo il caricamento della pagina)
+    let items = [];
+    function buildIndex() {
+      const out = [];
+      Object.keys(CATALOG).forEach(key => {
+        const cat = CATALOG[key];
+        const label = cat.label || capWords(key);
+        const prods = (cat.products || []).filter(isPublished);
+        out.push({ type: "cat", label, sub: "Categoria · " + prods.length + (prods.length === 1 ? " prodotto" : " prodotti"), cat: key, name: normTxt(label), hay: normTxt(label + " " + key) });
+        prods.forEach(p => out.push({
+          type: "prod", label: p.name, code: p.code, img: p.img, tags: p.tags || [],
+          sub: [label, p.norma].filter(Boolean).join(" · "),
+          name: normTxt(p.name + " " + p.code), hay: productHay(p, label),
+        }));
+      });
+      // categorie presenti solo come card statiche, non ancora popolate a catalogo
+      document.querySelectorAll("#view-prodotti .subcat-card[data-name]").forEach(c => {
+        const key = (c.dataset.name || "").trim().toLowerCase();
+        if (!key || CATALOG[key]) return;
+        const fam = c.closest("#fam-rivestimenti") ? "Rivestimenti e idropitture" : "Malte";
+        out.push({ type: "cat", label: capWords(key), sub: fam, cat: key, name: normTxt(key), hay: normTxt(key + " " + fam) });
+      });
+      pages.forEach(pg => out.push(Object.assign({ type: "page", name: normTxt(pg.label), hay: normTxt(pg.label + " " + pg.sub) }, pg)));
+      return out;
+    }
+    // punteggio: prima le corrispondenze sul nome/codice, poi sui tag, poi sul resto
+    function score(it, q, toks) {
+      let s = 0;
+      if (it.name === q) s = 100;
+      else if (it.name.indexOf(q) === 0) s = 80;
+      else if (it.name.indexOf(q) !== -1) s = 60;
+      else if (it.tags && it.tags.some(t => normTxt(t).indexOf(q) !== -1)) s = 50;
+      else s = 20;
+      return s + (it.type === "prod" ? 3 : it.type === "cat" ? 2 : 0);
+    }
 
     let active = 0, shown = [];
     function icon(it) {
-      if (it.view === "product") return '<span class="sr-ico bg-red/10 text-red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 16-9 5-9-5V8l9-5 9 5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span>';
+      if (it.type === "prod" && it.img) return '<span class="sr-ico bg-white border border-line overflow-hidden"><img src="' + encodeURI(it.img) + '" alt="" loading="lazy" class="w-full h-full object-contain p-0.5"></span>';
+      if (it.type !== "page") return '<span class="sr-ico bg-red/10 text-red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 16-9 5-9-5V8l9-5 9 5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span>';
       return '<span class="sr-ico bg-bg2 text-ink border border-line"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 21V9"/></svg></span>';
     }
-    function render(q) {
-      q = (q || "").trim().toLowerCase();
-      shown = items.filter(it => !q || it.label.toLowerCase().includes(q) || it.sub.toLowerCase().includes(q)).slice(0, 14);
+    // se il prodotto è stato trovato tramite un tag, lo mostro nel sottotitolo
+    function subOf(it, q, toks) {
+      if (it.type !== "prod" || !toks.length || it.name.indexOf(q) !== -1) return it.sub;
+      const tag = it.tags.find(t => toks.some(k => normTxt(t).indexOf(k) !== -1));
+      return tag ? it.sub + " · #" + tag : it.sub;
+    }
+    function render(raw) {
+      const q = normTxt(raw).trim().replace(/\s+/g, " ");
+      const toks = searchTokens(q);
+      shown = toks.length
+        ? items.filter(it => matchesAll(it.hay, toks))
+            .map(it => ({ it, s: score(it, q, toks) }))
+            .sort((a, b) => b.s - a.s)
+            .map(x => x.it)
+            .slice(0, 20)
+        : items.filter(it => it.type !== "prod").slice(0, 14); // a campo vuoto: categorie e pagine
       active = 0;
       if (!shown.length) { results.innerHTML = '<div class="px-4 py-7 text-center text-muted text-sm">Nessun risultato. Prova un\'altra parola o <a href="#" data-view="contatti" data-search-close class="text-red font-semibold">contattaci</a>.</div>'; return; }
       results.innerHTML = shown.map((it, i) => (
         '<div class="sr-item' + (i === 0 ? ' active' : '') + '" data-i="' + i + '">' + icon(it) +
-        '<div class="min-w-0"><div class="font-semibold text-sm truncate">' + it.label + '</div><div class="text-[12px] text-muted truncate">' + it.sub + '</div></div>' +
+        '<div class="min-w-0"><div class="font-semibold text-sm truncate">' + esc(it.label) + '</div><div class="text-[12px] text-muted truncate">' + esc(subOf(it, q, toks)) + '</div></div>' +
         '<span class="ml-auto text-faint text-sm shrink-0">→</span></div>'
       )).join("");
     }
-    function go(it) { if (!it) return; close(); if (it.view === "product" && it.cat) setProductCategory(it.cat); setView(it.view); }
-    function open() { overlay.classList.remove("hidden"); document.body.classList.add("ov-lock"); input.value = ""; render(""); setTimeout(() => input.focus(), 30); }
+    function go(it) {
+      if (!it) return;
+      close();
+      if (it.type === "prod" && renderProduct(it.code)) { setView("product"); return; }
+      if (it.type === "cat") {
+        if (CATALOG[it.cat] && renderCatalog(it.cat)) { setView("catalog"); return; }
+        setProductCategory(it.cat); setView("product"); return;
+      }
+      setView(it.view);
+    }
+    function open() { items = buildIndex(); overlay.classList.remove("hidden"); document.body.classList.add("ov-lock"); input.value = ""; render(""); setTimeout(() => input.focus(), 30); }
     function close() { overlay.classList.add("hidden"); document.body.classList.remove("ov-lock"); }
 
-    document.querySelectorAll("[data-search]").forEach(b => b.addEventListener("click", open));
+    // delegato: copre anche i pulsanti iniettati negli header
+    document.addEventListener("click", (e) => { if (e.target.closest("[data-search]")) { e.preventDefault(); open(); } });
     overlay.querySelectorAll("[data-search-close]").forEach(x => x.addEventListener("click", close));
     input.addEventListener("input", () => render(input.value));
     results.addEventListener("click", (e) => {
@@ -1289,6 +1559,7 @@
 
     // ── caricamento dati admin + render liste ──
     function loadAdmin() {
+      populateFeatSelect();
       renderProdTable();
       renderCatList();
       renderNewsList();
@@ -1325,13 +1596,44 @@
         const stato = (p.stato || "pubblicato").toLowerCase() === "bozza"
           ? '<span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">Bozza</span>'
           : '<span class="text-[11px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">Pubblicato</span>';
+        const feat = HOME_FEAT.mode === "manual" && HOME_FEAT.code === p.code
+          ? ' <span class="ml-1.5 text-[10px] font-semibold text-red bg-red/10 border border-red/20 rounded-full px-2 py-0.5 align-middle">IN EVIDENZA</span>'
+          : "";
         return '<tr><td class="px-5 py-3"><input type="checkbox" class="accent-red w-4 h-4 rowChk" /></td>'
-          + '<td class="px-3 py-3 font-medium">' + esc(p.name) + "</td>"
-          + '<td class="px-3 py-3 mono text-faint">' + esc(p.code) + "</td>"
+          + '<td class="px-3 py-3 font-medium">' + esc(p.name) + feat + "</td>"
           + '<td class="px-3 py-3 text-muted">' + esc(CATALOG[catKey].label || catKey) + "</td>"
           + '<td class="px-3 py-3">' + stato + "</td>"
           + '<td class="px-3 py-3 text-right whitespace-nowrap">' + actionBtns('data-edit-prod="' + esc(p.code) + '" data-cat="' + esc(catKey) + '"', 'data-del-prod="' + esc(p.code) + '" data-cat="' + esc(catKey) + '"') + "</td></tr>";
-      }).join("") : '<tr><td colspan="6" class="px-5 py-10 text-center text-muted">Nessun prodotto.</td></tr>';
+      }).join("") : '<tr><td colspan="5" class="px-5 py-10 text-center text-muted">Nessun prodotto.</td></tr>';
+    }
+
+    // ── HOME: select "prodotto in evidenza" (solo prodotti pubblicati, per categoria) ──
+    function populateFeatSelect() {
+      const sel = document.getElementById("feat-code");
+      if (!sel) return;
+      sel.innerHTML = '<option value="">Casuale (a ogni visita)</option>'
+        + Object.keys(CATALOG).map((k) => {
+          const prods = (CATALOG[k].products || []).filter(isPublished);
+          if (!prods.length) return "";
+          return '<optgroup label="' + esc(CATALOG[k].label || cap(k)) + '">'
+            + prods.map((p) => '<option value="' + esc(p.code) + '">' + esc(p.name) + "</option>").join("")
+            + "</optgroup>";
+        }).join("");
+      const code = HOME_FEAT.mode === "manual" ? HOME_FEAT.code : "";
+      sel.value = code && CINDEX[code] ? code : "";
+    }
+    const featForm = document.getElementById("featForm");
+    if (featForm) {
+      featForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const code = (document.getElementById("feat-code") || {}).value || "";
+        try {
+          const s = await API.send("/api/settings", "PUT", { homeFeatured: { mode: code ? "manual" : "random", code } });
+          HOME_FEAT = (s && s.homeFeatured) || { mode: "random", code: "" };
+          renderHomeFeatured(); renderProdTable(); populateFeatSelect();
+          showMsg("featMsg", code ? "Prodotto in evidenza aggiornato." : "In home verrà mostrato un prodotto casuale.");
+        } catch (err) { showMsg("featMsg", "Errore: " + err.message, false); }
+      });
     }
 
     // ── CATEGORIE: lista ──
@@ -1401,7 +1703,10 @@
     // ── refresh completo dopo una mutazione ──
     function refreshPublicCatalog() {
       injectNewCategoryCards();
+      refreshFavs();
       populateProductCatSelect();
+      populateFeatSelect();
+      renderHomeFeatured(); // il prodotto in evidenza potrebbe essere stato modificato/eliminato
       if (currentCatKey && CATALOG[currentCatKey]) renderCatalog(currentCatKey);
     }
 
@@ -1415,8 +1720,14 @@
         const name = val("p-nome");
         const catKey = val("p-cat");
         if (!name || !catKey) { showMsg("productMsg", "Nome e categoria sono obbligatori.", false); return; }
-        let code = val("p-sku") || val("p-editcode");
-        if (!code) code = (name.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "")) || ("P" + name.length);
+        // codice interno (non più un campo del form): in modifica resta quello esistente,
+        // per i nuovi prodotti è derivato dal nome e reso univoco su tutto il catalogo
+        let code = val("p-editcode");
+        if (!code) {
+          const base = normTxt(name).toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "") || "PRODOTTO";
+          code = base;
+          for (let n = 2; CINDEX[code]; n++) code = base + "-" + n;
+        }
         // spec dalle righe dinamiche
         const spec = {};
         document.querySelectorAll("#specRows .spec-row").forEach((row) => {
@@ -1611,7 +1922,7 @@
         prodEditCat = catKey;
         const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v == null ? "" : v; };
         populateProductCatSelect();
-        set("p-editcode", p.code); set("p-nome", p.name); set("p-cat", catKey); set("p-sku", p.code);
+        set("p-editcode", p.code); set("p-nome", p.name); set("p-cat", catKey);
         set("p-norma", p.norma); set("p-sintesi", p.subtitle); set("p-comp", p.composizione);
         set("p-impiego", p.impiego); set("p-appl", p.applicazione); set("p-conserv", p.conservazione_note);
         set("p-formato", p.formato); set("p-img-url", p.img);
@@ -1998,14 +2309,21 @@
         API.get("/api/news"),
         API.get("/api/documents"),
         API.get("/api/positions"),
+        API.get("/api/settings"),
       ]);
-      const [cat, news, docs, pos] = results;
+      const [cat, news, docs, pos, settings] = results;
       if (cat.status === "fulfilled" && cat.value && typeof cat.value === "object") {
         applyCatalog(cat.value);
         injectNewCategoryCards();
         populateProductCatSelect();
         if (currentCatKey && CATALOG[currentCatKey]) renderCatalog(currentCatKey);
+        refreshFavs(); // i preferiti salvati vanno riletti sul catalogo live (prodotti eliminati/bozze)
       }
+      if (settings.status === "fulfilled" && settings.value && settings.value.homeFeatured) HOME_FEAT = settings.value.homeFeatured;
+      clearTimeout(homeFeatTimer);
+      renderHomeFeatured();
+      populateFeatSelect();
+      if (adminLoaded) renderProdTable(); // badge "in evidenza" se l'admin era già aperto
       if (news.status === "fulfilled" && Array.isArray(news.value)) { NEWS = news.value; renderNews(); }
       if (docs.status === "fulfilled" && Array.isArray(docs.value)) { DOCS = docs.value; renderDocs(); }
       if (pos.status === "fulfilled" && Array.isArray(pos.value)) { POSITIONS = pos.value; renderPositions(); }
