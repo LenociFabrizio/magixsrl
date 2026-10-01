@@ -50,6 +50,26 @@
     .rise { animation:none; }
   }
 
+  /* home: ogni sezione occupa una schermata intera sotto l'header sticky (68px + 1px di bordo);
+     la hero sottrae anche la top bar (36px). svh = viewport "piccola" su mobile: l'altezza
+     non salta quando la barra del browser compare/scompare. Contenuto centrato in verticale. */
+  .home-screen { display: flex; flex-direction: column; justify-content: center;
+    min-height: calc(100vh - 69px); min-height: calc(100svh - 69px); scroll-margin-top: 69px; }
+  .home-hero { min-height: calc(100vh - 105px); min-height: calc(100svh - 105px); }
+
+  /* hero cemento: la texture SVG (#mxConcrete) va su un layer proprio, così viene
+     rasterizzata una volta sola e non ridisegnata dalle animazioni del testo */
+  .concrete { transform: translateZ(0); }
+  /* luce radente dall'alto a sinistra: schiarisce il cemento dietro al testo */
+  .concrete-light { background:
+    radial-gradient(70% 85% at 22% 42%, rgba(245,243,239,.62), rgba(245,243,239,.25) 55%, rgba(245,243,239,0) 80%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(21,23,28,.07)); }
+  @media (max-width: 1023px) {
+    .concrete-light { background:
+      radial-gradient(95% 70% at 40% 45%, rgba(245,243,239,.6), rgba(245,243,239,.2) 60%, rgba(245,243,239,0) 85%),
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(21,23,28,.07)); }
+  }
+
   /* foto cantieri in evidenza (home): entrata via .reveal + zoom "ken burns" leggero */
   @keyframes featKen { 0% { transform: scale(1); } 100% { transform: scale(1.07); } }
   .feat-shot img { animation: featKen 16s ease-in-out infinite alternate; will-change: transform; }

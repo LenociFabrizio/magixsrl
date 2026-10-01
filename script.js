@@ -5,9 +5,57 @@
   const CINDEX = window.MAGIX_CATALOG_INDEX || {};
   let currentCatKey = null; // categoria attualmente mostrata (per breadcrumb "indietro")
   let currentProductCode = null; // prodotto attualmente in scheda (per il pulsante preferiti)
+  let placeholderCat = null; // categoria della scheda segnaposto (categoria senza prodotti a catalogo)
 
-  function setView(name) {
-    const targetId = views[name] || views.home;
+  // ── cronologia: ogni cambio di view è una voce della history del browser, così il tasto
+  //    "indietro" (browser o gesto del telefono) torna alla pagina precedente del sito invece
+  //    di uscire. Nello state: view + contesto (categoria/prodotto) + scroll della pagina ──
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  function viewState(name) {
+    return {
+      mx: 1, view: name,
+      cat: name === "catalog" ? currentCatKey : null,
+      prod: name === "product" ? currentProductCode : null,
+      pcat: name === "product" && !currentProductCode ? placeholderCat : null,
+    };
+  }
+  const sameState = (a, b) => a.view === b.view && a.cat === b.cat && a.prod === b.prod && a.pcat === b.pcat;
+  function recordView(name, fromHistory) {
+    const st = viewState(name), cur = history.state;
+    const url = location.pathname + location.search; // niente #ancora (es. #fam-malte) nelle voci delle view
+    if (fromHistory) { history.replaceState(Object.assign(st, { y: (cur && cur.y) || 0 }), "", url); return; }
+    // voci non nostre (primo caricamento, salto a un'ancora) vengono sostituite
+    if (!cur || !cur.mx) { history.replaceState(st, "", url); return; }
+    history.replaceState(Object.assign({}, cur, { y: window.scrollY }), ""); // per ritrovare lo scroll tornando qui
+    if (sameState(cur, st)) history.replaceState(st, "", url);
+    else history.pushState(st, "", url);
+  }
+  // riapre la view descritta da uno state (indietro/avanti, ricarica pagina)
+  function restoreView(st) {
+    if (st.view === "product" && st.prod && renderProduct(st.prod)) return setView("product", true);
+    if (st.view === "product" && st.pcat) { setProductCategory(st.pcat); return setView("product", true); }
+    if (st.view === "catalog" && st.cat && renderCatalog(st.cat)) return setView("catalog", true);
+    // prodotto/categoria non più a catalogo → elenco prodotti
+    setView(st.view === "product" || st.view === "catalog" ? "prodotti" : st.view, true);
+  }
+  window.addEventListener("popstate", (e) => {
+    const st = e.state;
+    if (!st || !st.mx) return; // voce di un'ancora interna: ci pensa il browser
+    closeMega(true); closeMobile();
+    ["searchOverlay", "articleOverlay"].forEach((id) => { const o = document.getElementById(id); if (o) o.classList.add("hidden"); });
+    document.body.classList.remove("ov-lock");
+    restoreView(st);
+    // salto immediato allo scroll salvato (scavalca lo scroll-behavior: smooth dell'html)
+    const html = document.documentElement;
+    html.style.scrollBehavior = "auto";
+    window.scrollTo(0, st.y || 0);
+    html.style.scrollBehavior = "";
+  });
+
+  function setView(name, fromHistory) {
+    if (!views[name]) name = "home";
+    const targetId = views[name];
+    recordView(name, fromHistory);
     if (name === "preferiti") renderFavorites();
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
     document.getElementById(targetId).classList.add("active");
@@ -19,6 +67,7 @@
     highlightNav(name);
     window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
     runReveal();
+    document.dispatchEvent(new CustomEvent("mx:view", { detail: name }));
   }
 
   // evidenzia la voce di menu attiva nell'header della view corrente
@@ -63,6 +112,14 @@
 
   // ── nav routing (delegated: copre anche elementi iniettati/clonati) ──
   document.addEventListener("click", (e) => {
+    // ancore interne (#fam-malte, freccia "Scorri" della home…): scroll morbido senza
+    // aggiungere voci alla cronologia, così "indietro" porta davvero alla pagina precedente
+    const anchor = e.target.closest('a[href^="#"]:not([href="#"]):not([data-view])');
+    if (anchor) {
+      const t = document.getElementById(anchor.getAttribute("href").slice(1));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      return;
+    }
     const el = e.target.closest("[data-view]");
     if (!el) return;
     e.preventDefault();
@@ -94,6 +151,7 @@
   function setProductCategory(name) {
     if (!name) return;
     currentProductCode = null; // scheda segnaposto: nessun prodotto reale (preferiti/preventivo)
+    placeholderCat = name;
     renderRelated(null);
     const label = name.replace(/\b\w/g, c => c.toUpperCase());
     const crumb = document.getElementById("pCrumbCat");
@@ -1552,10 +1610,8 @@
       if (loginOverlay) loginOverlay.classList.remove("hidden");
     });
 
-    // gate all'apertura dell'area admin
-    document.querySelectorAll('[data-view="admin"]').forEach((a) =>
-      a.addEventListener("click", () => { setTimeout(checkAuth, 0); })
-    );
+    // gate all'apertura dell'area admin (da link, ma anche da indietro/avanti o ricarica pagina)
+    document.addEventListener("mx:view", (e) => { if (e.detail === "admin") setTimeout(checkAuth, 0); });
 
     // ── caricamento dati admin + render liste ──
     function loadAdmin() {
@@ -2330,5 +2386,9 @@
     })();
   })();
 
-  // ── init ──
-  setView("home");
+  // ── init: dopo una ricarica (o tornando al sito con "indietro" da una pagina esterna)
+  //    riapre la pagina in cui si era, letta dallo state della history. Un accesso
+  //    "nuovo" parte sempre dalla home, anche se il browser ha conservato lo state ──
+  const navType = ((performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || {}).type;
+  if (history.state && history.state.mx && (navType === "reload" || navType === "back_forward")) restoreView(history.state);
+  else { history.replaceState(null, ""); setView("home"); }

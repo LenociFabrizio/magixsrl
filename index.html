@@ -42,15 +42,15 @@
 <section id="view-home" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -80,11 +80,45 @@
     </div>
   </header>
 
-  <!-- hero -->
-  <section class="relative overflow-hidden border-b border-line">
-    <div class="absolute inset-0 grid-bg"></div>
-    <div class="absolute -top-32 -right-32 w-[460px] h-[460px] rounded-full" style="background:radial-gradient(circle,rgba(228,0,43,.14),transparent 70%)"></div>
-    <div class="relative max-w-7xl mx-auto px-5 pt-16 pb-20 lg:grid lg:grid-cols-[1.15fr,.85fr] lg:gap-12 items-center">
+  <!-- hero (a tutto schermo, vedi .home-screen) -->
+  <section class="home-screen home-hero relative overflow-hidden border-b border-line bg-[#B0A8A5]">
+    <!-- sfondo effetto cemento: texture SVG procedurale (nessuna immagine da scaricare).
+         Macchie grandi + chiazze più chiare a bordi netti + grana fine + pori, più qualche graffio. -->
+    <svg class="concrete absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" focusable="false">
+      <filter id="mxConcrete" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="3" seed="4" result="dmap"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".0035" numOctaves="5" seed="11"/>
+        <feDisplacementMap in2="dmap" scale="70" xChannelSelector="R" yChannelSelector="G"/>
+        <feColorMatrix type="matrix" values=".2 0 0 0 .59  .2 0 0 0 .558  .2 0 0 0 .546  0 0 0 0 1" result="base"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".007" numOctaves="4" seed="9"/>
+        <feDisplacementMap in2="dmap" scale="40" xChannelSelector="G" yChannelSelector="R"/>
+        <feColorMatrix type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1"/>
+        <feComponentTransfer result="patch">
+          <feFuncR type="table" tableValues="0 0 0 .5 1 1 1"/><feFuncG type="table" tableValues="0 0 0 .5 1 1 1"/><feFuncB type="table" tableValues="0 0 0 .5 1 1 1"/>
+        </feComponentTransfer>
+        <feComposite in="base" in2="patch" operator="arithmetic" k2="1" k3=".06" k4="-.03" result="b2"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".3" numOctaves="2" seed="8"/>
+        <feColorMatrix type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="speck"/>
+        <feComposite in="b2" in2="speck" operator="arithmetic" k2="1" k3=".1" k4="-.05" result="b3"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="5"/>
+        <feColorMatrix type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="grain"/>
+        <feComposite in="b3" in2="grain" operator="arithmetic" k2="1" k3=".08" k4="-.04" result="b4"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".25" numOctaves="1" seed="21"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 .42  0 0 0 0 .39  0 0 0 0 .39  -22 0 0 0 4.2" result="pores"/>
+        <feComposite in="pores" in2="b4" operator="over"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#mxConcrete)"/>
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" stroke="#4A4344" stroke-linecap="round" opacity=".22">
+        <path vector-effect="non-scaling-stroke" stroke-width="1" d="M70 15 C74 13 78 11 81 9"/>
+        <path vector-effect="non-scaling-stroke" stroke-width=".8" d="M80 51 C85 49 90 48 94 47"/>
+        <path vector-effect="non-scaling-stroke" stroke-width=".7" d="M53 9 L56 9.6"/>
+        <path vector-effect="non-scaling-stroke" stroke-width=".8" d="M4 92 C9 93 14 94 19 95"/>
+        <path vector-effect="non-scaling-stroke" stroke-width=".7" d="M48 70 L56 70.4"/>
+      </svg>
+    </svg>
+    <!-- luce radente: schiarisce il cemento dietro al testo (leggibilità) -->
+    <div class="concrete-light absolute inset-0 pointer-events-none"></div>
+    <div class="relative w-full max-w-7xl mx-auto px-5 pt-12 pb-28 lg:pt-16 lg:grid lg:grid-cols-[1.15fr,.85fr] lg:gap-12 items-center">
       <div>
         <div class="rise kicker text-red flex items-center gap-2" style="animation-delay:.05s">
           <span class="w-6 h-px bg-red"></span> DAL 1990 · BIOEDILIZIA · MADE IN PUGLIA
@@ -113,23 +147,31 @@
         <div id="homeFeatured" class="relative"></div>
       </div>
     </div>
+
+    <a href="#home-azienda" class="absolute left-1/2 -translate-x-1/2 bottom-5 flex flex-col items-center gap-2 text-inksoft hover:text-red transition group" aria-label="Scorri alla sezione successiva">
+      <span class="kicker">Scorri</span>
+      <span class="scroll-cue-arrow grid place-items-center w-11 h-11 rounded-full border border-line bg-surface/80 shadow-soft group-hover:border-red/40 transition">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14m0 0-6-6m6 6 6-6"/></svg>
+      </span>
+    </a>
   </section>
 
   <!-- chi siamo (azienda) -->
-  <section class="max-w-7xl mx-auto px-5 py-20">
-    <div class="lg:grid lg:grid-cols-[.9fr,1.1fr] lg:gap-14 items-center">
-      <!-- visual -->
-      <div class="reveal relative order-last lg:order-first mt-10 lg:mt-0">
+  <section id="home-azienda" class="home-screen max-w-7xl mx-auto px-5 py-10 sm:py-12 lg:py-16">
+    <!-- flex su mobile: così order-last mette le foto sotto al testo -->
+    <div class="flex flex-col lg:grid lg:grid-cols-[.9fr,1.1fr] lg:gap-14 items-center">
+      <!-- visual (su desktop le foto crescono con l'altezza dello schermo) -->
+      <div class="reveal relative w-full order-last lg:order-first mt-8 lg:mt-0">
         <div class="absolute -inset-3 rounded-[28px] bg-gradient-to-tr from-graphite/5 to-transparent blur-xl"></div>
         <div class="relative grid grid-cols-3 gap-3">
-          <img src="img/cantiere_magix_1.jpg" alt="Cantiere Magix" loading="lazy" class="rounded-2xl h-40 w-full object-cover border border-line shadow-soft" />
-          <img src="img/MAGIX_STORIA.jpg" alt="La storia di Magix" loading="lazy" class="rounded-2xl h-40 w-full object-cover border border-line shadow-soft translate-y-6" />
-          <img src="img/sacchi_magix.jpg" alt="Sacchi di malta Magix" loading="lazy" class="rounded-2xl h-40 w-full object-cover border border-line shadow-soft" />
-          <img src="img/sacchi_magix_2.jpg" alt="Produzione e confezionamento Magix" loading="lazy" class="rounded-2xl h-28 w-full object-cover border border-line shadow-soft col-span-3" />
+          <img src="img/cantiere_magix_1.jpg" alt="Cantiere Magix" loading="lazy" class="rounded-2xl h-28 sm:h-40 lg:h-[clamp(10rem,28vh,17rem)] w-full object-cover border border-line shadow-soft" />
+          <img src="img/MAGIX_STORIA.jpg" alt="La storia di Magix" loading="lazy" class="rounded-2xl h-28 sm:h-40 lg:h-[clamp(10rem,28vh,17rem)] w-full object-cover border border-line shadow-soft translate-y-6" />
+          <img src="img/sacchi_magix.jpg" alt="Sacchi di malta Magix" loading="lazy" class="rounded-2xl h-28 sm:h-40 lg:h-[clamp(10rem,28vh,17rem)] w-full object-cover border border-line shadow-soft" />
+          <img src="img/sacchi_magix_2.jpg" alt="Produzione e confezionamento Magix" loading="lazy" class="rounded-2xl h-20 sm:h-28 lg:h-[clamp(7rem,18vh,11rem)] w-full object-cover border border-line shadow-soft col-span-3" />
         </div>
       </div>
       <!-- text -->
-      <div class="reveal">
+      <div class="reveal w-full">
         <div class="kicker text-red flex items-center gap-2"><span>◢</span> 01 — CHI SIAMO</div>
         <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight mt-3">Tradizione e innovazione,<br>dal 1990.</h2>
         <p class="text-inksoft mt-5 leading-relaxed max-w-xl">
@@ -146,7 +188,7 @@
   </section>
 
   <!-- categories -->
-  <section class="max-w-7xl mx-auto px-5 py-20 border-t border-line">
+  <section class="home-screen max-w-7xl mx-auto px-5 py-12 lg:py-16 border-t border-line">
     <div class="flex items-end justify-between reveal">
       <div>
         <div class="kicker text-red flex items-center gap-2"><span>◢</span> 02 — CATALOGO</div>
@@ -155,68 +197,71 @@
       <a href="#" data-view="prodotti" class="hidden sm:flex items-center gap-2 text-sm font-semibold underline-grow">Tutte le 18 categorie →</a>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+    <!-- mobile: 2 colonne compatte (descrizione nascosta) così la gamma sta in una schermata -->
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-8 sm:mt-10">
       <!-- cat card -->
-      <a href="#" data-view="catalog" data-name="malte da intonaco" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
+      <a href="#" data-view="catalog" data-name="malte da intonaco" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
         <div class="flex items-start justify-between">
           <span class="mono text-[12px] text-faint">01</span>
-          <span class="mat mat-grey w-12 h-12 rounded-xl"></span>
+          <span class="mat mat-grey w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span>
         </div>
-        <h3 class="display font-bold text-xl mt-5">Malte da intonaco</h3>
-        <p class="text-muted text-sm mt-1.5">Base, finitura, traspiranti per interni ed esterni.</p>
-        <div class="flex items-center justify-between mt-5 text-sm">
+        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Malte da intonaco</h3>
+        <p class="hidden sm:block text-muted text-sm mt-1.5">Base, finitura, traspiranti per interni ed esterni.</p>
+        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm">
           <span class="mono text-faint text-[12px]">14 prodotti</span>
           <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
         </div>
       </a>
-      <a href="#" data-view="catalog" data-name="sistema a cappotto" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">02</span><span class="mat mat-white w-12 h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-xl mt-5">Sistema a cappotto</h3>
-        <p class="text-muted text-sm mt-1.5">Cicli ETICS completi: collanti, rasanti, primer.</p>
-        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">9 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      <a href="#" data-view="catalog" data-name="sistema a cappotto" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">02</span><span class="mat mat-white w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Sistema a cappotto</h3>
+        <p class="hidden sm:block text-muted text-sm mt-1.5">Cicli ETICS completi: collanti, rasanti, primer.</p>
+        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">9 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" data-view="catalog" data-name="adesivi cementizi" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">03</span><span class="mat mat-ochre w-12 h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-xl mt-5">Adesivi cementizi</h3>
-        <p class="text-muted text-sm mt-1.5">C1/C2 per ceramica, gres e grandi formati.</p>
-        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">11 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      <a href="#" data-view="catalog" data-name="adesivi cementizi" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">03</span><span class="mat mat-ochre w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Adesivi cementizi</h3>
+        <p class="hidden sm:block text-muted text-sm mt-1.5">C1/C2 per ceramica, gres e grandi formati.</p>
+        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">11 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" data-view="catalog" data-name="linea bio" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">04</span><span class="mat mat-bio w-12 h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-xl mt-5 flex items-center gap-2">Linea bio <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">ECO</span></h3>
-        <p class="text-muted text-sm mt-1.5">Leganti naturali a base calce, alta traspirabilità.</p>
-        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">7 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      <a href="#" data-view="catalog" data-name="linea bio" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">04</span><span class="mat mat-bio w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5 flex items-center gap-2">Linea bio <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">ECO</span></h3>
+        <p class="hidden sm:block text-muted text-sm mt-1.5">Leganti naturali a base calce, alta traspirabilità.</p>
+        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">7 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" data-view="catalog" data-name="malte rapide" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">05</span><span class="mat mat-red w-12 h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-xl mt-5">Malte rapide</h3>
-        <p class="text-muted text-sm mt-1.5">Presa e indurimento veloci per fissaggi e ripristini.</p>
-        <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-faint text-[12px]">6 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+      <a href="#" data-view="catalog" data-name="malte rapide" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
+        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">05</span><span class="mat mat-red w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
+        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Malte rapide</h3>
+        <p class="hidden sm:block text-muted text-sm mt-1.5">Presa e indurimento veloci per fissaggi e ripristini.</p>
+        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">6 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
       </a>
-      <a href="#" data-view="cemento" class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-6 hover:shadow-lift relative overflow-hidden">
+      <a href="#" data-view="cemento" class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift relative overflow-hidden">
         <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
         <div class="relative">
-          <div class="flex items-start justify-between"><span class="mono text-[12px] text-white/40">06</span><span class="mat mat-anthr w-12 h-12 rounded-xl border border-white/10"></span></div>
-          <h3 class="display font-bold text-xl mt-5">Cemento sfuso</h3>
-          <p class="text-white/60 text-sm mt-1.5">Fornitura in silo, trasportato e pompato sui piani.</p>
-          <div class="flex items-center justify-between mt-5 text-sm"><span class="mono text-white/40 text-[12px]">su preventivo</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+          <div class="flex items-start justify-between"><span class="mono text-[12px] text-white/40">06</span><span class="mat mat-anthr w-9 h-9 sm:w-12 sm:h-12 rounded-xl border border-white/10"></span></div>
+          <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Cemento sfuso</h3>
+          <p class="hidden sm:block text-white/60 text-sm mt-1.5">Fornitura in silo, trasportato e pompato sui piani.</p>
+          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/40 text-[12px]">su preventivo</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
         </div>
       </a>
     </div>
+    <a href="#" data-view="prodotti" class="sm:hidden self-start mt-6 flex items-center gap-2 text-sm font-semibold text-red">Tutte le 18 categorie →</a>
   </section>
 
   <!-- featured products -->
-  <section class="bg-bg2 border-y border-line">
-    <div class="max-w-7xl mx-auto px-5 py-20">
+  <section class="home-screen bg-bg2 border-y border-line">
+    <div class="w-full max-w-7xl mx-auto px-5 py-12 lg:py-16 flex-1 flex flex-col">
       <div class="reveal kicker text-red flex items-center gap-2"><span>◢</span> 03 — IN EVIDENZA</div>
       <div class="flex flex-col md:flex-row md:items-end md:justify-between reveal mt-3 gap-4">
         <h2 class="display font-extrabold text-[clamp(2rem,4vw,3rem)] leading-tight">Magix<br>nei cantieri.</h2>
         <p class="text-muted text-sm max-w-xs md:text-right">Silos, forniture e malte a prestazione garantita: i nostri prodotti al lavoro nei cantieri reali.</p>
       </div>
 
-      <!-- foto reali dei cantieri MAGIX (animazione "ken burns" leggera, vedi .feat-shot in styles.css) -->
-      <div class="grid sm:grid-cols-2 gap-5 mt-10">
-        <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft aspect-[4/5]">
+      <!-- foto reali dei cantieri MAGIX (animazione "ken burns" leggera, vedi .feat-shot in styles.css).
+           La griglia riempie il resto della schermata: le righe si allungano fino in fondo -->
+      <div class="grid sm:grid-cols-2 gap-4 sm:gap-5 mt-8 sm:mt-10 flex-1">
+        <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft min-h-[13rem] sm:min-h-[20rem]">
           <img src="img/magix_foto_1.png" alt="Silo MAGIX malte — bio edilizia in cantiere" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-graphite/80 via-graphite/15 to-transparent"></div>
           <figcaption class="absolute bottom-0 inset-x-0 p-6">
@@ -226,7 +271,7 @@
           </figcaption>
         </figure>
 
-        <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft aspect-[4/5]" style="transition-delay:90ms">
+        <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft min-h-[13rem] sm:min-h-[20rem]" style="transition-delay:90ms">
           <img src="img/magix_foto_3.png" alt="Cantiere con ponteggio e silo MAGIX bio edilizia" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-graphite/80 via-graphite/15 to-transparent"></div>
           <figcaption class="absolute bottom-0 inset-x-0 p-6">
@@ -240,8 +285,9 @@
   </section>
 
   <!-- bio band -->
-  <section class="max-w-7xl mx-auto px-5 py-20">
-    <div class="reveal relative rounded-3xl overflow-hidden border border-bio/20 bg-biosoft p-10 lg:p-14 grid lg:grid-cols-2 gap-8 items-center">
+  <section class="home-screen max-w-7xl mx-auto px-5 py-12 lg:py-16">
+    <!-- il riquadro si allunga a riempire la schermata, contenuto centrato -->
+    <div class="reveal relative rounded-3xl overflow-hidden border border-bio/20 bg-biosoft p-8 sm:p-10 lg:p-14 grid lg:grid-cols-2 gap-8 items-center content-center flex-1">
       <div class="absolute inset-0 grid-bg opacity-[.25]"></div>
       <div class="relative">
         <div class="kicker text-bio">◢ SOSTENIBILITÀ</div>
@@ -250,13 +296,13 @@
         <button data-view="catalog" data-name="linea bio" class="mt-6 h-11 px-5 rounded-xl bg-bio text-white font-semibold text-sm hover:brightness-95 transition">Scopri la Linea Bio →</button>
       </div>
       <div class="relative grid grid-cols-3 gap-3">
-        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
+        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 lg:h-44 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
           <img src="img/img_prd/NATURAL%20BIO_NUOVO%20copia.png" alt="Magix Natural Bio — leganti a base calce" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
         </a>
-        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden translate-y-5" title="Bio Restore">
+        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 lg:h-44 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden translate-y-5" title="Bio Restore">
           <img src="img/img_prd/BIO%20RESTORE.png" alt="Magix Bio Restore — intonaco da risanamento" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
         </a>
-        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
+        <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 lg:h-44 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
           <img src="img/img_prd/NATURAL%20BIO_NUOVO%20copia.png" alt="Magix Natural Bio — alta traspirabilità" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
         </a>
       </div>
@@ -310,15 +356,15 @@
 <section id="view-prodotti" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -471,15 +517,15 @@
 <section id="view-catalog" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -528,15 +574,15 @@
 <section id="view-preferiti" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -592,15 +638,15 @@
 <section id="view-product" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -1343,15 +1389,15 @@
 <section id="view-cemento" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -1808,15 +1854,15 @@
 <section id="view-news" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -2022,15 +2068,15 @@
 <section id="view-contatti" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -2248,15 +2294,15 @@
 <section id="view-lavora" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -2653,15 +2699,15 @@
 <section id="view-privacy" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -2792,15 +2838,15 @@
 <section id="view-cookie" class="view">
 
   <!-- top bar -->
-  <div class="bg-graphite text-white/70 text-[12.5px]">
-    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span class="mono">📍 Gravina in Puglia (BA)</span>
+  <div class="bg-graphite text-white/70 text-[12.5px] whitespace-nowrap">
+    <div class="max-w-7xl mx-auto px-5 h-9 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <span class="mono truncate">📍 Gravina in Puglia (BA)</span>
         <span class="hidden sm:inline text-white/30">|</span>
         <a href="#" class="hidden sm:inline hover:text-white transition">080.325.17.69</a>
       </div>
       <div class="flex items-center gap-4">
-        <a href="#" data-view="download" class="hover:text-white transition">Area download</a>
+        <a href="#" data-view="download" class="hidden sm:inline hover:text-white transition">Area download</a>
         <a href="#" data-view="lavora" class="hover:text-white transition">Lavora con noi</a>
       </div>
     </div>
@@ -2963,46 +3009,46 @@
 
 <!-- ░░ mega menu prodotti (desktop) ░░ -->
 <div id="megaMenu" class="hidden fixed left-0 right-0 z-[45] px-5 pt-3" aria-label="Categorie prodotti">
-  <div class="max-w-5xl mx-auto">
-    <div class="glass rounded-2xl shadow-glass border border-line p-6 grid md:grid-cols-[1.5fr,1fr] gap-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="bg-surface/95 backdrop-blur-xl rounded-3xl shadow-glass border border-line p-8 xl:p-10 grid md:grid-cols-[1.6fr,1fr] gap-8 xl:gap-12">
       <div>
-        <div class="flex items-center justify-between">
-          <a href="#" data-view="prodotti" class="kicker text-red hover:opacity-80 transition">MALTE</a>
-          <span class="text-[10px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2 py-0.5">18 categorie</span>
+        <div class="flex items-center justify-between gap-3">
+          <a href="#" data-view="prodotti" class="display font-extrabold text-2xl text-ink hover:text-red transition">Malte</a>
+          <span class="text-[12px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2.5 py-1 shrink-0">18 categorie</span>
         </div>
-        <div id="megaMalteLinks" class="grid grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-0.5 mt-4 text-[13.5px]">
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Adesivi cementizi</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Linea bio</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da intonaco</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte rapide</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da ripristino</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malta antincendio</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Legante premiscelato</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da massetto</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da rasatura</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Sistema a cappotto</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malta impermeabilizzante</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Linea deumidificanti</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da muratura</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Primer monocomponente</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Ciclo calcestruzzo autoclavato</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da finitura</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da muratura facciavista</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Malte da rinzaffo</a>
+        <div id="megaMalteLinks" class="grid grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-1 mt-6 text-[16px]">
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Adesivi cementizi</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Linea bio</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da intonaco</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte rapide</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da ripristino</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malta antincendio</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Legante premiscelato</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da massetto</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da rasatura</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Sistema a cappotto</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malta impermeabilizzante</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Linea deumidificanti</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da muratura</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Primer monocomponente</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Ciclo calcestruzzo autoclavato</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da finitura</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da muratura facciavista</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Malte da rinzaffo</a>
         </div>
-        <a href="#" data-view="prodotti" class="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-red underline-grow">Tutte le categorie →</a>
+        <a href="#" data-view="prodotti" class="inline-flex items-center gap-1.5 mt-6 text-[15px] font-semibold text-red underline-grow">Tutte le categorie →</a>
       </div>
-      <div class="md:border-l md:border-line md:pl-6">
-        <div class="flex items-center justify-between">
-          <a href="#" data-view="prodotti" class="kicker text-red hover:opacity-80 transition">RIVESTIMENTI E IDROPITTURE</a>
-          <span class="text-[10px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2 py-0.5">3</span>
+      <div class="md:border-l md:border-line md:pl-8 xl:pl-12">
+        <div class="flex items-center justify-between gap-3">
+          <a href="#" data-view="prodotti" class="display font-extrabold text-2xl text-ink hover:text-red transition">Rivestimenti e idropitture</a>
+          <span class="text-[12px] font-semibold text-ink bg-bg2 border border-line rounded-full px-2.5 py-1 shrink-0">3</span>
         </div>
-        <div id="megaRivLinks" class="grid gap-0.5 mt-4 text-[13.5px]">
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Rivestimenti</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Idropitture</a>
-          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1">Rivestimenti per esterni</a>
+        <div id="megaRivLinks" class="grid gap-1 mt-6 text-[16px]">
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Rivestimenti</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Idropitture</a>
+          <a href="#" data-view="product" class="mega-cat text-inksoft hover:text-red transition py-1.5">Rivestimenti per esterni</a>
         </div>
-        <a href="#" data-view="contatti" class="inline-flex items-center gap-1.5 mt-4 text-sm font-semibold text-red underline-grow">Contattaci →</a>
+        <a href="#" data-view="contatti" class="inline-flex items-center gap-1.5 mt-6 text-[15px] font-semibold text-red underline-grow">Contattaci →</a>
       </div>
     </div>
   </div>
