@@ -19,7 +19,7 @@ module.exports = async function handler(req, res) {
     const settings = await readCollection("settings");
 
     if (req.method === "GET") return res.status(200).json(settings);
-    if (!requireAuth(req, res)) return;
+    if (!(await requireAuth(req, res))) return;
     if (req.method !== "PUT") return res.status(405).json({ error: "Metodo non consentito" });
 
     const body = parseBody(req);

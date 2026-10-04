@@ -27,12 +27,24 @@ Apri http://localhost:3000
 
 ## Area riservata (admin) — backend
 
-L'area riservata (`Area riservata` nel footer → `/admin`) usa **Vercel Serverless Functions** (`api/`)
-con storage su **Vercel Blob** e una **passphrase unica** per l'accesso.
+L'area riservata usa **Vercel Serverless Functions** (`api/`) con storage su **Vercel Blob** e un
+**account admin** (username/email + password) configurato nelle variabili d'ambiente.
 
-Le GET sono pubbliche (il sito legge i contenuti); ogni operazione di scrittura (create/update/delete)
-richiede l'autenticazione tramite cookie di sessione firmato. Se il backend non è configurato o non
-risponde, il sito pubblico **ricade automaticamente sui dati statici** e resta perfettamente funzionante.
+- **Accesso:** solo da URL diretto **`/admin`** (da salvare nei preferiti). Il sito pubblico non contiene
+  link all'area riservata; `vercel.json` riscrive `/admin` su `index.html` e lo marca `noindex`.
+- **Sessione:** al login il server crea una sessione (id casuale registrato sul Blob, 12 ore) e la invia in
+  un cookie `HttpOnly; Secure; SameSite=Strict` firmato HMAC. Ogni API protetta verifica firma, scadenza e
+  registro. Il **logout** rimuove la sessione dal registro: il vecchio cookie non vale più, anche se copiato.
+  Cambiare password, username o `AUTH_SECRET` chiude tutte le sessioni aperte.
+- **Senza sessione** il pannello resta coperto dal login e ogni API riservata risponde `401`: scritture
+  (catalogo, news, documenti, posizioni, impostazioni), upload, storico trasferte e `api/geo`.
+  Prodotti e news in **bozza** non escono dalle GET pubbliche.
+- Le collezioni private (`trips`, `sessions`) sono salvate sul Blob con un nome casuale non indovinabile,
+  non a un path fisso (lo store è ad accesso pubblico per URL).
+
+Le GET dei contenuti pubblicati sono pubbliche (il sito le legge). Se il backend non è configurato o non
+risponde, il sito pubblico **ricade automaticamente sui dati statici** e resta perfettamente funzionante;
+l'area riservata invece resta chiusa (nessun accesso senza le variabili d'ambiente e il Blob).
 
 - **Prodotto in evidenza in home** (Dashboard → "Prodotto in evidenza in home"): l'admin sceglie il
   prodotto mostrato nella card in alto della home, oppure "Casuale" (cambia a ogni visita). Salvato in
@@ -63,10 +75,11 @@ totale del viaggio, con storico salvato sul backend.
 1. **Crea il Blob store**: Vercel → progetto → **Storage → Create → Blob** → connetti al progetto
    (Vercel inserisce in automatico `BLOB_READ_WRITE_TOKEN`).
 2. **Imposta le variabili d'ambiente** (Settings → Environment Variables), vedi `.env.example`:
-   - `ADMIN_PASSWORD` — la passphrase d'accesso all'area riservata.
-   - `AUTH_SECRET` — segreto per firmare il cookie (`openssl rand -hex 32`).
+   - `ADMIN_USERNAME` — username o email dell'account admin.
+   - `ADMIN_PASSWORD` — password (in chiaro o, meglio, hash `scrypt:…` generato col comando in `.env.example`).
+   - `AUTH_SECRET` — segreto per firmare il cookie, almeno 32 caratteri (`openssl rand -hex 32`).
    - `ORS_API_KEY` — (opzionale) chiave OpenRouteService per il tool "Trasferte & trasporti".
-3. Redeploy.
+3. Redeploy, poi apri `https://<dominio>/admin`.
 
 ### Sviluppo locale dell'area riservata
 
@@ -75,12 +88,12 @@ npm install
 npm i -g vercel        # se non presente
 vercel link            # collega la cartella al progetto Vercel
 vercel env pull .env.local   # scarica BLOB_READ_WRITE_TOKEN
-# aggiungi ADMIN_PASSWORD e AUTH_SECRET in .env.local (vedi .env.example)
-vercel dev             # serve sito + functions su http://localhost:3000
+# aggiungi ADMIN_USERNAME, ADMIN_PASSWORD e AUTH_SECRET in .env.local (vedi .env.example)
+vercel dev             # serve sito + functions su http://localhost:3000 (area riservata: /admin)
 ```
 
 > Senza `vercel dev` (es. `npm start`) le API non sono attive: il sito gira comunque sui dati statici,
-> ma l'area riservata non potrà salvare.
+> ma l'area riservata non è raggiungibile (né `/admin` né il login funzionano).
 
 ## Deploy su Vercel
 

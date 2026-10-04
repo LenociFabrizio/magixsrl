@@ -1,5 +1,8 @@
   // ── view router ──
   const views = { home: "view-home", prodotti: "view-prodotti", cemento: "view-cemento", news: "view-news", contatti: "view-contatti", lavora: "view-lavora", download: "view-download", catalog: "view-catalog", product: "view-product", preferiti: "view-preferiti", privacy: "view-privacy", cookie: "view-cookie", admin: "view-admin" };
+  // l'area riservata ha un URL proprio, non linkato da nessuna parte del sito pubblico:
+  // ci si arriva solo digitandolo o da un preferito (vercel.json lo riscrive su index.html)
+  const ADMIN_PATH = "/admin";
   // ── catalogo prodotti (dati da catalog-data.js) ──
   const CATALOG = window.MAGIX_CATALOG || {};
   const CINDEX = window.MAGIX_CATALOG_INDEX || {};
@@ -22,7 +25,8 @@
   const sameState = (a, b) => a.view === b.view && a.cat === b.cat && a.prod === b.prod && a.pcat === b.pcat;
   function recordView(name, fromHistory) {
     const st = viewState(name), cur = history.state;
-    const url = location.pathname + location.search; // niente #ancora (es. #fam-malte) nelle voci delle view
+    const path = name === "admin" ? ADMIN_PATH : (location.pathname === ADMIN_PATH ? "/" : location.pathname);
+    const url = path + location.search; // niente #ancora (es. #fam-malte) nelle voci delle view
     if (fromHistory) { history.replaceState(Object.assign(st, { y: (cur && cur.y) || 0 }), "", url); return; }
     // voci non nostre (primo caricamento, salto a un'ancora) vengono sostituite
     if (!cur || !cur.mx) { history.replaceState(st, "", url); return; }
@@ -1323,10 +1327,12 @@
   //  pubblico continua a mostrare i dati statici bundle (fallback morbido).
   // ══════════════════════════════════════════════════════════════════════
   (function () {
+    // 401 = sessione assente/scaduta/chiusa: lo segnala al controller admin (torna al login)
+    const unauthorized = (r) => { if (r.status === 401) document.dispatchEvent(new CustomEvent("mx:unauthorized")); };
     const API = {
       async get(path) {
         const r = await fetch(path, { headers: { Accept: "application/json" }, cache: "no-store" });
-        if (!r.ok) throw new Error("HTTP " + r.status);
+        if (!r.ok) { unauthorized(r); const e = new Error("HTTP " + r.status); e.status = r.status; throw e; }
         return r.json();
       },
       async send(path, method, body) {
@@ -1337,7 +1343,7 @@
         });
         let data = null;
         try { data = await r.json(); } catch (_) { /* no body */ }
-        if (!r.ok) { const e = new Error((data && data.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
+        if (!r.ok) { unauthorized(r); const e = new Error((data && data.error) || ("HTTP " + r.status)); e.status = r.status; throw e; }
         return data;
       },
     };
@@ -1541,10 +1547,15 @@
     }
 
     // ══════════════════════ CONTROLLER ADMIN ══════════════════════
+    // Il pannello resta nascosto finché il server non conferma la sessione. La protezione
+    // vera è lato server: ogni dato o azione dell'area riservata passa da API che senza
+    // una sessione valida rispondono 401.
     const loginOverlay = document.getElementById("adminLogin");
     const loginForm = document.getElementById("adminLoginForm");
     const loginMsg = document.getElementById("adminLoginMsg");
+    const userInput = document.getElementById("adminUser");
     const passInput = document.getElementById("adminPass");
+    const adminShell = document.getElementById("adminShell");
     let authed = false;
     let adminLoaded = false;
 
@@ -1556,32 +1567,18 @@
       el.classList.add(ok === false ? "text-red" : "text-bio");
       if (ok !== false) setTimeout(() => el.classList.add("hidden"), 4000);
     }
-    // ⚠ avviso visibile quando il bypass password di test è attivo lato server
-    function applyBypassUi(on) {
-      if (passInput) {
-        passInput.required = !on;
-        if (on) passInput.placeholder = "(bypass test attivo — lascia vuoto)";
-      }
-      let strip = document.getElementById("adminBypassStrip");
-      if (on) {
-        if (!strip) {
-          strip = document.createElement("div");
-          strip.id = "adminBypassStrip";
-          strip.className = "fixed top-0 inset-x-0 z-[80] bg-red text-white text-center text-[12px] font-semibold py-1.5 px-4 shadow-soft";
-          strip.textContent = "⚠ MODALITÀ TEST — bypass password attivo (ADMIN_BYPASS). Disattivalo prima di andare online.";
-          document.body.appendChild(strip);
-        }
-        strip.classList.remove("hidden");
-      } else if (strip) {
-        strip.classList.add("hidden");
-      }
+    function setAuthedUi(on) {
+      authed = on;
+      if (loginOverlay) loginOverlay.classList.toggle("hidden", on);
+      if (adminShell) adminShell.classList.toggle("hidden", !on);
+    }
+    function loginError(text) {
+      if (loginMsg) { loginMsg.textContent = text; loginMsg.classList.remove("hidden"); }
     }
     async function checkAuth() {
       let me = null;
       try { me = await API.get("/api/auth?action=me"); } catch (_) {}
-      authed = !!(me && me.authed);
-      applyBypassUi(!!(me && me.bypass));
-      if (loginOverlay) loginOverlay.classList.toggle("hidden", authed);
+      setAuthedUi(!!(me && me.authed));
       if (authed && !adminLoaded) { adminLoaded = true; loadAdmin(); }
       return authed;
     }
@@ -1590,37 +1587,48 @@
       loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (loginMsg) loginMsg.classList.add("hidden");
+        const username = userInput ? userInput.value.trim() : "";
+        const password = passInput ? passInput.value : "";
+        if (!username || !password) { loginError("Inserisci username (o email) e password."); return; }
         try {
-          await API.send("/api/auth?action=login", "POST", { password: passInput ? passInput.value : "" });
-          authed = true;
+          await API.send("/api/auth?action=login", "POST", { username, password });
           if (passInput) passInput.value = "";
-          if (loginOverlay) loginOverlay.classList.add("hidden");
+          setAuthedUi(true);
           adminLoaded = true;
           loadAdmin();
         } catch (err) {
-          if (loginMsg) { loginMsg.textContent = err.status === 401 ? "Passphrase errata." : "Backend non disponibile."; loginMsg.classList.remove("hidden"); }
+          if (passInput) passInput.value = "";
+          loginError(err.status === 401 ? "Credenziali non valide." : err.status >= 500 ? err.message : "Backend non disponibile.");
         }
       });
     }
+    // sessione scaduta o chiusa altrove (es. logout da un altro dispositivo): qualunque
+    // 401 delle API mentre si lavora nel pannello riporta al login
+    document.addEventListener("mx:unauthorized", () => {
+      if (!authed) return;
+      setAuthedUi(false);
+      loginError("Sessione scaduta: accedi di nuovo.");
+    });
     const logoutBtn = document.getElementById("adminLogout");
     if (logoutBtn) logoutBtn.addEventListener("click", async (e) => {
       e.preventDefault();
-      try { await API.send("/api/auth?action=logout", "POST", {}); } catch (_) {}
-      authed = false; adminLoaded = false;
-      if (loginOverlay) loginOverlay.classList.remove("hidden");
+      try { await API.send("/api/auth?action=logout", "POST", {}); }
+      catch (err) { alert(err.status ? err.message : "Logout non riuscito: backend non raggiungibile, riprova."); return; }
+      // ricarica pulita: nessun dato dell'area riservata resta in memoria o nel DOM
+      location.replace(ADMIN_PATH);
     });
 
-    // gate all'apertura dell'area admin (da link, ma anche da indietro/avanti o ricarica pagina)
+    // gate all'apertura dell'area admin (URL diretto, indietro/avanti o ricarica pagina)
     document.addEventListener("mx:view", (e) => { if (e.detail === "admin") setTimeout(checkAuth, 0); });
 
     // ── caricamento dati admin + render liste ──
     function loadAdmin() {
       populateFeatSelect();
-      renderProdTable();
-      renderCatList();
-      renderNewsList();
       renderDocList();
       renderPosList();
+      // le GET pubbliche escludono le bozze: con la sessione appena aperta le si rilegge complete
+      reloadCatalog();
+      reloadNews();
       reloadTrips();
       updateKpis();
     }
@@ -2388,7 +2396,8 @@
 
   // ── init: dopo una ricarica (o tornando al sito con "indietro" da una pagina esterna)
   //    riapre la pagina in cui si era, letta dallo state della history. Un accesso
-  //    "nuovo" parte sempre dalla home, anche se il browser ha conservato lo state ──
+  //    "nuovo" parte sempre dalla home (o dall'area riservata, se si è aperto ADMIN_PATH),
+  //    anche se il browser ha conservato lo state ──
   const navType = ((performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || {}).type;
   if (history.state && history.state.mx && (navType === "reload" || navType === "back_forward")) restoreView(history.state);
-  else { history.replaceState(null, ""); setView("home"); }
+  else { history.replaceState(null, ""); setView(location.pathname === ADMIN_PATH ? "admin" : "home"); }

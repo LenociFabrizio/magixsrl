@@ -1,8 +1,8 @@
-// CRUD News.  GET pubblico · POST/PUT/DELETE protetti.
+// CRUD News.  GET pubblico (senza bozze) · POST/PUT/DELETE protetti.
 // Item: { id, titolo, cat, data, estratto, corpo:[paragrafi], img, stato }
 "use strict";
 
-const { arrayCrud } = require("./_lib/collection");
+const { arrayCrud, isPublished } = require("./_lib/collection");
 
 function sanitize(n) {
   let corpo = n.corpo;
@@ -20,4 +20,4 @@ function sanitize(n) {
   };
 }
 
-module.exports = arrayCrud("news", sanitize);
+module.exports = arrayCrud("news", sanitize, { publicFilter: isPublished });

@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
       body: req.body,
       request: req,
       onBeforeGenerateToken: async (/* pathname, clientPayload */) => {
-        if (!isAuthed(req)) throw new Error("Non autorizzato");
+        if (!(await isAuthed(req))) throw new Error("Non autorizzato");
         return {
           allowedContentTypes: [
             "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",

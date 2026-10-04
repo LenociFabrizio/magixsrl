@@ -1,13 +1,14 @@
 // CRUD Catalogo (categorie + prodotti annidati).
 // GET pubblico → oggetto { [catKey]: { label, mat, intro, seo, products:[...] } }
+//   (i prodotti in bozza solo con sessione admin valida)
 // Mutazioni protette, body con `kind`:
 //   kind:"category"  → { key, label, mat, intro, seo, oldKey? }
 //   kind:"product"   → { catKey, product:{...}, oldCatKey?, code? (per PUT/DELETE) }
 "use strict";
 
 const { readCollection, writeCollection } = require("./_lib/store");
-const { requireAuth } = require("./_lib/auth");
-const { parseBody } = require("./_lib/collection");
+const { requireAuth, isAuthed } = require("./_lib/auth");
+const { parseBody, isPublished } = require("./_lib/collection");
 
 const slug = (s) => String(s || "").trim().toLowerCase();
 
@@ -25,8 +26,15 @@ module.exports = async function handler(req, res) {
   try {
     const catalog = await readCollection("catalog");
 
-    if (req.method === "GET") return res.status(200).json(catalog);
-    if (!requireAuth(req, res)) return;
+    if (req.method === "GET") {
+      if (!(await isAuthed(req))) {
+        Object.values(catalog).forEach((c) => {
+          if (c && Array.isArray(c.products)) c.products = c.products.filter(isPublished);
+        });
+      }
+      return res.status(200).json(catalog);
+    }
+    if (!(await requireAuth(req, res))) return;
 
     const body = parseBody(req);
     const kind = body.kind;

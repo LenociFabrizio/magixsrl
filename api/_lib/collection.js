@@ -3,7 +3,7 @@
 "use strict";
 
 const { readCollection, writeCollection, newId } = require("./store");
-const { requireAuth } = require("./auth");
+const { requireAuth, isAuthed } = require("./auth");
 
 function parseBody(req) {
   let body = req.body;
@@ -13,18 +13,26 @@ function parseBody(req) {
   return body || {};
 }
 
+// contenuti in "bozza" (prodotti, news): visibili solo all'area riservata
+const isPublished = (x) => String((x && x.stato) || "pubblicato").toLowerCase() !== "bozza";
+
 // opts.protectGet: se true, anche la GET richiede autenticazione (dati privati,
 // es. storico trasferte). Default: GET pubblica (catalogo/news/documenti/posizioni).
+// opts.publicFilter: sulla GET senza sessione restituisce solo gli item che lo
+// soddisfano (es. niente bozze); con sessione valida l'admin riceve tutto.
 function arrayCrud(name, sanitize, opts) {
   sanitize = sanitize || ((x) => x);
   const protectGet = !!(opts && opts.protectGet);
+  const publicFilter = opts && opts.publicFilter;
   return async function handler(req, res) {
     try {
       if (req.method === "GET") {
-        if (protectGet && !requireAuth(req, res)) return;
-        return res.status(200).json(await readCollection(name));
+        if (protectGet && !(await requireAuth(req, res))) return;
+        const items = await readCollection(name);
+        if (publicFilter && !protectGet && !(await isAuthed(req))) return res.status(200).json(items.filter(publicFilter));
+        return res.status(200).json(items);
       }
-      if (!requireAuth(req, res)) return;
+      if (!(await requireAuth(req, res))) return;
 
       const body = parseBody(req);
       const list = await readCollection(name);
@@ -56,4 +64,4 @@ function arrayCrud(name, sanitize, opts) {
   };
 }
 
-module.exports = { arrayCrud, parseBody };
+module.exports = { arrayCrud, parseBody, isPublished };

@@ -1,40 +1,54 @@
-// POST /api/auth?action=login   body { password }   → set-cookie sessione
-// POST /api/auth?action=logout                       → clear cookie
-// GET  /api/auth?action=me                            → { authed: bool }
+// POST /api/auth?action=login   body { username, password } → crea la sessione (cookie)
+// POST /api/auth?action=logout                              → invalida la sessione e cancella il cookie
+// GET  /api/auth?action=me                                   → { authed: bool }
 "use strict";
 
-const { checkPassword, setSession, clearSession, isAuthed, bypassEnabled } = require("./_lib/auth");
+const { checkCredentials, createSession, destroySession, isAuthed } = require("./_lib/auth");
+const { parseBody } = require("./_lib/collection");
+
+// risposta ritardata sui tentativi falliti: rallenta i tentativi a raffica sulla password
+const FAIL_DELAY_MS = 800;
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 module.exports = async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
   const action = (req.query && req.query.action) || "";
 
   if (action === "me") {
-    // `bypass` informa il frontend per mostrare l'avviso "modalità test"
-    return res.status(200).json({ authed: isAuthed(req), bypass: bypassEnabled() });
+    return res.status(200).json({ authed: await isAuthed(req) });
   }
 
   if (action === "logout") {
-    clearSession(res);
+    if (req.method !== "POST") return res.status(405).json({ error: "Metodo non consentito" });
+    try {
+      await destroySession(req, res);
+    } catch (e) {
+      console.error("logout error:", e && e.message);
+      return res.status(503).json({ error: "Logout non riuscito, riprova" });
+    }
     return res.status(200).json({ ok: true });
   }
 
   if (action === "login") {
     if (req.method !== "POST") return res.status(405).json({ error: "Metodo non consentito" });
-    // ⚠ BYPASS TEST: con ADMIN_BYPASS attivo si entra senza password
-    if (bypassEnabled()) {
-      setSession(res);
-      return res.status(200).json({ ok: true, bypass: true });
+    const body = parseBody(req);
+    let ok;
+    try {
+      ok = await checkCredentials(body.username, body.password);
+    } catch (e) {
+      console.error("auth config error:", e && e.message);
+      return res.status(500).json({ error: "Area riservata non configurata sul server" });
     }
-    let password = req.body && req.body.password;
-    if (password == null && typeof req.body === "string") {
-      try { password = JSON.parse(req.body).password; } catch { /* ignore */ }
+    if (!ok) {
+      await wait(FAIL_DELAY_MS);
+      return res.status(401).json({ error: "Credenziali non valide" });
     }
     try {
-      if (!checkPassword(password)) return res.status(401).json({ error: "Password errata" });
+      await createSession(res);
     } catch (e) {
-      return res.status(500).json({ error: "Configurazione server incompleta" });
+      console.error("session error:", e && e.message);
+      return res.status(503).json({ error: "Impossibile avviare la sessione, riprova" });
     }
-    setSession(res);
     return res.status(200).json({ ok: true });
   }
 

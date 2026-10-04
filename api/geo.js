@@ -66,7 +66,7 @@ async function routeOSRM(from, to) {
 }
 
 module.exports = async function handler(req, res) {
-  if (!isAuthed(req)) return res.status(401).json({ error: "Non autorizzato" });
+  if (!(await isAuthed(req))) return res.status(401).json({ error: "Non autorizzato" });
 
   const key = process.env.ORS_API_KEY || "";
   const provider = key ? "ors" : "osm";
