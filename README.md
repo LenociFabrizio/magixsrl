@@ -104,3 +104,5 @@ Il progetto è pronto per Vercel come sito statico (nessuna build necessaria):
 3. Deploy.
 
 Ad ogni `git push` sul branch `main` Vercel pubblica automaticamente la nuova versione.
+
+> Per un futuro passaggio dell'hosting a **Hostinger** c'è un piano pronto: [`docs/piano-migrazione-hostinger.md`](docs/piano-migrazione-hostinger.md).
