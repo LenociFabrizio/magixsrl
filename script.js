@@ -3,6 +3,7 @@
   // l'area riservata ha un URL proprio, non linkato da nessuna parte del sito pubblico:
   // ci si arriva solo digitandolo o da un preferito (vercel.json lo riscrive su index.html)
   const ADMIN_PATH = "/admin";
+  const SITE_TITLE = document.title; // titolo del sito (index.html) per le view senza un titolo proprio
   // ── catalogo prodotti (dati da catalog-data.js) ──
   const CATALOG = window.MAGIX_CATALOG || {};
   const CINDEX = window.MAGIX_CATALOG_INDEX || {};
@@ -60,6 +61,9 @@
     if (!views[name]) name = "home";
     const targetId = views[name];
     recordView(name, fromHistory);
+    // home e le altre view tornano al titolo del sito (senza restare su quello dell'ultimo
+    // prodotto visto); elenco categoria e scheda prodotto lo impostano da sé
+    if (name !== "catalog" && !(name === "product" && currentProductCode)) document.title = SITE_TITLE;
     if (name === "preferiti") renderFavorites();
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
     document.getElementById(targetId).classList.add("active");
@@ -173,6 +177,107 @@
   const productHay = (p, catLabel) => normTxt([p.name, p.code, p.subtitle, p.norma, catLabel].concat(p.tags || []).join(" "));
   const matchesAll = (hay, toks) => toks.every(t => hay.indexOf(t) !== -1);
 
+  // ── card prodotto (elenco categoria, preferiti): foto a misura del prodotto ──
+  // Le foto sono quadrate (3000×3000) con ampi margini vuoti attorno al sacco/secchio,
+  // che occupa circa metà del lato: nella card il prodotto risultava minuscolo. Al
+  // caricamento si misura, su una copia ridotta, il riquadro occupato dal prodotto
+  // (pixel opachi, o diversi dal colore di fondo per le foto senza trasparenza) e lo si
+  // ingrandisce fino a riempire l'area foto, senza deformarlo né tagliarlo: si perdono
+  // solo i margini vuoti (l'ombra sfuma ai lati). Se la misura non è possibile (foto di
+  // altro dominio senza CORS, foto senza fondo uniforme) la foto resta intera.
+  const CARD_RATIO = 4 / 3; // larghezza/altezza dell'area foto: deve coincidere con .pc-media in styles.css
+  const CARD_PAD = 0.06;   // margine minimo attorno al prodotto (frazione del lato dell'area foto)
+  const fitCache = new Map(); // src → riquadro misurato, oppure null (foto da mostrare intera)
+
+  function productMedia(p, mat) {
+    if (!p.img) return '<div class="pc-media mat ' + esc(mat) + ' border-b border-line"></div>';
+    const src = encodeURI(p.img);
+    const known = fitCache.has(src), fit = fitCache.get(src);
+    // foto già misurata in questa visita: markup definitivo subito, senza dissolvenza
+    return '<div class="pc-media bg-white border-b border-line" data-mat="' + esc(mat) + '"' + (fit && fit.bg ? ' style="background-color:' + fit.bg + '"' : '') + '><div class="pc-stage">'
+      + '<img src="' + src + '" alt="' + esc(p.name) + '" loading="lazy" data-fit' + (known ? ' class="is-ready" style="' + fitStyle(fit) + '"' : '') + '>'
+      + '</div></div>';
+  }
+
+  // riquadro del prodotto in frazioni della foto {x, y, w, h}, proporzione della foto e colore di fondo
+  function measureFit(img) {
+    const NW = img.naturalWidth, NH = img.naturalHeight;
+    if (!NW || !NH) return null;
+    const k = Math.min(1, 240 / Math.max(NW, NH));
+    const w = Math.max(1, Math.round(NW * k)), h = Math.max(1, Math.round(NH * k));
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    const g = c.getContext("2d", { willReadFrequently: true });
+    g.drawImage(img, 0, 0, w, h);
+    let d;
+    try { d = g.getImageData(0, 0, w, h).data; } catch (e) { return undefined; } // foto di altro dominio: canvas non leggibile
+    const at = (x, y) => (y * w + x) * 4;
+    const corners = [at(0, 0), at(w - 1, 0), at(0, h - 1), at(w - 1, h - 1)];
+    // basta un angolo non opaco (es. ombra che arriva al bordo) per trattarla come foto scontornata
+    const transparent = corners.some(i => d[i + 3] < 250);
+    const bg = [0, 1, 2].map(j => Math.round(corners.reduce((s, i) => s + d[i + j], 0) / 4));
+    // foto senza trasparenza e senza un fondo uniforme (es. foto ambientata): nessun ritaglio
+    if (!transparent && corners.some(i => Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 36)) return null;
+    let x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const i = at(x, y);
+      // con trasparenza conta il prodotto pieno (l'ombra semitrasparente resta fuori dal riquadro)
+      const on = transparent ? d[i + 3] > 240 : Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 30;
+      if (on) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    }
+    if (x1 < x0) return null;
+    // un pixel di margine per lato (bordi sfumati dalla riduzione)
+    x0 = Math.max(0, x0 - 1); y0 = Math.max(0, y0 - 1); x1 = Math.min(w - 1, x1 + 1); y1 = Math.min(h - 1, y1 + 1);
+    return { x: x0 / w, y: y0 / h, w: (x1 - x0 + 1) / w, h: (y1 - y0 + 1) / h, ratio: NW / NH, bg: transparent ? "" : "rgb(" + bg.join(",") + ")" };
+  }
+
+  // posizione della foto nell'area (percentuali): il riquadro del prodotto entra nell'area
+  // meno i margini CARD_PAD, centrato. Senza misura: foto intera (regola di .pc-stage img)
+  function fitStyle(f) {
+    if (!f) return "";
+    const inner = 1 - 2 * CARD_PAD;
+    const ra = (f.w / f.h) * f.ratio; // proporzione reale (in pixel) del riquadro del prodotto
+    const rw = ra < CARD_RATIO ? inner * ra / CARD_RATIO : inner;
+    const rh = ra < CARD_RATIO ? inner : inner * CARD_RATIO / ra;
+    const iw = rw / f.w, ih = rh / f.h; // dimensioni della foto intera, in frazioni dell'area
+    const pct = (v) => (v * 100).toFixed(2) + "%";
+    return "left:" + pct(0.5 - (f.x + f.w / 2) * iw) + ";top:" + pct(0.5 - (f.y + f.h / 2) * ih) + ";width:" + pct(iw) + ";height:" + pct(ih);
+  }
+
+  function applyFit(img, fit) {
+    if (fit) {
+      img.setAttribute("style", fitStyle(fit));
+      const box = img.closest(".pc-media");
+      if (box && fit.bg) box.style.backgroundColor = fit.bg; // il fondo dell'area prosegue quello della foto
+    }
+    img.classList.add("is-ready");
+  }
+
+  // load/error non risalgono il DOM: ascolto in fase di cattura (copre le card renderizzate dopo)
+  document.addEventListener("load", (e) => {
+    const img = e.target;
+    if (!(img instanceof HTMLImageElement) || !img.hasAttribute("data-fit") || img.classList.contains("is-ready")) return;
+    const src = img.getAttribute("src");
+    if (fitCache.has(src)) return applyFit(img, fitCache.get(src));
+    const fit = measureFit(img);
+    if (fit !== undefined) { fitCache.set(src, fit); return applyFit(img, fit); }
+    // altro dominio: riprovo con una richiesta CORS; se il server non la consente, foto intera
+    const probe = new Image();
+    probe.crossOrigin = "anonymous";
+    probe.onload = () => { const f = measureFit(probe); fitCache.set(src, f || null); applyFit(img, f || null); };
+    probe.onerror = () => { fitCache.set(src, null); applyFit(img, null); };
+    probe.src = img.currentSrc || img.src;
+  }, true);
+  // foto non raggiungibile: al posto dell'icona "immagine rotta" lo sfondo materico,
+  // come per i prodotti senza foto
+  document.addEventListener("error", (e) => {
+    const img = e.target;
+    if (!(img instanceof HTMLImageElement) || !img.hasAttribute("data-fit")) return;
+    const box = img.closest(".pc-media");
+    if (box) { box.classList.remove("bg-white"); box.classList.add("mat", box.dataset.mat || "mat-grey"); }
+    img.remove();
+  }, true);
+
   function setSeo(title, description) {
     if (title) document.title = title;
     if (description != null) {
@@ -216,9 +321,7 @@
           : (p.availability === "order"
             ? '<span class="text-[10px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">su ordinazione</span>'
             : '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">disponibile</span>');
-        const media = p.img
-          ? '<div class="h-32 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img src="' + encodeURI(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-2"></div>'
-          : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>';
+        const media = productMedia(p, p.mat || cat.mat || "mat-grey");
         return '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">'
           + media
           + '<div class="p-5 flex-1 flex flex-col">'
@@ -728,9 +831,7 @@
         : (p.availability === "order"
           ? '<span class="text-[10px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5">su ordinazione</span>'
           : '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">disponibile</span>');
-      const media = p.img
-        ? '<div class="h-32 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img src="' + encodeURI(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-2"></div>'
-        : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>';
+      const media = productMedia(p, p.mat || cat.mat || "mat-grey");
       return '<div class="relative reveal">'
         + '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="subcat-card lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col h-full">'
         + media
@@ -1063,12 +1164,25 @@
       probe.src = url;
     })();
   }
-  document.querySelectorAll(".subcat-card").forEach(card => {
-    autoCatImage(card.querySelector("div"), (card.dataset.name || "").replace(/\s+/g, "-"));
-  });
-  document.querySelectorAll(".cat-tab").forEach(tab => {
-    autoCatImage(tab.querySelector("div"), "famiglia-" + tab.dataset.cat);
-  });
+  // la foto si scarica solo quando la card sta per entrare nello schermo: la pagina
+  // Prodotti è nascosta (display:none) finché non la si apre, così le altre pagine
+  // non scaricano le foto delle categorie
+  const catImgIO = "IntersectionObserver" in window && new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      catImgIO.unobserve(e.target);
+      autoCatImage(e.target, e.target.dataset.catSlug);
+    });
+  }, { rootMargin: "300px 0px" });
+  function lazyCatImage(card) {
+    const thumb = card.querySelector("div");
+    const slug = (card.dataset.name || "").trim().toLowerCase().replace(/\s+/g, "-");
+    if (!thumb || !slug) return;
+    if (!catImgIO) return autoCatImage(thumb, slug);
+    thumb.dataset.catSlug = slug;
+    catImgIO.observe(thumb);
+  }
+  document.querySelectorAll(".subcat-card[data-name]").forEach(lazyCatImage);
 
   // ── global search overlay ──
   (function () {
@@ -1409,10 +1523,11 @@
         a.dataset.view = "catalog";
         a.dataset.name = key;
         a.className = "subcat-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20";
-        a.innerHTML = '<div class="mat ' + esc(mat) + ' h-28"></div>'
+        a.innerHTML = '<div class="mat ' + esc(mat) + ' aspect-[4/3]"></div>'
           + '<div class="p-4 flex items-center justify-between gap-2"><h3 class="display font-bold text-[15px] leading-snug">'
           + esc(cat.label || cap(key)) + '</h3><span class="text-red font-semibold group-hover:translate-x-1 transition shrink-0">→</span></div>';
         grid.appendChild(a);
+        lazyCatImage(a); // foto da img/categorie/ se presente, come per le card statiche
         existing.add(key);
       });
       runReveal();

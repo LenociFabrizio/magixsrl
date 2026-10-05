@@ -37,6 +37,20 @@
   .mat-bio   { background: linear-gradient(150deg,#bcd9c6,#7bae90 60%,#4f8a6b); }
   .mat-anthr { background: linear-gradient(150deg,#3a3d45,#23252b 60%,#16181d); }
 
+  /* card prodotto (elenco categoria, preferiti): area foto 4:3 a ogni breakpoint
+     (la stessa proporzione è in CARD_RATIO, script.js). La foto è posizionata da
+     script.js sul riquadro del prodotto; finché non è misurata resta nascosta, poi
+     compare con una dissolvenza. La maschera sfuma ai lati l'ombra dei sacchi. */
+  .pc-media { position: relative; overflow: hidden; aspect-ratio: 4 / 3; }
+  .pc-stage { position: absolute; inset: 0; transition: transform .5s cubic-bezier(.2,.7,.2,1);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+  .pc-stage img { position: absolute; left: 6%; top: 6%; width: 88%; height: 88%; max-width: none;
+    object-fit: contain; opacity: 0; transition: opacity .3s ease; }
+  .pc-stage img.is-ready { opacity: 1; }
+  @media (hover: hover) { .group:hover .pc-stage { transform: scale(1.04); } }
+  @media (prefers-reduced-motion: reduce) { .pc-stage, .pc-stage img { transition: none; } }
+
   /* reveal on scroll */
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
   .reveal.in { opacity: 1; transform: none; }
