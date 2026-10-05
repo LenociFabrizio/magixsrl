@@ -203,50 +203,59 @@
 
     <!-- mobile: 2 colonne compatte (descrizione nascosta) così la gamma sta in una schermata -->
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-8 sm:mt-10">
-      <!-- cat card -->
-      <a href="#" data-view="catalog" data-name="malte da intonaco" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between">
-          <span class="mono text-[12px] text-faint">01</span>
-          <span class="mat mat-grey w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span>
-        </div>
-        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Malte da intonaco</h3>
-        <p class="hidden sm:block text-muted text-sm mt-1.5">Base, finitura, traspiranti per interni ed esterni.</p>
-        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm">
-          <span class="mono text-faint text-[12px]">14 prodotti</span>
-          <span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span>
-        </div>
-      </a>
-      <a href="#" data-view="catalog" data-name="sistema a cappotto" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">02</span><span class="mat mat-white w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Sistema a cappotto</h3>
-        <p class="hidden sm:block text-muted text-sm mt-1.5">Cicli ETICS completi: collanti, rasanti, primer.</p>
-        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">9 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
-      </a>
-      <a href="#" data-view="catalog" data-name="adesivi cementizi" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">03</span><span class="mat mat-ochre w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Adesivi cementizi</h3>
-        <p class="hidden sm:block text-muted text-sm mt-1.5">C1/C2 per ceramica, gres e grandi formati.</p>
-        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">11 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
-      </a>
-      <a href="#" data-view="catalog" data-name="linea bio" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">04</span><span class="mat mat-bio w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5 flex items-center gap-2">Linea bio <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">ECO</span></h3>
-        <p class="hidden sm:block text-muted text-sm mt-1.5">Leganti naturali a base calce, alta traspirabilità.</p>
-        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">7 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
-      </a>
-      <a href="#" data-view="catalog" data-name="malte rapide" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-4 sm:p-6 hover:shadow-lift hover:border-ink/20">
-        <div class="flex items-start justify-between"><span class="mono text-[12px] text-faint">05</span><span class="mat mat-red w-9 h-9 sm:w-12 sm:h-12 rounded-xl"></span></div>
-        <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Malte rapide</h3>
-        <p class="hidden sm:block text-muted text-sm mt-1.5">Presa e indurimento veloci per fissaggi e ripristini.</p>
-        <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-faint text-[12px]">6 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
-      </a>
-      <a href="#" data-view="cemento" class="reveal lift group bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift relative overflow-hidden">
-        <div class="absolute inset-0 grid-bg opacity-[.15]"></div>
+      <!-- cat card: foto della categoria (img/categorie/) come sfondo, scurita per leggere il testo -->
+      <a href="#" data-view="catalog" data-name="malte da intonaco" class="cat-tile reveal lift group relative overflow-hidden bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift">
+        <div class="cat-tile-img mat mat-grey absolute inset-0"></div><div class="cat-tile-shade absolute inset-0"></div>
         <div class="relative">
-          <div class="flex items-start justify-between"><span class="mono text-[12px] text-white/40">06</span><span class="mat mat-anthr w-9 h-9 sm:w-12 sm:h-12 rounded-xl border border-white/10"></span></div>
+          <div class="h-9 sm:h-12"><span class="mono text-[12px] text-white/70">01</span></div>
+          <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Malte da intonaco</h3>
+          <p class="hidden sm:block text-white/80 text-sm mt-1.5">Base, finitura, traspiranti per interni ed esterni.</p>
+          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/70 text-[12px]">14 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+        </div>
+      </a>
+      <a href="#" data-view="catalog" data-name="sistema a cappotto" class="cat-tile reveal lift group relative overflow-hidden bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift">
+        <div class="cat-tile-img mat mat-white absolute inset-0"></div><div class="cat-tile-shade absolute inset-0"></div>
+        <div class="relative">
+          <div class="h-9 sm:h-12"><span class="mono text-[12px] text-white/70">02</span></div>
+          <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Sistema a cappotto</h3>
+          <p class="hidden sm:block text-white/80 text-sm mt-1.5">Cicli ETICS completi: collanti, rasanti, primer.</p>
+          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/70 text-[12px]">9 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+        </div>
+      </a>
+      <a href="#" data-view="catalog" data-name="adesivi cementizi" class="cat-tile reveal lift group relative overflow-hidden bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift">
+        <div class="cat-tile-img mat mat-ochre absolute inset-0"></div><div class="cat-tile-shade absolute inset-0"></div>
+        <div class="relative">
+          <div class="h-9 sm:h-12"><span class="mono text-[12px] text-white/70">03</span></div>
+          <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Adesivi cementizi</h3>
+          <p class="hidden sm:block text-white/80 text-sm mt-1.5">C1/C2 per ceramica, gres e grandi formati.</p>
+          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/70 text-[12px]">11 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+        </div>
+      </a>
+      <a href="#" data-view="catalog" data-name="linea bio" class="cat-tile reveal lift group relative overflow-hidden bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift">
+        <div class="cat-tile-img mat mat-bio absolute inset-0"></div><div class="cat-tile-shade absolute inset-0"></div>
+        <div class="relative">
+          <div class="h-9 sm:h-12"><span class="mono text-[12px] text-white/70">04</span></div>
+          <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5 flex items-center gap-2">Linea bio <span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">ECO</span></h3>
+          <p class="hidden sm:block text-white/80 text-sm mt-1.5">Leganti naturali a base calce, alta traspirabilità.</p>
+          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/70 text-[12px]">7 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+        </div>
+      </a>
+      <a href="#" data-view="catalog" data-name="malte rapide" class="cat-tile reveal lift group relative overflow-hidden bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift">
+        <div class="cat-tile-img mat mat-red absolute inset-0"></div><div class="cat-tile-shade absolute inset-0"></div>
+        <div class="relative">
+          <div class="h-9 sm:h-12"><span class="mono text-[12px] text-white/70">05</span></div>
+          <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Malte rapide</h3>
+          <p class="hidden sm:block text-white/80 text-sm mt-1.5">Presa e indurimento veloci per fissaggi e ripristini.</p>
+          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/70 text-[12px]">6 prodotti</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+        </div>
+      </a>
+      <a href="#" data-view="cemento" data-cat-img="cemento-sfuso" class="cat-tile reveal lift group relative overflow-hidden bg-graphite text-white rounded-2xl border border-graphite shadow-soft p-4 sm:p-6 hover:shadow-lift">
+        <div class="cat-tile-img mat mat-anthr absolute inset-0"></div><div class="cat-tile-shade absolute inset-0"></div>
+        <div class="relative">
+          <div class="h-9 sm:h-12"><span class="mono text-[12px] text-white/70">06</span></div>
           <h3 class="display font-bold text-[15px] sm:text-xl leading-snug mt-3 sm:mt-5">Cemento sfuso</h3>
-          <p class="hidden sm:block text-white/60 text-sm mt-1.5">Fornitura in silo, trasportato e pompato sui piani.</p>
-          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/40 text-[12px]">su preventivo</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
+          <p class="hidden sm:block text-white/80 text-sm mt-1.5">Fornitura in silo, trasportato e pompato sui piani.</p>
+          <div class="flex items-center justify-between mt-3 sm:mt-5 text-sm"><span class="mono text-white/70 text-[12px]">su preventivo</span><span class="text-red font-semibold group-hover:translate-x-1 transition inline-block">→</span></div>
         </div>
       </a>
     </div>

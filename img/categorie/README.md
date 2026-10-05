@@ -1,7 +1,7 @@
 # Immagini delle categorie prodotto
 
-Le card del catalogo (pagina **Prodotti**) caricano automaticamente un'immagine
-se presente in questa cartella. Finché il file non esiste, resta lo sfondo
+Le card del catalogo (pagina **Prodotti** e sezione *Catalogo* della **home**)
+caricano automaticamente un'immagine se presente in questa cartella. Finché il file non esiste, resta lo sfondo
 materico di default — quindi puoi aggiungere o sostituire le foto **una alla volta**, quando vuoi.
 
 La foto si scarica solo quando la card sta per comparire sullo schermo (le altre
@@ -55,6 +55,15 @@ dei *rinzaffi*.
 | `rivestimenti.jpg` | `2025/10/acrilico-rivestimento.webp` |
 | `idropitture.jpg` | `2025/10/idropittura-bg.webp` |
 | `rivestimenti-per-esterni.jpg` | `2025/10/rivestimenti-ext.webp` |
+
+### Home — sezione Catalogo
+Le card della home usano le stesse foto delle categorie (nome categoria → file
+sopra), come sfondo scurito sotto al testo. La card *Cemento sfuso*, che non è una
+categoria del catalogo, usa:
+
+| File | Foto originale (vecchio sito) |
+|---|---|
+| `cemento-sfuso.jpg` | `2025/10/cemento-sfuso-magix-malte.webp` (foto della pagina *Cemento sfuso*) |
 
 I `.jpg` originali sono copiati senza ricompressione; i `.png` e i `.webp` sono
 stati convertiti in `.jpg` (i `.webp` ridotti a 1200 px di larghezza).

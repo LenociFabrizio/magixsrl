@@ -51,6 +51,14 @@
   @media (hover: hover) { .group:hover .pc-stage { transform: scale(1.04); } }
   @media (prefers-reduced-motion: reduce) { .pc-stage, .pc-stage img { transition: none; } }
 
+  /* home, sezione catalogo: foto della categoria come sfondo della card, scurita
+     verso il basso così il testo bianco resta leggibile su qualsiasi foto */
+  .cat-tile-img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+  .cat-tile-shade { background: linear-gradient(180deg, rgba(21,23,28,.22) 0%, rgba(21,23,28,.5) 45%, rgba(21,23,28,.88) 100%); }
+  .cat-tile h3, .cat-tile p { text-shadow: 0 1px 2px rgba(21,23,28,.45); }
+  @media (hover: hover) { .cat-tile:hover .cat-tile-img { transform: scale(1.06); } }
+  @media (prefers-reduced-motion: reduce) { .cat-tile-img { transition: none; } }
+
   /* reveal on scroll */
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
   .reveal.in { opacity: 1; transform: none; }

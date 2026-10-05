@@ -1176,13 +1176,15 @@
   }, { rootMargin: "300px 0px" });
   function lazyCatImage(card) {
     const thumb = card.querySelector("div");
-    const slug = (card.dataset.name || "").trim().toLowerCase().replace(/\s+/g, "-");
+    // data-cat-img: card senza categoria a catalogo (es. "Cemento sfuso" in home)
+    const slug = (card.dataset.catImg || card.dataset.name || "").trim().toLowerCase().replace(/\s+/g, "-");
     if (!thumb || !slug) return;
     if (!catImgIO) return autoCatImage(thumb, slug);
     thumb.dataset.catSlug = slug;
     catImgIO.observe(thumb);
   }
-  document.querySelectorAll(".subcat-card[data-name]").forEach(lazyCatImage);
+  // card della pagina Prodotti + card della sezione catalogo della home
+  document.querySelectorAll(".subcat-card[data-name], .cat-tile").forEach(lazyCatImage);
 
   // ── global search overlay ──
   (function () {
