@@ -4,6 +4,7 @@
   // ci si arriva solo digitandolo o da un preferito (vercel.json lo riscrive su index.html)
   const ADMIN_PATH = "/admin";
   const SITE_TITLE = document.title; // titolo del sito (index.html) per le view senza un titolo proprio
+  const SITE_DESC = (document.querySelector('meta[name="description"]') || {}).content || ""; // idem per la meta description
   // ── catalogo prodotti (dati da catalog-data.js) ──
   const CATALOG = window.MAGIX_CATALOG || {};
   const CINDEX = window.MAGIX_CATALOG_INDEX || {};
@@ -63,7 +64,7 @@
     recordView(name, fromHistory);
     // home e le altre view tornano al titolo del sito (senza restare su quello dell'ultimo
     // prodotto visto); elenco categoria e scheda prodotto lo impostano da sé
-    if (name !== "catalog" && !(name === "product" && currentProductCode)) document.title = SITE_TITLE;
+    if (name !== "catalog" && !(name === "product" && currentProductCode)) setSeo(SITE_TITLE, SITE_DESC);
     if (name === "preferiti") renderFavorites();
     Object.values(views).forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove("active"); });
     document.getElementById(targetId).classList.add("active");
@@ -168,6 +169,40 @@
 
   // ── helpers catalogo ──
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // URL che arrivano dai dati (catalogo, news, documenti): solo percorsi del sito o http(s),
+  // come lato server (safeUrl in api/_lib/collection.js). Un "javascript:" in un link
+  // sarebbe eseguibile; tab, a capo e caratteri di controllo si tolgono come fa il browser.
+  function safeUrl(v) {
+    let s = String(v == null ? "" : v).replace(/[\t\n\r]/g, "");
+    let a = 0, b = s.length; // spazi e caratteri di controllo (codice <= 32) ai due estremi
+    while (a < b && s.charCodeAt(a) <= 32) a++;
+    while (b > a && s.charCodeAt(b - 1) <= 32) b--;
+    s = s.slice(a, b);
+    const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(s);
+    if (scheme) return /^https?$/i.test(scheme[1]) ? s : "";
+    return s.startsWith("//") || s.startsWith("\\") ? "" : s;
+  }
+  // codifica per href/src: spazi e accenti sì, ma le sequenze %XX già presenti restano tali
+  // (con encodeURI da solo "/documents/Catalogo%20Magix.pdf" diventava "%2520" → 404)
+  const encUrl = (u) => encodeURI(u).replace(/%25([0-9A-Fa-f]{2})/g, "%$1");
+
+  // ── foto prodotto ottimizzate ──
+  // Gli originali in img/img_prd/ sono enormi (fino a 3500×3500 px, 1–2,7 MB l'uno). Accanto
+  // c'è una copia WebP in img/img_prd/web/: "<nome>.webp" (1600 px, card e scheda prodotto)
+  // e "<nome>-sm.webp" (480 px, miniature). Il catalogo (anche quello salvato dall'admin)
+  // continua a indicare l'originale: la copia si sceglie qui, al momento di mostrarla. Foto
+  // di altro tipo (es. caricate dall'admin sul Blob) restano come sono; se una copia manca
+  // si ricade sull'originale (data-orig, vedi il listener "error" più sotto).
+  const PRD_IMG = /^(\/?img\/img_prd\/)([^/?#]+)\.(?:png|jpe?g)$/i;
+  function prdImg(src, small) {
+    const url = safeUrl(src), m = PRD_IMG.exec(url);
+    return m ? { src: encUrl(m[1] + "web/" + m[2] + (small ? "-sm" : "") + ".webp"), orig: encUrl(url) } : { src: encUrl(url), orig: "" };
+  }
+  // attributi src (+ data-orig) per i template HTML
+  function imgAttrs(src, small) {
+    const r = prdImg(src, small);
+    return 'src="' + esc(r.src) + '"' + (r.orig ? ' data-orig="' + esc(r.orig) + '"' : "");
+  }
   // prodotti in "bozza" (admin) non compaiono in ricerca né in evidenza
   const isPublished = (p) => !!p && (p.stato || "pubblicato") !== "bozza";
   // testo normalizzato per la ricerca: minuscolo e senza accenti ("Disponibilità" → "disponibilita")
@@ -191,11 +226,11 @@
 
   function productMedia(p, mat) {
     if (!p.img) return '<div class="pc-media mat ' + esc(mat) + ' border-b border-line"></div>';
-    const src = encodeURI(p.img);
+    const src = prdImg(p.img).src;
     const known = fitCache.has(src), fit = fitCache.get(src);
     // foto già misurata in questa visita: markup definitivo subito, senza dissolvenza
     return '<div class="pc-media bg-white border-b border-line" data-mat="' + esc(mat) + '"' + (fit && fit.bg ? ' style="background-color:' + fit.bg + '"' : '') + '><div class="pc-stage">'
-      + '<img src="' + src + '" alt="' + esc(p.name) + '" loading="lazy" data-fit' + (known ? ' class="is-ready" style="' + fitStyle(fit) + '"' : '') + '>'
+      + '<img ' + imgAttrs(p.img) + ' alt="' + esc(p.name) + '" loading="lazy" data-fit' + (known ? ' class="is-ready" style="' + fitStyle(fit) + '"' : '') + '>'
       + '</div></div>';
   }
 
@@ -268,11 +303,13 @@
     probe.onerror = () => { fitCache.set(src, null); applyFit(img, null); };
     probe.src = img.currentSrc || img.src;
   }, true);
-  // foto non raggiungibile: al posto dell'icona "immagine rotta" lo sfondo materico,
-  // come per i prodotti senza foto
+  // foto non raggiungibile: se era la copia ottimizzata si riprova con l'originale (data-orig);
+  // altrimenti, al posto dell'icona "immagine rotta", lo sfondo materico come per i prodotti senza foto
   document.addEventListener("error", (e) => {
     const img = e.target;
-    if (!(img instanceof HTMLImageElement) || !img.hasAttribute("data-fit")) return;
+    if (!(img instanceof HTMLImageElement)) return;
+    if (img.dataset.orig) { const orig = img.dataset.orig; delete img.dataset.orig; img.src = orig; return; }
+    if (!img.hasAttribute("data-fit")) return;
     const box = img.closest(".pc-media");
     if (box) { box.classList.remove("bg-white"); box.classList.add("mat", box.dataset.mat || "mat-grey"); }
     img.remove();
@@ -311,7 +348,7 @@
     if (title) title.textContent = cat.label;
     if (crumb) crumb.textContent = cat.label;
     if (intro) intro.textContent = cat.intro || "";
-    setSeo((cat.seo && cat.seo.title) || (cat.label + " | Magix"), cat.seo && cat.seo.description);
+    setSeo((cat.seo && cat.seo.title) || (cat.label + " | Magix"), (cat.seo && cat.seo.description) || SITE_DESC);
 
     if (grid) {
       const prods = (cat.products || []).filter(isPublished); // le bozze dell'admin non sono pubbliche
@@ -388,7 +425,9 @@
         }
         heroImg.style.transform = "scale(1)";
         heroImg.style.transformOrigin = "center center";
-        heroImg.src = encodeURI(p.img);
+        const hero = prdImg(p.img);
+        if (hero.orig) heroImg.dataset.orig = hero.orig; else delete heroImg.dataset.orig;
+        heroImg.src = hero.src;
         heroImg.alt = "Magix " + p.name;
       } else {
         swatch.className = "mat " + (p.mat || "mat-grey") + " rounded-3xl aspect-[4/3] shadow-soft border border-line relative";
@@ -443,7 +482,7 @@
     }
 
     renderRelated(entry);
-    setSeo((p.seo && p.seo.title) || ("Magix " + p.name), p.seo && p.seo.description);
+    setSeo((p.seo && p.seo.title) || ("Magix " + p.name), (p.seo && p.seo.description) || SITE_DESC);
     setProductJsonLd(p);
     runReveal();
     return true;
@@ -466,7 +505,7 @@
     if (title) title.textContent = "Altri prodotti · " + (cat.label || entry.catKey);
     grid.innerHTML = others.map(p => {
       const media = p.img
-        ? '<div class="h-32 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img src="' + encodeURI(p.img) + '" alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-2"></div>'
+        ? '<div class="h-32 bg-white border-b border-line flex items-center justify-center overflow-hidden"><img ' + imgAttrs(p.img, true) + ' alt="' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-2"></div>'
         : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-32"></div>';
       return '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">'
         + media
@@ -517,8 +556,9 @@
     if (!entry) { box.innerHTML = ""; delete box.dataset.code; return; }
     const p = entry.product, cat = CATALOG[entry.catKey] || {};
     const first = !box.dataset.code; // anima solo la prima comparsa, non i cambi successivi
+    // loading="lazy": la card è visibile solo da desktop (lg); su mobile, nascosta, la foto non si scarica
     const media = p.img
-      ? '<div class="h-44 bg-white border-b border-line flex items-center justify-center overflow-hidden relative"><img src="' + encodeURI(p.img) + '" alt="Magix ' + esc(p.name) + '" class="max-h-full max-w-full object-contain p-3">'
+      ? '<div class="h-44 bg-white border-b border-line flex items-center justify-center overflow-hidden relative"><img ' + imgAttrs(p.img, true) + ' alt="Magix ' + esc(p.name) + '" loading="lazy" class="max-h-full max-w-full object-contain p-3">'
       : '<div class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' h-40 relative">';
     const badge = p.availability === "order"
       ? '<span class="text-[11px] font-semibold text-faint bg-bg2 border border-line rounded-full px-2 py-0.5 shrink-0">SU ORDINAZIONE</span>'
@@ -694,7 +734,8 @@
 
   // ── preferiti (localStorage, nessun login richiesto) ──
   const FAV_KEY = "magix_favorites";
-  function getFavs() { try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) { return []; } }
+  // sempre un array: un valore non valido nel localStorage non deve rompere la pagina
+  function getFavs() { try { const a = JSON.parse(localStorage.getItem(FAV_KEY)); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
   function setFavs(a) { try { localStorage.setItem(FAV_KEY, JSON.stringify(a)); } catch (e) {} }
   function isFav(code) { return getFavs().indexOf(code) !== -1; }
   function toggleFav(code) {
@@ -773,7 +814,7 @@
     list.innerHTML = items.map(({ catKey, product: p }) => {
       const cat = CATALOG[catKey] || {};
       const thumb = p.img
-        ? '<span class="w-11 h-11 rounded-lg bg-white border border-line overflow-hidden grid place-items-center shrink-0"><img src="' + encodeURI(p.img) + '" alt="" class="max-w-full max-h-full object-contain p-0.5"></span>'
+        ? '<span class="w-11 h-11 rounded-lg bg-white border border-line overflow-hidden grid place-items-center shrink-0"><img ' + imgAttrs(p.img, true) + ' alt="" class="max-w-full max-h-full object-contain p-0.5"></span>'
         : '<span class="mat ' + esc(p.mat || cat.mat || "mat-grey") + ' w-11 h-11 rounded-lg border border-line shrink-0"></span>';
       return '<div class="flex items-center gap-1 rounded-xl hover:bg-bg2 transition">'
         + '<a href="#" data-view="product" data-prod="' + esc(p.code) + '" class="flex items-center gap-3 min-w-0 flex-1 p-2">' + thumb
@@ -911,7 +952,7 @@
     const ig = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>';
     feed.innerHTML = tiles.slice(0, 6).map(t =>
       '<a href="' + PROFILE + '" target="_blank" rel="noopener" class="group relative block aspect-square rounded-xl overflow-hidden border border-line bg-white" title="Seguici su Instagram">'
-      + '<img src="' + encodeURI(t.img) + '" alt="' + esc(t.name) + ' — Magix su Instagram" loading="lazy" class="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105">'
+      + '<img ' + imgAttrs(t.img, true) + ' alt="' + esc(t.name) + ' — Magix su Instagram" loading="lazy" class="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-105">'
       + '<span class="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition" style="background:linear-gradient(45deg,rgba(245,133,41,.85),rgba(221,42,123,.85),rgba(129,52,175,.85))">' + ig + '</span>'
       + '</a>'
     ).join("");
@@ -1244,7 +1285,7 @@
 
     let active = 0, shown = [];
     function icon(it) {
-      if (it.type === "prod" && it.img) return '<span class="sr-ico bg-white border border-line overflow-hidden"><img src="' + encodeURI(it.img) + '" alt="" loading="lazy" class="w-full h-full object-contain p-0.5"></span>';
+      if (it.type === "prod" && it.img) return '<span class="sr-ico bg-white border border-line overflow-hidden"><img ' + imgAttrs(it.img, true) + ' alt="" loading="lazy" class="w-full h-full object-contain p-0.5"></span>';
       if (it.type !== "page") return '<span class="sr-ico bg-red/10 text-red"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 16-9 5-9-5V8l9-5 9 5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg></span>';
       return '<span class="sr-ico bg-bg2 text-ink border border-line"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 21V9"/></svg></span>';
     }
@@ -1378,9 +1419,11 @@
     function open(a) {
       if (!a) return;
       elCat.textContent = String(a.cat || "").toUpperCase(); elDate.textContent = a.data; elTitle.textContent = a.titolo;
-      if (a.img) {
+      const cover = safeUrl(a.img);
+      if (cover) {
         elCover.className = "h-44 relative shrink-0 overflow-hidden bg-bg2";
-        elCover.style.backgroundImage = "url('" + encodeURI(a.img) + "')";
+        // virgolette doppie: encUrl le codifica, quindi l'URL non può chiudere url("…")
+        elCover.style.backgroundImage = 'url("' + encUrl(cover) + '")';
         elCover.style.backgroundSize = "cover";
         elCover.style.backgroundPosition = "center";
       } else {
@@ -1552,7 +1595,7 @@
       const f = list.shift();
       if (featured && f) {
         const media = f.img
-          ? '<img src="' + encodeURI(f.img) + '" alt="' + esc(f.titolo) + '" loading="lazy" class="absolute inset-0 w-full h-full object-cover">'
+          ? '<img ' + imgAttrs(f.img) + ' alt="' + esc(f.titolo) + '" loading="lazy" class="absolute inset-0 w-full h-full object-cover">'
           : '<div class="mat mat-ochre absolute inset-0"></div>';
         featured.innerHTML =
           '<div class="min-h-[240px] lg:min-h-full relative overflow-hidden">' + media
@@ -1567,7 +1610,7 @@
       if (grid) {
         grid.innerHTML = list.map((n) => {
           const media = n.img
-            ? '<div class="h-40 overflow-hidden relative shrink-0"><img src="' + encodeURI(n.img) + '" alt="' + esc(n.titolo) + '" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>'
+            ? '<div class="h-40 overflow-hidden relative shrink-0"><img ' + imgAttrs(n.img) + ' alt="' + esc(n.titolo) + '" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>'
             : '<div class="mat mat-ochre h-40 shrink-0"></div>';
           return '<a href="#" data-news-id="' + esc(n.id) + '" class="reveal lift group bg-surface rounded-2xl border border-line shadow-soft overflow-hidden hover:shadow-lift hover:border-ink/20 flex flex-col">'
             + media
@@ -1592,11 +1635,12 @@
       const grid = document.getElementById("downloadGrid");
       if (!grid || !DOCS.length) return;
       grid.innerHTML = DOCS.map((d) => {
-        const href = d.url ? encodeURI(d.url) : "#";
+        const url = safeUrl(d.url);
+        const href = url ? esc(encUrl(url)) : "#";
         const corner = d.badge
           ? '<span class="text-[10px] font-semibold text-bio bg-biosoft border border-bio/20 rounded-full px-2 py-0.5">' + esc(d.badge) + "</span>"
           : '<svg class="text-faint group-hover:text-red transition" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>';
-        return '<a href="' + href + '"' + (d.url ? " download" : "") + ' class="doc-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col" data-cat="' + esc(d.cat || "company") + '" data-title="' + esc(String(d.nome || "").toLowerCase()) + '">'
+        return '<a href="' + href + '"' + (url ? " download" : "") + ' class="doc-card reveal lift group bg-surface rounded-2xl border border-line shadow-soft p-6 hover:shadow-lift hover:border-ink/20 flex flex-col" data-cat="' + esc(d.cat || "company") + '" data-title="' + esc(String(d.nome || "").toLowerCase()) + '">'
           + '<div class="flex items-start justify-between">' + docTypeBadge(d.tipo) + corner + "</div>"
           + '<h3 class="display font-bold text-lg mt-5 leading-snug flex-1">' + esc(d.nome) + "</h3>"
           + '<div class="mono text-[11px] text-faint mt-2">' + esc(String(d.cat || "").toUpperCase()) + " · " + esc(String(d.tipo || "PDF").toUpperCase()) + "</div></a>";

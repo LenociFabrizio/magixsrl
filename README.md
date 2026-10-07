@@ -18,12 +18,23 @@ Apri http://localhost:3000
 
 | File | Descrizione |
 |------|-------------|
-| `index.html` | Markup di tutte le viste + config Tailwind inline |
+| `index.html` | Markup di tutte le viste |
+| `tailwind-config.js` | Configurazione Tailwind (colori, font, ombre) — non inline, per la Content-Security-Policy |
+| `vendor/tailwindcss-3.4.17.js` | Tailwind Play CDN in **copia locale**, versione fissa (da `https://cdn.tailwindcss.com/3.4.17`) |
+| `fonts.css`, `fonts/` | Font del sito in locale (Bricolage Grotesque, Hanken Grotesk, JetBrains Mono), prima da Google Fonts |
 | `styles.css` | Utility custom (animazioni, swatch materici, accordion, ecc.) |
 | `script.js` | Router delle viste, reveal on scroll, accordion FAQ, form, **bootstrap dati da API** |
 | `catalog-data.js` | Catalogo prodotti statico (usato come fallback se l'API non risponde) |
+| `img/img_prd/web/` | Copie WebP delle foto prodotto (`<nome>.webp` 1600 px, `<nome>-sm.webp` 480 px): il sito usa queste, il catalogo continua a indicare l'originale |
 | `api/` | **Serverless Functions** (area riservata: auth + CRUD catalogo/news/documenti/posizioni + impostazioni sito) |
-| `vercel.json` | Configurazione deploy |
+| `vercel.json` | Configurazione deploy: rewrite `/admin`, **header di sicurezza** (CSP, anti-clickjacking, nosniff…) e cache |
+| `.vercelignore` | File del repo da non pubblicare (`docs/`, README) |
+
+### Foto prodotto nuove
+
+Le foto in `img/img_prd/` sono gli originali ad alta risoluzione. Per una foto nuova aggiungere anche le due
+copie in `img/img_prd/web/` (WebP, lato lungo 1600 px e 480 px, stesso nome + `-sm` per la piccola). Senza
+copie il sito funziona lo stesso (ricade sull'originale), ma la pagina è molto più pesante.
 
 ## Area riservata (admin) — backend
 

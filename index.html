@@ -4,40 +4,19 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Magix Srl</title>
+<meta name="description" content="Magix Srl, Gravina in Puglia (BA): malte premiscelate, rivestimenti e cemento sfuso a prestazione garantita, dal 1990. Schede tecniche e marcatura CE." />
 <!-- icona della scheda: il logo dell'header (img/logo.png) adattato a un quadrato -->
 <link rel="icon" href="favicon.ico" sizes="32x32" />
 <link rel="icon" href="img/favicon/favicon-192.png" type="image/png" sizes="192x192" />
 <link rel="apple-touch-icon" href="img/favicon/apple-touch-icon.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    future: { hoverOnlyWhenSupported: true },
-    theme: {
-      extend: {
-        colors: {
-          bg: "#F5F3EF", bg2: "#ECE8E1", surface: "#FFFFFF",
-          ink: "#15171C", inksoft: "#33353D", muted: "#5C5D64", faint: "#8A8B91",
-          line: "#E4E0D8", linesoft: "#EEEBE5",
-          red: "#E4002B", redcta: "#C20023", reddeep: "#9C001C",
-          graphite: "#15171C", bio: "#2E7D5B", biosoft: "#EAF3EE",
-        },
-        fontFamily: {
-          display: ['"Bricolage Grotesque"', "sans-serif"],
-          sans: ['"Hanken Grotesk"', "sans-serif"],
-          mono: ['"JetBrains Mono"', "monospace"],
-        },
-        boxShadow: {
-          soft: "0 1px 2px rgba(21,23,28,.04), 0 8px 24px -12px rgba(21,23,28,.12)",
-          lift: "0 2px 4px rgba(21,23,28,.04), 0 24px 48px -20px rgba(21,23,28,.22)",
-          glass: "0 8px 40px -12px rgba(21,23,28,.18)",
-        },
-      },
-    },
-  };
-</script>
+<!-- font in locale (fonts.css, file in fonts/): si anticipano i due della prima schermata -->
+<link rel="preload" href="fonts/bricolagegrotesque-v9-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="fonts/hankengrotesk-v12-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="stylesheet" href="fonts.css" />
+<!-- Tailwind Play CDN 3.4.17 in copia locale (da https://cdn.tailwindcss.com/3.4.17): versione
+     fissa e nessun server esterno prima del rendering. Configurazione in tailwind-config.js -->
+<script src="vendor/tailwindcss-3.4.17.js"></script>
+<script src="tailwind-config.js"></script>
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="antialiased">
@@ -64,7 +43,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0">
-        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
@@ -275,7 +254,7 @@
            La griglia riempie il resto della schermata: le righe si allungano fino in fondo -->
       <div class="grid sm:grid-cols-2 gap-4 sm:gap-5 mt-8 sm:mt-10 flex-1">
         <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft min-h-[13rem] sm:min-h-[20rem]">
-          <img src="img/magix_foto_1.png" alt="Silo MAGIX malte — bio edilizia in cantiere" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+          <img src="img/magix_foto_1.webp" alt="Silo MAGIX malte — bio edilizia in cantiere" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-graphite/80 via-graphite/15 to-transparent"></div>
           <figcaption class="absolute bottom-0 inset-x-0 p-6">
             <div class="kicker text-white/70">◢ IN OPERA</div>
@@ -285,7 +264,7 @@
         </figure>
 
         <figure class="feat-shot reveal lift group relative rounded-3xl overflow-hidden border border-line shadow-soft min-h-[13rem] sm:min-h-[20rem]" style="transition-delay:90ms">
-          <img src="img/magix_foto_3.png" alt="Cantiere con ponteggio e silo MAGIX bio edilizia" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
+          <img src="img/magix_foto_3.webp" alt="Cantiere con ponteggio e silo MAGIX bio edilizia" loading="lazy" class="absolute inset-0 w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-graphite/80 via-graphite/15 to-transparent"></div>
           <figcaption class="absolute bottom-0 inset-x-0 p-6">
             <div class="kicker text-white/70">◢ BIO EDILIZIA</div>
@@ -310,13 +289,13 @@
       </div>
       <div class="relative grid grid-cols-3 gap-3">
         <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 lg:h-44 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
-          <img src="img/img_prd/NATURAL%20BIO_NUOVO%20copia.png" alt="Magix Natural Bio — leganti a base calce" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
+          <img src="img/img_prd/web/NATURAL%20BIO_NUOVO%20copia-sm.webp" alt="Magix Natural Bio — leganti a base calce" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
         </a>
         <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 lg:h-44 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden translate-y-5" title="Bio Restore">
-          <img src="img/img_prd/BIO%20RESTORE.png" alt="Magix Bio Restore — intonaco da risanamento" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
+          <img src="img/img_prd/web/BIO%20RESTORE-sm.webp" alt="Magix Bio Restore — intonaco da risanamento" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
         </a>
         <a href="#" data-view="catalog" data-name="linea bio" class="bg-white rounded-2xl h-28 lg:h-44 border border-bio/20 shadow-soft flex items-center justify-center overflow-hidden" title="Linea Natural Bio">
-          <img src="img/img_prd/NATURAL%20BIO_NUOVO%20copia.png" alt="Magix Natural Bio — alta traspirabilità" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
+          <img src="img/img_prd/web/NATURAL%20BIO_NUOVO%20copia-sm.webp" alt="Magix Natural Bio — alta traspirabilità" loading="lazy" class="max-h-full max-w-full object-contain p-2.5">
         </a>
       </div>
     </div>
@@ -326,7 +305,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -387,7 +366,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0">
-        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a>
@@ -486,7 +465,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -546,7 +525,7 @@
 
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
-      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
       <div class="ml-auto flex items-center gap-2">
         <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
@@ -577,7 +556,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -636,7 +615,7 @@
 
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
-      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
       <div class="ml-auto flex items-center gap-2">
         <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
@@ -674,7 +653,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -733,7 +712,7 @@
 
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
-      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2"><a class="underline-grow" href="#" data-view="home">Home</a> <a class="underline-grow text-red" href="#" data-view="prodotti">Prodotti</a><a class="underline-grow" href="#" data-view="cemento">Cemento sfuso</a><a class="underline-grow" href="#" data-view="news">News</a><a class="underline-grow" href="#" data-view="contatti">Contatti</a></nav>
       <div class="ml-auto flex items-center gap-2">
         <a href="#" data-view="contatti" class="hidden sm:flex h-10 px-4 items-center rounded-xl bg-redcta text-white text-sm font-semibold hover:bg-reddeep transition shadow-soft">Contattaci</a>
@@ -858,7 +837,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -903,7 +882,7 @@
   <div id="adminLogin" class="fixed inset-0 z-[60] bg-graphite/95 backdrop-blur grid place-items-center px-5">
     <form id="adminLoginForm" class="w-full max-w-sm bg-surface rounded-3xl border border-line shadow-soft p-7" novalidate>
       <div class="flex items-center gap-2.5">
-        <img src="img/logo.png" alt="Magix" class="h-9 w-auto bg-white rounded-lg px-1.5 py-1" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix" class="h-9 w-auto bg-white rounded-lg px-1.5 py-1" />
         <span class="display font-bold text-ink/60 text-sm">/ area riservata</span>
       </div>
       <h2 class="display font-extrabold text-2xl mt-5">Accedi</h2>
@@ -923,7 +902,7 @@
     <!-- sidebar: drawer a scomparsa su mobile, statica su desktop (lg+) -->
     <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-50 w-64 -translate-x-full transition-transform duration-300 lg:sticky lg:top-0 lg:z-auto lg:translate-x-0 flex flex-col bg-graphite text-white/70 min-h-screen p-4 overflow-y-auto">
       <div class="flex items-center gap-2.5 px-2 py-2">
-        <img src="img/logo.png" alt="Magix" class="h-8 w-auto bg-white rounded-lg px-1.5 py-1" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix" class="h-8 w-auto bg-white rounded-lg px-1.5 py-1" />
         <span class="display font-bold text-white/50 text-sm">/ admin</span>
         <button id="adminSidebarClose" type="button" class="lg:hidden ml-auto w-9 h-9 grid place-items-center rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition" aria-label="Chiudi menu">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
@@ -1488,7 +1467,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0">
-        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
@@ -1892,7 +1871,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -1953,7 +1932,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0">
-        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
@@ -2106,7 +2085,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -2167,7 +2146,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0">
-        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
@@ -2332,7 +2311,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -2393,7 +2372,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0">
-        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
@@ -2571,7 +2550,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -2632,7 +2611,7 @@
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
       <a href="#" data-view="home" class="flex items-center shrink-0">
-        <img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" />
+        <img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" />
       </a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
@@ -2737,7 +2716,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -2797,7 +2776,7 @@
   <!-- header -->
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
-      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
@@ -2876,7 +2855,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -2936,7 +2915,7 @@
   <!-- header -->
   <header class="sticky top-0 z-40 glass border-b border-line">
     <div class="max-w-7xl mx-auto px-5 h-[68px] flex items-center gap-6">
-      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
+      <a href="#" data-view="home" class="flex items-center shrink-0"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto" /></a>
       <nav class="hidden lg:flex items-center gap-7 text-[15px] font-medium ml-2">
         <a class="underline-grow" href="#" data-view="home">Home</a>
         <a class="underline-grow" href="#" data-view="prodotti">Prodotti</a>
@@ -2992,7 +2971,7 @@
 
       <div class="reveal">
         <h2 class="display font-bold text-xl text-ink">Cookie di terze parti</h2>
-        <p class="text-muted mt-3">Nella pagina Contatti è incorporata la mappa di <span class="font-medium text-ink">Google Maps</span>, che può installare cookie propri al caricamento. Tali cookie sono gestiti direttamente da Google secondo la relativa informativa, consultabile su <span class="mono">policies.google.com/technologies/cookies</span>.</p>
+        <p class="text-muted mt-3">Nella pagina Contatti è incorporata la mappa di <span class="font-medium text-ink">Google Maps</span>, che può installare cookie propri al caricamento. Tali cookie sono gestiti direttamente da Google secondo la relativa informativa, consultabile su <span class="mono break-words">policies.google.com/technologies/cookies</span>.</p>
       </div>
 
       <div class="reveal">
@@ -3010,7 +2989,7 @@
   <footer class="bg-graphite text-white/70">
     <div class="max-w-7xl mx-auto px-5 py-16 grid md:grid-cols-4 gap-10">
       <div class="md:col-span-1">
-        <div class="flex items-center"><img src="img/logo.png" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
+        <div class="flex items-center"><img src="img/logo.png" width="550" height="175" alt="Magix Bio Edilizia" class="h-9 w-auto bg-white rounded-lg px-2 py-1" /></div>
         <p class="text-sm mt-4 text-white/50 leading-relaxed">Produzione e fornitura di prodotti per l'edilizia. A prestazione garantita, dal 1990.</p>
       </div>
       <div>
@@ -3140,7 +3119,7 @@
   <div class="absolute inset-0 bg-graphite/50 backdrop-blur-sm opacity-0 transition-opacity duration-300" data-mclose></div>
   <aside class="drawer-panel absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-surface shadow-lift flex flex-col">
     <div class="h-[60px] px-5 flex items-center justify-between border-b border-line shrink-0">
-      <img src="img/logo.png" alt="Magix" class="h-8 w-auto" />
+      <img src="img/logo.png" width="550" height="175" alt="Magix" class="h-8 w-auto" />
       <button data-mclose class="h-10 w-10 grid place-items-center rounded-xl border border-line text-muted hover:border-ink/30 transition" aria-label="Chiudi menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <nav class="flex-1 overflow-y-auto p-4 text-[15px]">
