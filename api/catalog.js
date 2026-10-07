@@ -8,9 +8,21 @@
 
 const { readCollection, writeCollection } = require("./_lib/store");
 const { requireAuth, isAuthed } = require("./_lib/auth");
-const { parseBody, isPublished } = require("./_lib/collection");
+const { parseBody, isPublished, safeUrl, noStore } = require("./_lib/collection");
 
 const slug = (s) => String(s || "").trim().toLowerCase();
+// nomi che su un oggetto JS non sono semplici proprietà: mai usarli come chiave categoria
+const RESERVED = ["__proto__", "constructor", "prototype"];
+const hasCat = (catalog, k) => !!k && Object.prototype.hasOwnProperty.call(catalog, k);
+
+// prodotto dal body: si conservano tutti i campi della scheda, ma codice e nome restano
+// testo e la foto solo un URL ammesso (vedi safeUrl in _lib/collection.js)
+function cleanProduct(p) {
+  const out = Object.assign({}, p, { code: String(p.code), name: String(p.name) });
+  const img = safeUrl(p.img);
+  if (img) out.img = img; else delete out.img;
+  return out;
+}
 
 function cleanCategory(b, prev) {
   return {
@@ -23,6 +35,7 @@ function cleanCategory(b, prev) {
 }
 
 module.exports = async function handler(req, res) {
+  noStore(res);
   try {
     const catalog = await readCollection("catalog");
 
@@ -43,6 +56,7 @@ module.exports = async function handler(req, res) {
     if (kind === "category") {
       const key = slug(body.key);
       if (!key) return res.status(400).json({ error: "Chiave categoria mancante" });
+      if (RESERVED.includes(key) || RESERVED.includes(slug(body.oldKey))) return res.status(400).json({ error: "Nome categoria non valido" });
 
       if (req.method === "DELETE") {
         delete catalog[key];
@@ -51,8 +65,8 @@ module.exports = async function handler(req, res) {
       }
       // POST = create, PUT = update (con eventuale rinomina via oldKey)
       const oldKey = slug(body.oldKey);
-      const prev = (oldKey && catalog[oldKey]) || catalog[key];
-      if (req.method === "PUT" && oldKey && oldKey !== key && catalog[oldKey]) {
+      const prev = (hasCat(catalog, oldKey) && catalog[oldKey]) || (hasCat(catalog, key) ? catalog[key] : undefined);
+      if (req.method === "PUT" && oldKey && oldKey !== key && hasCat(catalog, oldKey)) {
         delete catalog[oldKey];
       }
       catalog[key] = cleanCategory(body, prev);
@@ -63,7 +77,7 @@ module.exports = async function handler(req, res) {
     // ── PRODOTTI ──
     if (kind === "product") {
       const catKey = slug(body.catKey);
-      if (!catKey || !catalog[catKey]) return res.status(400).json({ error: "Categoria inesistente" });
+      if (!hasCat(catalog, catKey)) return res.status(400).json({ error: "Categoria inesistente" });
       catalog[catKey].products = catalog[catKey].products || [];
       const code = body.code || (body.product && body.product.code);
 
@@ -73,13 +87,14 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ ok: true, deleted: code });
       }
 
-      const product = body.product || {};
-      if (!product.code || !product.name) return res.status(400).json({ error: "Codice e nome prodotto obbligatori" });
+      const raw = body.product && typeof body.product === "object" && !Array.isArray(body.product) ? body.product : {};
+      if (!raw.code || !raw.name) return res.status(400).json({ error: "Codice e nome prodotto obbligatori" });
+      const product = cleanProduct(raw);
 
       if (req.method === "PUT") {
         // rimuovi dalla vecchia categoria se spostato
         const oldCatKey = slug(body.oldCatKey) || catKey;
-        if (catalog[oldCatKey]) {
+        if (hasCat(catalog, oldCatKey)) {
           catalog[oldCatKey].products = (catalog[oldCatKey].products || []).filter((p) => p.code !== code);
         }
         const arr = catalog[catKey].products;

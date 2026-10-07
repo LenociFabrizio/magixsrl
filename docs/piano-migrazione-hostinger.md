@@ -23,16 +23,18 @@ a Vercel (Vercel → Project → Domains), senza toccare il codice.
 |---|---|---|---|
 | API (`auth`, `catalog`, `news`, `documents`, `positions`, `settings`, `trips`, `geo`, `upload`) | `api/*.js` | eseguite come Vercel Functions | servono tramite `server.js`. Usano solo `req.method/query/body/headers`, `res.status().json()` e `res.setHeader`: **gli handler restano invariati** |
 | Rewrite `/admin` → `index.html` | `vercel.json` | sì | nel `server.js` |
-| `X-Robots-Tag: noindex, nofollow` su `/admin` | `vercel.json` | sì | nel `server.js` |
+| `X-Robots-Tag: noindex, nofollow` su `/admin` e `/api/*` | `vercel.json` | sì | nel `server.js` |
+| Header di sicurezza su tutte le risposte (Content-Security-Policy, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`) | `vercel.json` | sì | nel `server.js`, **stessi valori** (copiarli da `vercel.json`) |
+| Cache dei file statici (`img/`, `documents/` 1 giorno; `fonts/`, `vendor/` 1 anno, `immutable`) | `vercel.json` | sì | nel `server.js` |
 | `cleanUrls` (`/index.html` → `/`) e `trailingSlash: false` (`/admin/` → `/admin`) | `vercel.json` | sì | redirect nel `server.js` |
-| File **non** pubblicati (`api/**`, `package.json`) | regola di Vercel | sì | **elenco esplicito** dei file servibili nel `server.js` (vedi 3.1) |
+| File **non** pubblicati (`api/**`, `package.json`; `docs/`, `README.md`, `.env.example` via `.vercelignore`) | regola di Vercel + `.vercelignore` | sì | **elenco esplicito** dei file servibili nel `server.js` (vedi 3.1) |
 | Storage (contenuti, sessioni, storico trasferte, upload) | `api/_lib/store.js`, `api/upload.js` | Vercel Blob | Opzione A: resta Blob (funziona anche fuori da Vercel con `BLOB_READ_WRITE_TOKEN`); Opzione B: disco |
 | Upload diretto browser → Blob | `script.js` (`uploadFile`, importa `@vercel/blob@0.27.3/client` da esm.sh) | Blob | A: invariato · B: da riscrivere |
 | Variabili d'ambiente | pannello Vercel | sì | pannello Hostinger, oppure `.env` **fuori** dalla cartella pubblica |
 | Deploy automatico a ogni push su `main` | integrazione Git di Vercel | sì | integrazione GitHub di Hostinger, se disponibile sul piano, altrimenti deploy manuale |
 | HTTPS, CDN, compressione | Vercel | sì | SSL gratuito Hostinger (**obbligatorio**: il cookie di sessione è `Secure`); verificare gzip/brotli |
 
-Indipendenti dall'hosting (nessuna modifica): Tailwind e Google Fonts da CDN, esm.sh, i servizi di
+Indipendenti dall'hosting (nessuna modifica): Tailwind e font sono file del sito (`vendor/`, `fonts/`), esm.sh, i servizi di
 geocoding/percorso (Nominatim/OSRM/ORS, chiamati dal server), link WhatsApp/Instagram.
 
 Versione di Node: serve **≥ 18** (`fetch` globale, `base64url`, `crypto.randomUUID`); meglio **≥ 20.6**
@@ -71,12 +73,13 @@ Se il piano non ha Node.js → **VPS Hostinger** (nginx + Node + pm2/systemd + c
 - [ ] **Redirect:** `/index.html` → `/` (301) e slash finale → senza (`/admin/` → `/admin`, 308)
 - [ ] **`/admin`** → contenuto di `index.html` + `X-Robots-Tag: noindex, nofollow`
 - [ ] **File statici, solo questi:** `/`, `/index.html`, `/script.js`, `/styles.css`, `/catalog-data.js`,
-      `/img/**`, `/documents/**`. Tutto il resto → 404, così `api/`, `package.json`, `README.md`, `.env*`, `docs/`
+      `/tailwind-config.js`, `/fonts.css`, `/favicon.ico`, `/img/**`, `/documents/**`, `/fonts/**`, `/vendor/**`. Tutto il resto → 404, così `api/`, `package.json`, `README.md`, `.env*`, `docs/`
       e `.git` non vengono **mai** serviti. Protezione dal path traversal (decodifica, normalizza, controlla la radice).
-- [ ] Header dei file statici: `content-type` per estensione (html, js, css, png, jpg, webp, svg, pdf, json, ico);
-      `Cache-Control: public, max-age=0, must-revalidate` per html/js/css (i nomi non hanno hash), più lunga per
-      `img/` e `documents/` (es. 7 giorni); `ETag` / `Last-Modified` con risposta 304
-- [ ] Facoltativi: header di sicurezza (`Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`)
+- [ ] Header dei file statici: `content-type` per estensione (html, js, css, png, jpg, webp, svg, pdf, json, ico, woff2);
+      `Cache-Control: public, max-age=0, must-revalidate` per html/js/css (i nomi non hanno hash), quelli di `vercel.json`
+      per `img/`, `documents/`, `fonts/`, `vendor/`; `ETag` / `Last-Modified` con risposta 304
+- [ ] Header di sicurezza **su ogni risposta**, uguali a quelli di `vercel.json` (CSP compresa), più
+      `Strict-Transport-Security` (su Vercel lo aggiunge la piattaforma)
 
 L'adattatore esiste già nell'harness di test (`authsrv.mjs`, sezione 7): la versione di produzione è quella,
 senza i mock e con l'elenco dei file servibili e i limiti.

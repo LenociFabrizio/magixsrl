@@ -5,10 +5,13 @@
 "use strict";
 
 const { handleUpload } = require("@vercel/blob/client");
-const { isAuthed } = require("./_lib/auth");
+const { isAuthed, sameOrigin } = require("./_lib/auth");
+const { noStore } = require("./_lib/collection");
 
 module.exports = async function handler(req, res) {
+  noStore(res);
   if (req.method !== "POST") return res.status(405).json({ error: "Metodo non consentito" });
+  if (!sameOrigin(req)) return res.status(403).json({ error: "Origine della richiesta non consentita" });
 
   try {
     const jsonResponse = await handleUpload({

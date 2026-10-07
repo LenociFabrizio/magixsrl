@@ -3,7 +3,7 @@
 // GET  /api/auth?action=me                                   → { authed: bool }
 "use strict";
 
-const { checkCredentials, createSession, destroySession, isAuthed } = require("./_lib/auth");
+const { checkCredentials, createSession, destroySession, isAuthed, sameOrigin } = require("./_lib/auth");
 const { parseBody } = require("./_lib/collection");
 
 // risposta ritardata sui tentativi falliti: rallenta i tentativi a raffica sulla password
@@ -17,6 +17,8 @@ module.exports = async function handler(req, res) {
   if (action === "me") {
     return res.status(200).json({ authed: await isAuthed(req) });
   }
+  // login e logout solo da pagine di questo sito (vedi sameOrigin in _lib/auth.js)
+  if (req.method === "POST" && !sameOrigin(req)) return res.status(403).json({ error: "Origine della richiesta non consentita" });
 
   if (action === "logout") {
     if (req.method !== "POST") return res.status(405).json({ error: "Metodo non consentito" });

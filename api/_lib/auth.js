@@ -165,6 +165,20 @@ async function destroySession(req, res) {
   res.setHeader("Set-Cookie", sessionCookie("", 0));
 }
 
+// Difesa in profondità contro il CSRF, oltre al cookie SameSite=Strict (che non basta
+// verso un sottodominio dello stesso sito): le richieste che modificano dati devono
+// partire da una pagina di questo stesso host. I browser inviano sempre Origin su
+// POST/PUT/DELETE; senza Origin (client non browser, test) si lascia passare.
+function sameOrigin(req) {
+  const h = req.headers || {};
+  if (!h.origin) return true;
+  let host;
+  try { host = new URL(h.origin).host.toLowerCase(); } catch { return false; } // anche "Origin: null"
+  return [h["x-forwarded-host"], h.host].some((x) => x && String(x).split(",")[0].trim().toLowerCase() === host);
+}
+
+const SAFE_METHODS = ["GET", "HEAD", "OPTIONS"];
+
 async function isAuthed(req) {
   const t = readToken(req);
   if (!t) return false;
@@ -180,8 +194,13 @@ async function isAuthed(req) {
 
 // Gate per le route protette. ASYNC: usarlo sempre come
 //   if (!(await requireAuth(req, res))) return;
-// Ritorna true se la sessione è valida, altrimenti risponde 401 e ritorna false.
+// Ritorna true se la sessione è valida, altrimenti risponde 401 (403 se una richiesta
+// che modifica dati arriva da un'altra origine) e ritorna false.
 async function requireAuth(req, res) {
+  if (!SAFE_METHODS.includes(req.method) && !sameOrigin(req)) {
+    res.status(403).json({ error: "Origine della richiesta non consentita" });
+    return false;
+  }
   if (await isAuthed(req)) return true;
   res.status(401).json({ error: "Non autorizzato" });
   return false;
@@ -194,4 +213,5 @@ module.exports = {
   destroySession,
   isAuthed,
   requireAuth,
+  sameOrigin,
 };

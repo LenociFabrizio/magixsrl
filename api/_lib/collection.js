@@ -16,6 +16,20 @@ function parseBody(req) {
 // contenuti in "bozza" (prodotti, news): visibili solo all'area riservata
 const isPublished = (x) => String((x && x.stato) || "pubblicato").toLowerCase() !== "bozza";
 
+// URL di immagini e documenti salvati dall'admin: solo percorsi del sito o http(s).
+// Altri schemi (javascript:, data:, …) diventerebbero link eseguibili sul sito pubblico.
+// Tab e a capo si tolgono come fa il browser ("java\tscript:" vale "javascript:").
+function safeUrl(v) {
+  const s = String(v == null ? "" : v).replace(/[\t\n\r]/g, "").replace(/^[\u0000-\u0020]+|[\u0000-\u0020]+$/g, "");
+  if (!s) return "";
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(s);
+  if (scheme) return /^https?$/i.test(scheme[1]) ? s : "";
+  return s.startsWith("//") || s.startsWith("\\") ? "" : s;
+}
+
+// risposte delle API mai salvate in cache: con la sessione admin includono le bozze
+const noStore = (res) => res.setHeader("Cache-Control", "private, no-store");
+
 // opts.protectGet: se true, anche la GET richiede autenticazione (dati privati,
 // es. storico trasferte). Default: GET pubblica (catalogo/news/documenti/posizioni).
 // opts.publicFilter: sulla GET senza sessione restituisce solo gli item che lo
@@ -25,6 +39,7 @@ function arrayCrud(name, sanitize, opts) {
   const protectGet = !!(opts && opts.protectGet);
   const publicFilter = opts && opts.publicFilter;
   return async function handler(req, res) {
+    noStore(res);
     try {
       if (req.method === "GET") {
         if (protectGet && !(await requireAuth(req, res))) return;
@@ -52,6 +67,7 @@ function arrayCrud(name, sanitize, opts) {
       }
       if (req.method === "DELETE") {
         const id = body.id || (req.query && req.query.id);
+        if (!id) return res.status(400).json({ error: "id mancante" }); // senza id cancellerebbe gli elementi privi di id
         const next = list.filter((x) => x.id !== id);
         await writeCollection(name, next);
         return res.status(200).json({ ok: true, deleted: id });
@@ -64,4 +80,4 @@ function arrayCrud(name, sanitize, opts) {
   };
 }
 
-module.exports = { arrayCrud, parseBody, isPublished };
+module.exports = { arrayCrud, parseBody, isPublished, safeUrl, noStore };

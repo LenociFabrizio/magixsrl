@@ -2,7 +2,7 @@
 // Item: { id, nome, cat, tipo, url, badge }
 "use strict";
 
-const { arrayCrud } = require("./_lib/collection");
+const { arrayCrud, safeUrl } = require("./_lib/collection");
 
 function sanitize(d) {
   return {
@@ -10,7 +10,7 @@ function sanitize(d) {
     nome: String(d.nome || "").trim(),
     cat: String(d.cat || "company").trim().toLowerCase(),
     tipo: String(d.tipo || "PDF").trim().toUpperCase(),
-    url: String(d.url || "").trim(),
+    url: safeUrl(d.url),
     badge: String(d.badge || "").trim(),
   };
 }

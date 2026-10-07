@@ -2,7 +2,7 @@
 // Item: { id, titolo, cat, data, estratto, corpo:[paragrafi], img, stato }
 "use strict";
 
-const { arrayCrud, isPublished } = require("./_lib/collection");
+const { arrayCrud, isPublished, safeUrl } = require("./_lib/collection");
 
 function sanitize(n) {
   let corpo = n.corpo;
@@ -15,7 +15,7 @@ function sanitize(n) {
     data: String(n.data || "").trim(),
     estratto: String(n.estratto || "").trim(),
     corpo,
-    img: String(n.img || "").trim(),
+    img: safeUrl(n.img),
     stato: n.stato === "bozza" ? "bozza" : "pubblicato",
   };
 }

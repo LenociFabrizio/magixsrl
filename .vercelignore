@@ -1,0 +1,6 @@
+# File del repository che non servono al sito pubblicato: senza questo elenco Vercel
+# li servirebbe come statici (es. /docs/… era leggibile da chiunque e descrive
+# l'area riservata). NON aggiungere package.json: serve per le dipendenze delle API.
+/docs
+/README.md
+/.env.example

@@ -15,6 +15,7 @@
 "use strict";
 
 const { isAuthed } = require("./_lib/auth");
+const { noStore } = require("./_lib/collection");
 
 const ORS = "https://api.openrouteservice.org";
 const NOMINATIM = "https://nominatim.openstreetmap.org";
@@ -66,6 +67,7 @@ async function routeOSRM(from, to) {
 }
 
 module.exports = async function handler(req, res) {
+  noStore(res);
   if (!(await isAuthed(req))) return res.status(401).json({ error: "Non autorizzato" });
 
   const key = process.env.ORS_API_KEY || "";
@@ -77,6 +79,7 @@ module.exports = async function handler(req, res) {
     if (action === "autocomplete") {
       const text = String(q.q || "").trim();
       if (text.length < 3) return res.status(200).json({ suggestions: [], provider });
+      if (text.length > 200) return res.status(400).json({ error: "Indirizzo troppo lungo" });
       const raw = key ? await autocompleteORS(key, text) : await autocompleteNominatim(text);
       const suggestions = raw.filter((s) => s.label && isFinite(s.lat) && isFinite(s.lng));
       return res.status(200).json({ suggestions, provider });
@@ -85,7 +88,7 @@ module.exports = async function handler(req, res) {
     if (action === "route") {
       const from = String(q.from || "").split(",").map(Number); // "lat,lng"
       const to = String(q.to || "").split(",").map(Number);
-      const bad = (a) => a.length !== 2 || a.some((n) => !isFinite(n));
+      const bad = (a) => a.length !== 2 || a.some((n) => !isFinite(n)) || Math.abs(a[0]) > 90 || Math.abs(a[1]) > 180;
       if (bad(from) || bad(to)) return res.status(400).json({ error: "Coordinate non valide" });
       const rt = key ? await routeORS(key, from, to) : await routeOSRM(from, to);
       return res.status(200).json({

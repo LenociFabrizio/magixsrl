@@ -7,7 +7,7 @@
 
 const { readCollection, writeCollection } = require("./_lib/store");
 const { requireAuth } = require("./_lib/auth");
-const { parseBody } = require("./_lib/collection");
+const { parseBody, noStore } = require("./_lib/collection");
 
 function cleanHomeFeatured(v) {
   const code = String((v && v.code) || "").trim();
@@ -15,6 +15,7 @@ function cleanHomeFeatured(v) {
 }
 
 module.exports = async function handler(req, res) {
+  noStore(res);
   try {
     const settings = await readCollection("settings");
 
