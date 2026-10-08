@@ -109,7 +109,7 @@ try {
   ok(r.status === 405, 'POST su una pagina → 405', r.status);
 
   section('Cache delle GET pubbliche');
-  ok(['catalog', 'news', 'documents', 'positions', 'settings'].every((k) => serverMod.apiCache.has(k)), 'all'avvio (evento listening) la cache è già riempita', [...serverMod.apiCache.keys()]);
+  ok(['catalog', 'news', 'documents', 'positions', 'settings'].every((k) => serverMod.apiCache.has(k)), "cache già riempita all'avvio (evento listening)", [...serverMod.apiCache.keys()]);
   const cookie = (await get('/api/auth?action=login', { method: 'POST', headers: { 'content-type': 'application/json', origin: B }, body: JSON.stringify({ username: 'admin@magix.it', password: 'Password-Di-Test-2026!' }) })).headers.get('set-cookie').split(';')[0];
   const send = (method, p, body) => get(p, { method, headers: { 'content-type': 'application/json', origin: B, cookie }, body: JSON.stringify(body) });
   serverMod.apiCache.clear();
