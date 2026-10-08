@@ -304,9 +304,12 @@ const server = http.createServer((req, res) => {
   });
 });
 
+// il riscaldamento parte quando il server è in ascolto: su Hostinger è lsnode.js (LiteSpeed)
+// a fare require di questo file e a chiamare listen(), quindi require.main non è questo modulo
+server.once("listening", warmUp);
+
 if (require.main === module) {
   server.listen(PORT, () => console.log("MAGIX in ascolto sulla porta " + PORT));
-  warmUp();
 }
 
 module.exports = server;
