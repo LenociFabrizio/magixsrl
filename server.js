@@ -57,9 +57,10 @@ const SECURITY_HEADERS = {
 };
 const NOINDEX = "noindex, nofollow";
 
+// s-maxage: durata per la CDN di Hostinger (hcdn), che senza un valore esplicito non tiene copie
 function cacheControl(p) {
-  if (p.startsWith("/fonts/") || p.startsWith("/vendor/")) return "public, max-age=31536000, immutable";
-  if (p.startsWith("/img/") || p.startsWith("/documents/")) return "public, max-age=86400, stale-while-revalidate=604800";
+  if (p.startsWith("/fonts/") || p.startsWith("/vendor/")) return "public, max-age=31536000, s-maxage=31536000, immutable";
+  if (p.startsWith("/img/") || p.startsWith("/documents/")) return "public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800";
   // html/js/css: i nomi non hanno hash, il browser deve sempre ricontrollare
   return "public, max-age=0, must-revalidate";
 }
@@ -92,8 +93,97 @@ function sendJson(res, code, obj) {
   res.end(JSON.stringify(obj));
 }
 
+// ── Cache in memoria delle GET pubbliche ──
+// Ogni GET pubblica legge dal Blob (list + fetch, 300-800 ms): qui si tiene l'ultima
+// risposta di ogni API pubblica e la si serve subito. Oltre FRESH_MS la si serve
+// comunque e la si rilegge dal Blob in background (stale-while-revalidate).
+// Mai per chi ha il cookie di sessione: l'area riservata legge sempre dal Blob (bozze
+// comprese). Ogni scrittura svuota la cache del processo; gli altri processi Node si
+// riallineano entro FRESH_MS.
+const CACHED_API = ["catalog", "news", "documents", "positions", "settings"];
+const FRESH_MS = 30 * 1000;
+const apiCache = new Map(); // "nome?query" -> { status, headers, body, ts }
+const refreshing = new Map(); // "nome?query" -> Promise in corso
+let cacheGen = 0; // cambia a ogni scrittura: un refresh partito prima non salva dati vecchi
+
+const hasSession = (req) => /(?:^|;\s*)magix_session=/.test(String(req.headers.cookie || ""));
+
+// esegue l'handler su una risposta "finta" e ne restituisce stato, header e corpo
+async function captureHandler(name, query) {
+  const out = { status: 200, headers: {}, body: "" };
+  const req = { method: "GET", url: "/api/" + name, headers: {}, query, body: undefined };
+  const res = {
+    statusCode: 200,
+    headersSent: false,
+    setHeader(k, v) { out.headers[k] = v; },
+    getHeader(k) { return out.headers[k]; },
+    status(code) { this.statusCode = code; return this; },
+    json(obj) { out.status = this.statusCode; out.headers["Content-Type"] = "application/json; charset=utf-8"; out.body = JSON.stringify(obj); this.headersSent = true; return this; },
+    end(data) { out.status = this.statusCode; if (data != null) out.body = String(data); this.headersSent = true; },
+  };
+  await loadHandler(name)(req, res);
+  return out;
+}
+
+function refreshApi(name, search, query) {
+  const key = name + search;
+  if (refreshing.has(key)) return refreshing.get(key);
+  const gen = cacheGen;
+  const p = captureHandler(name, query)
+    .then((out) => {
+      // solo risposte riuscite, e solo se nel frattempo nessuno ha scritto
+      if (out.status === 200 && gen === cacheGen) apiCache.set(key, Object.assign(out, { ts: Date.now() }));
+      return out;
+    })
+    .finally(() => refreshing.delete(key));
+  refreshing.set(key, p);
+  return p;
+}
+
+function sendCaptured(res, out, state) {
+  res.statusCode = out.status;
+  for (const k in out.headers) res.setHeader(k, out.headers[k]);
+  res.setHeader("X-Magix-Cache", state);
+  res.end(out.body);
+}
+
+async function handleCachedGet(name, url, req, res) {
+  const key = name + url.search;
+  const query = Object.fromEntries(url.searchParams);
+  const hit = apiCache.get(key);
+  if (hit) {
+    if (Date.now() - hit.ts > FRESH_MS) refreshApi(name, url.search, query).catch((e) => console.error("[cache/" + name + "]", e));
+    return sendCaptured(res, hit, Date.now() - hit.ts > FRESH_MS ? "STALE" : "HIT");
+  }
+  return sendCaptured(res, await refreshApi(name, url.search, query), "MISS");
+}
+
+function invalidateApiCache() {
+  cacheGen++;
+  apiCache.clear();
+}
+
+// all'avvio del processo: carica handler e @vercel/blob e riempie la cache,
+// così il primo visitatore non paga l'avvio a freddo
+function warmUp() {
+  for (const name of API) {
+    try { loadHandler(name); } catch (e) { console.error("[warmup/" + name + "]", e); }
+  }
+  for (const name of CACHED_API) refreshApi(name, "", {}).catch((e) => console.error("[warmup/" + name + "]", e));
+}
+
 async function handleApi(name, url, req, res) {
   res.setHeader("X-Robots-Tag", NOINDEX);
+  if (req.method === "GET" && CACHED_API.includes(name) && !hasSession(req)) {
+    try { return await handleCachedGet(name, url, req, res); }
+    catch (e) {
+      console.error("[api/" + name + "]", e);
+      return sendJson(res, 500, { error: "Errore interno" });
+    }
+  }
+  // le scritture cambiano i contenuti pubblici: la cache si svuota a fine richiesta
+  if (req.method !== "GET" && req.method !== "HEAD" && CACHED_API.includes(name)) res.on("finish", invalidateApiCache);
+
   let raw;
   try { raw = await readBody(req); }
   catch (e) { return sendJson(res, e.status || 400, { error: e.status === 413 ? "Richiesta troppo grande" : "Richiesta non valida" }); }
@@ -216,6 +306,11 @@ const server = http.createServer((req, res) => {
 
 if (require.main === module) {
   server.listen(PORT, () => console.log("MAGIX in ascolto sulla porta " + PORT));
+  warmUp();
 }
 
 module.exports = server;
+// per i test
+module.exports.apiCache = apiCache;
+module.exports.warmUp = warmUp;
+module.exports.FRESH_MS = FRESH_MS;
