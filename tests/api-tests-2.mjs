@@ -92,7 +92,6 @@ try {
   ok(/noindex/.test((await fetch(B + '/admin')).headers.get('x-robots-tag') || ''), '/admin: noindex');
   ok(/noindex/.test((await fetch(B + '/api/catalog')).headers.get('x-robots-tag') || ''), '/api/*: noindex');
   ok(/max-age=86400/.test((await fetch(B + '/img/logo.png')).headers.get('cache-control') || ''), '/img: cache 1 giorno');
-  ok(/immutable/.test((await fetch(B + '/vendor/tailwindcss-3.4.17.js')).headers.get('cache-control') || ''), '/vendor: cache immutabile');
   ok(/immutable/.test((await fetch(B + '/fonts/hankengrotesk-v12-latin.woff2')).headers.get('cache-control') || ''), '/fonts: cache immutabile');
 } finally { srv.close(); }
 console.log(`\n${pass} ok, ${fail} falliti`);

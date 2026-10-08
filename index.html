@@ -13,11 +13,10 @@
 <link rel="preload" href="fonts/bricolagegrotesque-v9-latin.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="fonts/hankengrotesk-v12-latin.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="fonts.css" />
-<!-- Tailwind Play CDN 3.4.17 in copia locale (da https://cdn.tailwindcss.com/3.4.17): versione
-     fissa e nessun server esterno prima del rendering. Configurazione in tailwind-config.js -->
-<script src="vendor/tailwindcss-3.4.17.js"></script>
-<script src="tailwind-config.js"></script>
 <link rel="stylesheet" href="styles.css" />
+<!-- Tailwind: CSS generato in anticipo (npm run build:css, vedi tailwind.config.js), niente Play CDN.
+     Dopo styles.css come faceva il Play CDN, così l'ordine della cascata non cambia -->
+<link rel="stylesheet" href="tailwind.css" />
 </head>
 <body class="antialiased">
 

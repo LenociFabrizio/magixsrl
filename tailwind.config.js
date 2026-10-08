@@ -1,7 +1,9 @@
-// Configurazione di Tailwind (Play CDN, copia locale in vendor/): design token del sito.
-// Sta in un file a parte, non inline in index.html, così la Content-Security-Policy
-// (vercel.json) può vietare gli script inline. Va caricato subito dopo vendor/tailwindcss-*.js.
-tailwind.config = {
+// Configurazione di Tailwind per generare tailwind.css (npm run build:css): design token del sito.
+// Il CSS si genera in locale e si committa: gli hosting non eseguono nessuna build.
+// Dopo aver aggiunto o cambiato classi in index.html, script.js o catalog-data.js
+// va rigenerato (npm test segnala se tailwind.css non è aggiornato).
+module.exports = {
+  content: ["./index.html", "./script.js", "./catalog-data.js"],
   future: { hoverOnlyWhenSupported: true },
   theme: {
     extend: {

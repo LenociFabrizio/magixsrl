@@ -45,7 +45,7 @@ try {
   ok(r.status === 200 && r.headers.get('content-type') === 'application/pdf', 'PDF del catalogo (nome con spazi) servito come application/pdf');
 
   section('File che NON devono essere serviti (404)');
-  for (const p of ['/api/_lib/auth.js', '/api/_seed/catalog.json', '/api/auth.js', '/package.json', '/package-lock.json', '/README.md', '/.env', '/.env.local', '/.env.example', '/docs/piano-migrazione-hostinger.md', '/server.js', '/vercel.json', '/.vercelignore', '/.gitignore', '/.git/config', '/tests/testsrv.mjs', '/node_modules/@vercel/blob/package.json', '/img', '/img/', '/api/', '/api/inesistente', '/api/_lib']) {
+  for (const p of ['/api/_lib/auth.js', '/api/_seed/catalog.json', '/api/auth.js', '/package.json', '/package-lock.json', '/README.md', '/.env', '/.env.local', '/.env.example', '/docs/piano-migrazione-hostinger.md', '/server.js', '/vercel.json', '/.vercelignore', '/tailwind.config.js', '/tailwind.src.css', '/tailwind-config.js', '/vendor/tailwindcss-3.4.17.js', '/.gitignore', '/.git/config', '/tests/testsrv.mjs', '/node_modules/@vercel/blob/package.json', '/img', '/img/', '/api/', '/api/inesistente', '/api/_lib']) {
     const s = (await get(p)).status;
     ok(s === 404 || (s === 308 && p.endsWith('/')), `${p} → ${s}`);
   }
@@ -77,8 +77,10 @@ try {
   section('Cache e compressione');
   r = await get('/img/logo.png');
   ok(r.headers.get('cache-control') === 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800', '/img: 1 giorno');
-  r = await get('/vendor/tailwindcss-3.4.17.js');
-  ok(r.headers.get('cache-control') === 'public, max-age=31536000, s-maxage=31536000, immutable', '/vendor: immutabile');
+  r = await get('/fonts/hankengrotesk-v12-latin.woff2');
+  ok(r.headers.get('cache-control') === 'public, max-age=31536000, s-maxage=31536000, immutable', '/fonts: immutabile');
+  r = await get('/tailwind.css');
+  ok(r.status === 200 && r.headers.get('content-type').startsWith('text/css') && r.headers.get('cache-control') === 'public, max-age=0, must-revalidate', '/tailwind.css servito come CSS, sempre rivalidato');
   r = await get('/script.js', { headers: { 'accept-encoding': 'gzip' } });
   const etag = r.headers.get('etag');
   ok(r.headers.get('cache-control') === 'public, max-age=0, must-revalidate', '/script.js: sempre rivalidato');

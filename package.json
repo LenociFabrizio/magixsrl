@@ -11,7 +11,8 @@
     "start": "node server.js",
     "dev": "node --env-file=.env.local server.js",
     "dev:vercel": "vercel dev",
-    "test": "node tests/server-tests.mjs && node tests/api-tests.mjs && node tests/api-tests-2.mjs"
+    "build:css": "npx -y tailwindcss@3.4.17 -c tailwind.config.js -i tailwind.src.css -o tailwind.css --minify",
+    "test": "node tests/css-check.mjs && node tests/server-tests.mjs && node tests/api-tests.mjs && node tests/api-tests-2.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^0.27.3"

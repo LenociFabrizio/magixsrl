@@ -1,6 +1,6 @@
 # Magix S.r.l. — Sito (prototipo 2026)
 
-Sito statico (HTML + Tailwind via CDN + JS vanilla) per Magix S.r.l.
+Sito statico (HTML + Tailwind + JS vanilla) per Magix S.r.l.
 Single-page con più viste commutate via JavaScript: **Home**, **Cemento sfuso**, **News**, **Contatti**, **Scheda prodotto** e **Admin**.
 
 ## Sviluppo locale
@@ -15,13 +15,17 @@ variabili d'ambiente del sistema, come in produzione su Hostinger.
 
 Test (Blob simulato in memoria, nessuna variabile da impostare): `npm test`.
 
+**CSS di Tailwind:** dopo aver aggiunto o cambiato classi in `index.html`, `script.js` o `catalog-data.js`
+esegui `npm run build:css` e committa `tailwind.css` (Tailwind 3.4.17 via `npx`, nessuna dipendenza da installare).
+Gli hosting non fanno build: pubblicano il file così com'è. `npm test` segnala se `tailwind.css` non è aggiornato.
+
 ## Struttura
 
 | File | Descrizione |
 |------|-------------|
 | `index.html` | Markup di tutte le viste |
-| `tailwind-config.js` | Configurazione Tailwind (colori, font, ombre) — non inline, per la Content-Security-Policy |
-| `vendor/tailwindcss-3.4.17.js` | Tailwind Play CDN in **copia locale**, versione fissa (da `https://cdn.tailwindcss.com/3.4.17`) |
+| `tailwind.css` | CSS di Tailwind **generato** (`npm run build:css`) con le sole classi usate: non modificarlo a mano |
+| `tailwind.config.js`, `tailwind.src.css` | Configurazione Tailwind (colori, font, ombre) e sorgente da cui si genera `tailwind.css` |
 | `fonts.css`, `fonts/` | Font del sito in locale (Bricolage Grotesque, Hanken Grotesk, JetBrains Mono), prima da Google Fonts |
 | `styles.css` | Utility custom (animazioni, swatch materici, accordion, ecc.) |
 | `script.js` | Router delle viste, reveal on scroll, accordion FAQ, form, **bootstrap dati da API** |

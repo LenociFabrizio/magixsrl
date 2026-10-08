@@ -24,8 +24,8 @@ const MAX_BODY = 1024 * 1024; // 1 MB: le API ricevono solo JSON piccoli (gli up
 const API = ["auth", "catalog", "news", "documents", "positions", "settings", "trips", "geo", "upload"];
 
 // ── File statici pubblicabili: tutto il resto risponde 404 ──
-const STATIC_FILES = ["/index.html", "/script.js", "/styles.css", "/catalog-data.js", "/tailwind-config.js", "/fonts.css", "/favicon.ico"];
-const STATIC_DIRS = ["/img/", "/documents/", "/fonts/", "/vendor/"];
+const STATIC_FILES = ["/index.html", "/script.js", "/styles.css", "/catalog-data.js", "/tailwind.css", "/fonts.css", "/favicon.ico"];
+const STATIC_DIRS = ["/img/", "/documents/", "/fonts/"];
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -59,7 +59,7 @@ const NOINDEX = "noindex, nofollow";
 
 // s-maxage: durata per la CDN di Hostinger (hcdn), che senza un valore esplicito non tiene copie
 function cacheControl(p) {
-  if (p.startsWith("/fonts/") || p.startsWith("/vendor/")) return "public, max-age=31536000, s-maxage=31536000, immutable";
+  if (p.startsWith("/fonts/")) return "public, max-age=31536000, s-maxage=31536000, immutable";
   if (p.startsWith("/img/") || p.startsWith("/documents/")) return "public, max-age=86400, s-maxage=604800, stale-while-revalidate=604800";
   // html/js/css: i nomi non hanno hash, il browser deve sempre ricontrollare
   return "public, max-age=0, must-revalidate";

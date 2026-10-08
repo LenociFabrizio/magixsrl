@@ -1,0 +1,4 @@
+/* Sorgente di tailwind.css: npm run build:css (non modificare tailwind.css a mano) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

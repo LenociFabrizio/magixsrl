@@ -7,3 +7,6 @@
 # server per l'hosting Node (Hostinger): su Vercel non serve e non va pubblicato
 /server.js
 /tests
+# sorgenti di tailwind.css (npm run build:css)
+/tailwind.config.js
+/tailwind.src.css
