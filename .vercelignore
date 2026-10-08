@@ -4,3 +4,6 @@
 /docs
 /README.md
 /.env.example
+# server per l'hosting Node (Hostinger): su Vercel non serve e non va pubblicato
+/server.js
+/tests

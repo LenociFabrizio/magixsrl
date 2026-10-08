@@ -7,12 +7,13 @@ Single-page con più viste commutate via JavaScript: **Home**, **Cemento sfuso**
 
 ```bash
 npm install
-npm start
+npm run dev     # server.js con le variabili di .env.local (sito + API + area riservata)
 ```
 
-Apri http://localhost:3000
+Apri http://localhost:3000 (area riservata: `/admin`). `npm start` avvia lo stesso server leggendo le
+variabili d'ambiente del sistema, come in produzione su Hostinger.
 
-> In alternativa, essendo un sito statico, è sufficiente aprire `index.html` con un server statico qualsiasi.
+Test (Blob simulato in memoria, nessuna variabile da impostare): `npm test`.
 
 ## Struttura
 
@@ -73,9 +74,9 @@ totale del viaggio, con storico salvato sul backend.
   chiave** usando OpenStreetMap **Nominatim** (indirizzi) + **OSRM** (percorso). Se imposti
   `ORS_API_KEY` (opzionale) usa invece **OpenRouteService**, con la chiave che resta solo lato server.
   In ogni caso si possono sempre inserire i **km a mano**.
-  > ⚠️ Le funzioni serverless servono solo online (Vercel) o in locale con `vercel dev`: con `npm start`
-  > (server statico) le `/api/*` non girano, quindi autocomplete/routing e storico non sono disponibili
-  > (il calcolo con km manuali resta comunque utilizzabile).
+  > ⚠️ Le `/api/*` girano solo con `server.js` (`npm run dev` / `npm start`, Hostinger) o su Vercel:
+  > aprendo `index.html` con un server statico qualsiasi autocomplete/routing e storico non sono
+  > disponibili (il calcolo con km manuali resta comunque utilizzabile).
 - **Storico**: collezione privata `trips` su Vercel Blob (`api/trips.js`), con **GET protetta** oltre
   alle scritture (a differenza di catalogo/news/documenti/posizioni, che hanno GET pubblica).
 - **Export**: ogni riepilogo è esportabile in **CSV** o via **stampa/PDF**.
@@ -96,15 +97,12 @@ totale del viaggio, con storico salvato sul backend.
 
 ```bash
 npm install
-npm i -g vercel        # se non presente
-vercel link            # collega la cartella al progetto Vercel
-vercel env pull .env.local   # scarica BLOB_READ_WRITE_TOKEN
-# aggiungi ADMIN_USERNAME, ADMIN_PASSWORD e AUTH_SECRET in .env.local (vedi .env.example)
-vercel dev             # serve sito + functions su http://localhost:3000 (area riservata: /admin)
+# crea .env.local con ADMIN_USERNAME, ADMIN_PASSWORD, AUTH_SECRET e BLOB_READ_WRITE_TOKEN (vedi .env.example)
+npm run dev            # sito + API su http://localhost:3000 (area riservata: /admin)
 ```
 
-> Senza `vercel dev` (es. `npm start`) le API non sono attive: il sito gira comunque sui dati statici,
-> ma l'area riservata non è raggiungibile (né `/admin` né il login funzionano).
+> In alternativa `npm run dev:vercel` (Vercel CLI, `vercel link` + `vercel env pull .env.local`).
+> Il cookie di sessione è `Secure`: i browser lo accettano anche su `http://localhost`, non su altri host senza HTTPS.
 
 ## Deploy su Vercel
 
@@ -116,4 +114,19 @@ Il progetto è pronto per Vercel come sito statico (nessuna build necessaria):
 
 Ad ogni `git push` sul branch `main` Vercel pubblica automaticamente la nuova versione.
 
-> Per un futuro passaggio dell'hosting a **Hostinger** c'è un piano pronto: [`docs/piano-migrazione-hostinger.md`](docs/piano-migrazione-hostinger.md).
+## Deploy su Hostinger (app web Node.js)
+
+`server.js` fa quello che su Vercel fanno la piattaforma e `vercel.json`: esegue gli handler `api/*.js`
+invariati, serve **solo** i file statici del sito (sorgenti, `docs/`, `.env`, `package.json` → 404) e
+applica rewrite di `/admin`, redirect, cache e header di sicurezza. Lo storage resta **Vercel Blob**.
+
+1. hPanel → **Siti web → Aggiungi sito web → App web Node.js**, collegata a questo repository GitHub
+   (oppure caricando lo zip del progetto). Node **22**, comando di avvio `npm start`, file `server.js`.
+2. **Variabili d'ambiente** dell'app: `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `AUTH_SECRET`,
+   `BLOB_READ_WRITE_TOKEN` (il *read-write token* dello store `magixsrl-data`: fuori da Vercel l'OIDC non vale),
+   `ORS_API_KEY` facoltativa. Mai in un file dentro la cartella del sito.
+3. **SSL** attivo e **Forza HTTPS** in hPanel: il redirect HTTP → HTTPS non lo fa `server.js`.
+4. Verifiche e passaggio DNS: [`docs/piano-migrazione-hostinger.md`](docs/piano-migrazione-hostinger.md), sezioni 4 e 5.
+
+Gli header di sicurezza sono scritti sia in `vercel.json` sia in `server.js`: vanno modificati in entrambi
+(il test `tests/server-tests.mjs` segnala se divergono).

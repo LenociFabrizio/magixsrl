@@ -1,6 +1,7 @@
 # Piano di migrazione dell'hosting: Vercel → Hostinger
 
-> **Stato:** pronto, non avviato. Scritto il 4 ottobre 2026 sullo stato del codice di quella data
+> **Stato (8 ottobre 2026):** opzione A in corso. Fatti `server.js`, `package.json`, test in `tests/` (`npm test`) e README; mancano staging su Hostinger, verifiche (sez. 4) e passaggio DNS (sez. 5). Backup completo del vecchio WordPress fatto lo stesso giorno (fuori dal repo).
+> Piano scritto il 4 ottobre 2026 sullo stato del codice di quella data
 > (area riservata su `/admin` con login username/password e sessioni registrate sul Blob).
 > Prima di partire, ricontrolla la sezione 1: se nel frattempo il backend è cambiato, l'inventario va aggiornato.
 

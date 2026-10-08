@@ -1,16 +1,19 @@
 {
   "name": "magix",
   "version": "1.0.0",
-  "description": "Sito statico Magix",
+  "description": "Sito Magix",
   "private": true,
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "serve -l 3000 .",
-    "dev": "vercel dev"
+    "start": "node server.js",
+    "dev": "node --env-file=.env.local server.js",
+    "dev:vercel": "vercel dev",
+    "test": "node tests/server-tests.mjs && node tests/api-tests.mjs && node tests/api-tests-2.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^0.27.3"
-  },
-  "devDependencies": {
-    "serve": "^14.2.1"
   }
 }
